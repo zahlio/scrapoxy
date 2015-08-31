@@ -60,6 +60,7 @@
   "scripts": {
     "start": "node server/index.js"
   },
+  "preferGlobal": true,
   "bin": {
     "scrapoxy": "server/index.js"
   }
