@@ -17,14 +17,14 @@ $ npm install -g scrapoxy
 
 ## Step 3: Get AWS credentials
 
-See [Get AWS credentials](tutorials/aws/get_credentials/README.md).
+See [Get AWS credentials](../tutorials/aws/get_credentials/README.md).
 
 
 ## Step 4: Create a security group
 
 To use the default AMI, create a security group named 'forward-proxy' with port TCP/3128. 
 
-See [Create a security group](tutorials/aws/create_security_group/README.md).
+See [Create a security group](../tutorials/aws/create_security_group/README.md).
 
 
 ## Step 5: Generate configuration
