@@ -2,9 +2,16 @@
   "name": "scrapoxy",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Fabien Vauchelles",
+  "author": {
+    "name": "Fabien Vauchelles",
+    "email": "no@contact.com",
+    "url": "http://fabien.vauchelles.com"
+  },
   "description": "Scraping proxy (proxy for proxies)",
   "url": "https://github.com/fabienvauchelles/scrapoxy",
+  "homepage": "https://github.com/fabienvauchelles/scrapoxy",
+  "repository": "fabienvauchelles/scrapoxy",
+  "license": "MIT",
   "keywords": [
     "aws",
     "casperjs",
