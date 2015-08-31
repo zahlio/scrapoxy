@@ -25,12 +25,14 @@ var template = {
     },
 
     ec2: {
+        accessKeyId: 'YOUR ACCESS KEY ID',
+        secretAccessKey: 'YOUR SECRET ACCESS KEY',
         region: 'YOUR REGION (could be: eu-west-1)',
         tag: 'Proxy',
         instance: {
             InstanceType: 't1.micro',
-            ImageId: 'ami-1aa0ea6d', // Forward proxy
-            SecurityGroups: ['YOUR SECURITY GROUPS'],
+            ImageId: 'ami-1aa0ea6d', // Forward proxy node
+            SecurityGroups: ['forward-proxy'],
         },
         maxRunningInstances: 10,
     },
