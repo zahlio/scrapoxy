@@ -4,10 +4,10 @@
   "main": "index.js",
   "author": {
     "name": "Fabien Vauchelles",
-    "email": "no@contact.com",
+    "email": "fabien@vauchelles.com",
     "url": "http://fabien.vauchelles.com"
   },
-  "description": "Scraping proxy (proxy for proxies)",
+  "description": "Scrapoxy is a proxy for scrapers",
   "url": "https://github.com/fabienvauchelles/scrapoxy",
   "homepage": "https://github.com/fabienvauchelles/scrapoxy",
   "repository": "fabienvauchelles/scrapoxy",
