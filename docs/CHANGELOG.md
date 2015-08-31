@@ -3,6 +3,12 @@
 
 # Changelog
 
+## 1.0.1
+
+### Misc
+
+- **doc**: change author and misc informations
+
 
 ## 1.0.0
 
