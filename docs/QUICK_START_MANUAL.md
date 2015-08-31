@@ -15,31 +15,31 @@ $ npm install -g scrapoxy
 ```
 
 
-## Step 3: Create a security group on AWS EC2
+## Step 3: Get AWS credentials
 
-To use the default AMI:
-
-1. Go to your AWS console
-2. Go to EC2 dashboard
-3. Click on 'Security Groups'
-4. Click on 'Create Security Group'
-5. Fill the name and the description with 'forward-proxy'
-6. Add an Inbound rule with Type='Custom TCP Rule', Port Range=3128, Source=Anywhere
+See [Get AWS credentials](tutorials/aws/get_credentials/index.md).
 
 
-## Step 4: Generate configuration
+## Step 4: Create a security group
+
+To use the default AMI, create a security group named 'forward-proxy' with port TCP/3128. 
+
+See [Create a security group](tutorials/aws/create_security_group/index.md).
+
+
+## Step 5: Generate configuration
 
 ```
 $ scrapoxy init my-config.js
 ```
 
-## Step 5: Edit configuration 
+
+## Step 6: Edit configuration 
 
 Edit *my-config.js*:
 
-Replace *region* by your AWS region (see the [list of regions](http://docs.aws.amazon.com/general/latest/gr/rande.html)).
-
-Replace *SecurityGroups* by your security group (from step 3).
+1. Replace *accessKeyId* and *secretAccessKey* by your credentials;
+2. Replace *region* by your AWS region (see the [list of regions](http://docs.aws.amazon.com/general/latest/gr/rande.html)).
 
 
 ## Step 6: Start Scrapoxy
@@ -62,5 +62,3 @@ Scrapoxy is reachable at *http://localhost:8888*
 ```
 $ scrapoxy test http://localhost:8888
 ```
-
-

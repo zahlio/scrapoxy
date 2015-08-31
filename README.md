@@ -51,7 +51,10 @@ Look at the manuals:
 
 Look at the tutorials:
 
-- Create a proxy AMI (image) on AWS (TODO)
+- AWS:
+    - [Get credentials](docs/tutorials/aws/get_credentials/index.md)
+    - [Create a security group](docs/tutorials/aws/create_security_group/index.md)
+    - Create a proxy AMI (image) (TODO)
 - Start Scrapoxy with PM2 (TODO)
 - Create a Scrapy scraper with Scrapoxy (TODO)
 - Create an anti-blacklisting middleware with Scrapy (TODO)
