@@ -76,7 +76,7 @@ function startProxy(configFilename) {
         return console.log('Error: Config file not specified');
     }
 
-    configFilename = path.resolve(__dirname, configFilename);
+    configFilename = path.resolve(process.cwd(), configFilename);
 
     // Load config
     var config;
