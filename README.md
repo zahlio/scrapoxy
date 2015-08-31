@@ -52,8 +52,8 @@ Look at the manuals:
 Look at the tutorials:
 
 - AWS:
-    - [Get credentials](docs/tutorials/aws/get_credentials/index.md)
-    - [Create a security group](docs/tutorials/aws/create_security_group/index.md)
+    - [Get credentials](docs/tutorials/aws/get_credentials/README.md)
+    - [Create a security group](docs/tutorials/aws/create_security_group/README.md)
     - Create a proxy AMI (image) (TODO)
 - Start Scrapoxy with PM2 (TODO)
 - Create a Scrapy scraper with Scrapoxy (TODO)
