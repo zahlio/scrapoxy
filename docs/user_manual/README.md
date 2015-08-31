@@ -29,7 +29,7 @@
 
 ### Architecture
 
-![Global Arch](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/global_arch.jpg)
+![Global Arch](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/user_manual/global_arch.jpg)
 
 Scrapoxy consists of 3 parts:
 

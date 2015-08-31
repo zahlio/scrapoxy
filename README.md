@@ -45,8 +45,8 @@ You could use [Scrapy framework](http://scrapy.org) ([Python](https://www.python
 
 Look at the manuals:
 
-- the [Quick Start Manual](docs/QUICK_START_MANUAL.md);
-- the [User Manual](docs/USER_MANUAL.md);
+- the [Quick Start Manual](docs/quick_start_manual/README.md);
+- the [User Manual](docs/user_manual/README.md);
 - the [Changelog](docs/CHANGELOG.md).
 
 Look at the tutorials:
