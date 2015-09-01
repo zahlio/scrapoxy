@@ -3,6 +3,20 @@
 
 # Changelog
 
+## 1.1.0
+
+### Features
+
+- **commander**: stopping an instance returns the new count of instances
+- **commander**: password is hashed with base64
+- **commander**: read/write config with command (and live update of the scaling)
+
+
+### Misc
+
+- **chore**: force global install with NPM
+
+
 ## 1.0.2
 
 ### Features
