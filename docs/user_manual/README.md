@@ -22,7 +22,7 @@
 - [Control Scrapoxy with a REST API](#control-scrapoxy-with-a-rest-api)
     - [Authenticate request](#authenticate-request)
     - [Get informations about proxies](#get-informations-about-proxies)
-    - [Remove a proxy from pool](#remove-a-proxy-from-pool)
+    - [Stop an instance](#stop-an-instance)
 
 
 ## Understand Scrapoxy
@@ -189,12 +189,14 @@ Request:
 GET http://localhost:8889/stats
 ```
 
-Response:
+Response (JSON):
 
-- Status = 200. The body contains all informations about Scrapoxy.
+**Status: 200**
+
+The body contains all informations about Scrapoxy.
 
 
-### Remove a proxy from pool
+### Stop an instance
 
 Request: 
 
@@ -210,7 +212,23 @@ JSON payload:
 }
 ```
 
-Response:
+Response (JSON):
 
-- Status = 204. The proxy exists. Scrapoxy removes it from the pool. And a new instance is created, with a new IP address.
-- Status = 404. The proxy does not exist.
+**Status: 200**
+
+The instance exists. 
+
+Scrapoxy stops it. And the instance is restarted, with a new IP address.
+
+The body contains the remaining count of alive instances.
+
+```
+{
+  "alive": <count>
+}
+```
+
+
+**Status: 404**
+
+The instance does not exist.
