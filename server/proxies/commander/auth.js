@@ -4,7 +4,7 @@ module.exports = isAuthenticated;
 ////////////
 
 function isAuthenticated(req, res, next) {
-    var configPassword = req.app.get('config').password;
+    var configPassword = req.app.get('config').commander.password;
     if (!configPassword || configPassword.length <= 0) {
         return res.status(403).send('no password in configuration');
     }

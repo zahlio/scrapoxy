@@ -24,7 +24,7 @@ function Commander(config, manager) {
     this._app = express();
 
     // Set config
-    this._app.set('config', config);
+    this._app.set('config', this._config);
 
     // Init Express modules
     this._app.use(morgan('combined'));
@@ -43,12 +43,12 @@ function Commander(config, manager) {
 Commander.prototype.listen = function listenFn() {
     var self = this;
 
-    winston.info('[Commander] listen: port=%d', self._config.port);
+    winston.info('[Commander] listen: port=%d', self._config.commander.port);
 
     return new Promise(function(resolve, reject) {
         // Start server
-        self._server = self._app.listen(self._config.port, function(err) {
-            if (err) return reject(new Error('[Commander] Cannot listen at port ' + self._config.port + ': ' + err.toString()));
+        self._server = self._app.listen(self._config.commander.port, function(err) {
+            if (err) return reject(new Error('[Commander] Cannot listen at port ' + self._config.commander.port + ': ' + err.toString()));
 
             resolve();
         });

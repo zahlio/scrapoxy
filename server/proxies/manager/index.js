@@ -22,7 +22,7 @@ function ProxiesManager(config, cloud) {
 
     this._domains = {};
 
-    this._requiredCount = this._config.scaling.min;
+    this._config.scaling.required = this._config.scaling.required || this._config.scaling.min;
 }
 
 
@@ -137,11 +137,11 @@ ProxiesManager.prototype.start = function startFn() {
 
         function adjustInstances() {
             var managedCount = Object.keys(self._managedInstances).length;
-            winston.debug('[ProxiesManager] adjustInstances: required:%d / actual:%d', self._requiredCount, managedCount);
+            winston.debug('[ProxiesManager] adjustInstances: required:%d / actual:%d', self._config.scaling.required, managedCount);
 
-            if (managedCount > self._requiredCount) {
+            if (managedCount > self._config.scaling.required) {
                 // Too much
-                var count = managedCount - self._requiredCount;
+                var count = managedCount - self._config.scaling.required;
 
                 winston.info('[ProxiesManager] adjustInstances: remove %d instances', count);
 
@@ -153,9 +153,9 @@ ProxiesManager.prototype.start = function startFn() {
 
                 return self._cloud.deleteInstances(models);
             }
-            else if (managedCount < self._requiredCount) {
+            else if (managedCount < self._config.scaling.required) {
                 // Not enough
-                var count = self._requiredCount - managedCount;
+                var count = self._config.scaling.required - managedCount;
 
                 winston.info('[ProxiesManager] adjustInstances: add %d instances', count);
 
@@ -187,7 +187,7 @@ ProxiesManager.prototype.stop = function stopFn() {
 
     winston.info('[ProxiesManager] stop');
 
-    self._requiredCount = 0;
+    self._config.scaling.required = 0;
 
     return waitForNoInstance()
         .then(function() {
@@ -290,19 +290,19 @@ ProxiesManager.prototype.getStats = function getStatsFn() {
 ProxiesManager.prototype.requestReceived = function requestReceivedFn() {
     var self = this;
 
-    if (self._requiredCount <= 0) {
+    if (self._config.scaling.required <= 0) {
         // Shutdown
         return;
     }
 
-    self._requiredCount = self._config.scaling.max;
+    self._config.scaling.required = self._config.scaling.max;
 
     if (self._scaleDownTimeout) {
         clearTimeout(self._scaleDownTimeout);
     }
 
     self._scaleDownTimeout = setTimeout(function() {
-        self._requiredCount = self._config.scaling.min;
+        self._config.scaling.required = self._config.scaling.min;
     }, self._config.scaling.downscaleDelay);
 };
 

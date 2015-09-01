@@ -159,6 +159,7 @@ The delay is between mindelay and maxdelay.
 |---------------------|---------------|-------------|
 | min                 | none          | Maximum count of instances at startup |
 | max                 | none          | Maximum count of instances when using Scrapoxy |
+| required            | none          | Actual count of instances (optional) |
 | downscaleDelay      | 600000        | (in ms) Time to wait to remove unused instances when Scrapoxy is not in use |
 
 
@@ -220,7 +221,7 @@ The instance exists.
 
 Scrapoxy stops it. And the instance is restarted, with a new IP address.
 
-The body contains the remaining count of alive instances.
+he body contains the remaining count of alive instances.
 
 ```
 {
@@ -232,3 +233,65 @@ The body contains the remaining count of alive instances.
 **Status: 404**
 
 The instance does not exist.
+
+
+### Get the configuration
+
+Request: 
+
+```
+GET http://localhost:8889/commands/config
+```
+
+Response (JSON):
+
+**Status: 200**
+
+The body contains all the configuration of Scrapoxy.
+
+
+### Update the configuration
+
+Request: 
+
+```
+PATCH http://localhost:8889/commands/config
+```
+
+JSON payload:
+
+```
+{
+  "key_to_override": "<new_value>",
+  "section": {
+    "key2_to_override": "<new value>"
+  }
+}
+```
+
+Response (JSON):
+
+**Status: 200**
+
+The configuration is updated.
+
+**Status: 204**
+
+The configuration is not updated.
+
+
+### How to change the scaling ?
+
+JSON payload:
+
+```
+{
+  "instance": {
+    "scaling": {
+       "min": 5,
+       "required": 5,
+       "max": 7
+     }
+  }
+}
+```

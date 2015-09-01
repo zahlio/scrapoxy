@@ -23,7 +23,7 @@ function Main(config, cloud) {
     this._master = new Master(this._config.proxy, this._manager);
 
     // Init Commander
-    this._commander = new Commander(this._config.commander, this._manager);
+    this._commander = new Commander(this._config, this._manager);
 }
 
 
