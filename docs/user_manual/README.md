@@ -189,7 +189,9 @@ Request:
 GET http://localhost:8889/stats
 ```
 
-The response contains all informations about Scrapoxy.
+Response:
+
+- Status = 200. The body contains all informations about Scrapoxy.
 
 
 ### Remove a proxy from pool
@@ -208,6 +210,7 @@ JSON payload:
 }
 ```
 
-If the proxy exists, Scrapoxy removes it from the pool.
+Response:
 
-And a new instance is created, with a new IP address.
+- Status = 204. The proxy exists. Scrapoxy removes it from the pool. And a new instance is created, with a new IP address.
+- Status = 404. The proxy does not exist.
