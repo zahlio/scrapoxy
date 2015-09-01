@@ -178,7 +178,7 @@ By default, you can access to the commander at *http://localhost:8889*
 
 Every requests must have an Authorization header.
 
-The value is the password set in the configuration (commander/password).
+The value is the hash **base64** of the password set in the configuration (commander/password).
 
 
 ### Get informations about proxies

@@ -4,11 +4,18 @@ module.exports = isAuthenticated;
 ////////////
 
 function isAuthenticated(req, res, next) {
-    var config = req.app.get('config');
+    var configPassword = req.app.get('config').password;
+    if (!configPassword || configPassword.length <= 0) {
+        return res.status(403).send('no password in configuration');
+    }
 
     var token = req.headers['authorization'];
+    if (!token || token.length <= 0) {
+        return res.status(403).send('no authorization token found');
+    }
 
-    if (token !== config.password) {
+    var hashPassword = new Buffer(configPassword).toString('base64');
+    if (token !== hashPassword) {
         return res.status(403).send('wrong token');
     }
 
