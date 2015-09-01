@@ -31,11 +31,11 @@ It is written in [Node.js](https://nodejs.org) and it is open source!
 - Control the pool from your scraper
 
 
-## Why Scrapoxy doesn't support anti-blacklisting ?
+## Why Scrapoxy does not directly support anti-blacklisting ?
 
 Anti-blacklisting is a job for the scraper.
 
-When the scraper detects blacklisting, it asks Scrapoxy to remove the proxy from the proxies pool (through a REST API).
+When the scraper detects blacklisting, it asks Scrapoxy to remove the instance from the proxies pool (through a REST API).
 
 
 ## What is the best scraper framework to use with Scrapoxy ?
