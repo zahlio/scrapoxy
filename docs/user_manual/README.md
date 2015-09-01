@@ -23,6 +23,8 @@
     - [Authenticate request](#authenticate-request)
     - [Get informations about proxies](#get-informations-about-proxies)
     - [Stop an instance](#stop-an-instance)
+    - [Get the configuration](#get-the-configuration)
+    - [Update the configuration](#update-the-configuration)
 
 
 ## Understand Scrapoxy
