@@ -33,7 +33,7 @@ It is written in [Node.js](https://nodejs.org) and it is open source!
 
 ## Why Scrapoxy does not directly support anti-blacklisting ?
 
-Anti-blacklisting is a job for the scraper.
+Detection of blacklisting is a job for the scraper.
 
 When the scraper detects blacklisting, it asks Scrapoxy to remove the instance from the proxies pool (through a REST API).
 
