@@ -111,7 +111,8 @@ CloudEC2.prototype.getModels = function getInstancesFn() {
     function convertToModel(instancesDesc) {
         return _.map(instancesDesc, function(instanceDesc) {
             return new InstanceModel(
-                'ec2:' + instanceDesc.id,
+                instanceDesc.id,
+                'awsec2',
                 convertStatus(instanceDesc.status),
                 buildAddress(instanceDesc.ip),
                 instanceDesc

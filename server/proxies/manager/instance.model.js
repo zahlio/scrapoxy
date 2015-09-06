@@ -6,8 +6,9 @@ module.exports = InstanceModel;
 
 ////////////
 
-function InstanceModel(name, status, address, cloudOps) {
+function InstanceModel(name, type, status, address, cloudOps) {
     this._name = name;
+    this._type = type;
     this._status = status;
     this._address = address;
 
@@ -27,6 +28,9 @@ InstanceModel.prototype.getName = function getNameFn() {
     return this._name;
 };
 
+InstanceModel.prototype.getType = function getTypeFn() {
+    return this._type;
+};
 
 InstanceModel.prototype.getStatus = function getStatusFn() {
     return this._status;
@@ -58,6 +62,7 @@ InstanceModel.prototype.getCloudOpts = function getCloudOptsFn() {
 InstanceModel.prototype.getStats = function getStatsFn() {
     return {
         name: this._name,
+        type: this._type,
         status: this._status,
         address: this._address,
     };

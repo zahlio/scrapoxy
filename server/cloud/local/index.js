@@ -40,7 +40,8 @@ CloudLocal.prototype.getModels = function getModelsFn() {
                 };
 
                 return new InstanceModel(
-                    'local:' + local.name,
+                    local.name,
+                    'local',
                     InstanceModel.STARTED,
                     address,
                     local
