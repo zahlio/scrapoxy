@@ -19,7 +19,7 @@ module.exports = Commander;
 
 ////////////
 
-function Commander(config, manager) {
+function Commander(config, manager, master) {
     this._config = config;
 
     // Init Express
@@ -83,6 +83,15 @@ function Commander(config, manager) {
             var payload = JSON.stringify({
                 event: 'scaling:updated',
                 payload: scaling,
+            });
+
+            io.emit('event', payload);
+        });
+
+        master.on('stats', function (stats) {
+            var payload = JSON.stringify({
+                event: 'stats',
+                payload: stats,
             });
 
             io.emit('event', payload);
