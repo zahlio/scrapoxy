@@ -30,7 +30,7 @@ function Instance(manager, cloud, config) {
 
 
     // Register event
-    self.on('status:changed', function(newstatus) {
+    self.on('status:updated', function(newstatus) {
         // Alive
         if (newstatus === InstanceModel.STARTED) {
             // Start monitor
@@ -81,7 +81,7 @@ function Instance(manager, cloud, config) {
     });
 
     // Crash
-    self.on('alive:changed', function(alive) {
+    self.on('alive:updated', function(alive) {
         if (alive) {
             if (self._checkStopIfCrashedTimeout) {
                 clearTimeout(self._checkStopIfCrashedTimeout);
@@ -112,7 +112,7 @@ function Instance(manager, cloud, config) {
         if (self._alive !== alive) {
             self._alive = alive;
 
-            self.emit('alive:changed', alive);
+            self.emit('alive:updated', alive);
         }
     }
 
@@ -180,7 +180,7 @@ Instance.prototype.setModel = function setModelFn(model) {
     this._model = model;
 
     if (!this._model.hasStatus(oldstatus)) {
-        this.emit('status:changed', this._model.getStatus(), oldstatus);
+        this.emit('status:updated', this._model.getStatus(), oldstatus);
     }
 };
 
@@ -188,7 +188,7 @@ Instance.prototype.setModel = function setModelFn(model) {
 Instance.prototype.removedFromManager = function removedFromManagerFn() {
     this._model.setStatus(InstanceModel.REMOVED);
 
-    this.emit('status:changed', InstanceModel.REMOVED, this._model.getStatus());
+    this.emit('status:updated', InstanceModel.REMOVED, this._model.getStatus());
 };
 
 
