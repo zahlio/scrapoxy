@@ -3,7 +3,9 @@
 
 var _ = require('lodash'),
     Promise = require('bluebird'),
+    EventEmitter = require('events').EventEmitter,
     Instance = require('./instance'),
+    util = require('util'),
     winston = require('winston');
 
 
@@ -13,6 +15,8 @@ module.exports = ProxiesManager;
 /////////
 
 function ProxiesManager(config, cloud) {
+    EventEmitter.call(this);
+
     this._config = config;
     this._cloud = cloud;
 
@@ -24,6 +28,7 @@ function ProxiesManager(config, cloud) {
 
     this._config.scaling.required = this._config.scaling.required || this._config.scaling.min;
 }
+util.inherits(ProxiesManager, EventEmitter);
 
 
 ProxiesManager.prototype.getInstances = function getInstances() {
@@ -118,7 +123,11 @@ ProxiesManager.prototype.start = function startFn() {
         }
 
         function registerEvents(instance) {
-            instance.on('alive:changed', function(alive) {
+            instance.on('status:updated', function() {
+                self.emit('status:updated', instance.getStats());
+            });
+
+            instance.on('alive:updated', function(alive) {
                 var name = instance.getName();
                 if (alive) {
                     self._aliveInstances.push(instance);
@@ -132,6 +141,8 @@ ProxiesManager.prototype.start = function startFn() {
 
                     delete self._aliveInstancesMap[name];
                 }
+
+                self.emit('alive:updated', instance.getStats());
             });
         }
 
@@ -278,8 +289,8 @@ ProxiesManager.prototype.getNextRunningInstanceForDomain = function getNextRunni
 };
 
 
-ProxiesManager.prototype.getStats = function getStatsFn() {
-    winston.debug('[ProxiesManager] getStats');
+ProxiesManager.prototype.getInstancesStats = function getInstancesStatsFn() {
+    winston.debug('[ProxiesManager] getInstancesStats');
 
     return _.map(this._managedInstances, function(instance) {
         return instance.getStats();
@@ -313,7 +324,7 @@ ProxiesManager.prototype.stopInstance = function stopInstanceFn(name) {
         return;
     }
 
-    instance.emit('alive:changed', false);
+    instance.emit('alive:updated', false);
 
     return instance.stop();
 };

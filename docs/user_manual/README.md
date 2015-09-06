@@ -21,8 +21,10 @@
     - [Options: Proxy](#options-proxy)
 - [Control Scrapoxy with a REST API](#control-scrapoxy-with-a-rest-api)
     - [Authenticate request](#authenticate-request)
-    - [Get informations about proxies](#get-informations-about-proxies)
+    - [Get all instances](#get-all-instances)
     - [Stop an instance](#stop-an-instance)
+    - [Get the scaling](#get-the-scaling)
+    - [Update the scaling](#update-the-scaling)
     - [Get the configuration](#get-the-configuration)
     - [Update the configuration](#update-the-configuration)
 
@@ -184,19 +186,19 @@ Every requests must have an Authorization header.
 The value is the hash **base64** of the password set in the configuration (commander/password).
 
 
-### Get informations about proxies
+### Get all instances
 
 Request: 
 
 ```
-GET http://localhost:8889/stats
+GET http://localhost:8889/instances
 ```
 
 Response (JSON):
 
 **Status: 200**
 
-The body contains all informations about Scrapoxy.
+The body contains all informations about instances.
 
 
 ### Stop an instance
@@ -204,7 +206,7 @@ The body contains all informations about Scrapoxy.
 Request: 
 
 ```
-POST http://localhost:8889/commands/stop
+POST http://localhost:8889/instances/stop
 ```
 
 JSON payload:
@@ -237,19 +239,63 @@ he body contains the remaining count of alive instances.
 The instance does not exist.
 
 
-### Get the configuration
+### Get the scaling
 
 Request: 
 
 ```
-GET http://localhost:8889/commands/config
+GET http://localhost:8889/scaling
 ```
 
 Response (JSON):
 
 **Status: 200**
 
-The body contains all the configuration of Scrapoxy.
+The body contains all the configuration of the scaling.
+
+
+### Update the scaling
+
+Request: 
+
+```
+PATCH http://localhost:8889/scaling
+```
+
+JSON payload:
+
+```
+{
+  "min": "min_scaling",
+  "required": "required_scaling",
+  "max": "max_scaling",
+}
+```
+
+Response (JSON):
+
+**Status: 200**
+
+The scaling is updated.
+
+**Status: 204**
+
+The scaling is not updated.
+
+
+### Get the configuration
+
+Request: 
+
+```
+GET http://localhost:8889/config
+```
+
+Response (JSON):
+
+**Status: 200**
+
+The body contains all the configuration of Scrapoxy (including scaling).
 
 
 ### Update the configuration
@@ -257,7 +303,7 @@ The body contains all the configuration of Scrapoxy.
 Request: 
 
 ```
-PATCH http://localhost:8889/commands/config
+PATCH http://localhost:8889/config
 ```
 
 JSON payload:
@@ -280,20 +326,3 @@ The configuration is updated.
 **Status: 204**
 
 The configuration is not updated.
-
-
-### How to change the scaling ?
-
-JSON payload:
-
-```
-{
-  "instance": {
-    "scaling": {
-       "min": 5,
-       "required": 5,
-       "max": 7
-     }
-  }
-}
-```
