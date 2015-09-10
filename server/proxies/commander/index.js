@@ -1,7 +1,7 @@
 'use strict';
 
 var Promise = require('bluebird'),
-    auth = require('./auth'),
+    Auth = require('./auth'),
     bodyParser = require('body-parser'),
     compression = require('compression'),
     cors = require('cors'),
@@ -19,14 +19,14 @@ module.exports = Commander;
 
 ////////////
 
-function Commander(config, manager) {
+function Commander(config, manager, master) {
     this._config = config;
+
+    // Auth
+    var auth = new Auth(this._config.commander.password);
 
     // Init Express
     var app = express();
-
-    // Set config
-    app.set('config', this._config);
 
     // Init Express modules
     app.use(morgan('combined'));
@@ -38,13 +38,20 @@ function Commander(config, manager) {
     app.use(errorHandler());
 
     // Init Express routes
-    app.use('/config', auth, require('./config')(manager));
-    app.use('/instances', auth, require('./instances')(manager));
-    app.use('/scaling', auth, require('./scaling')(manager));
+    function expressAuth(req, res, next) {
+        return auth.express(req, res, next);
+    }
+
+    app.use('/config', expressAuth, require('./config')(this._config, manager));
+    app.use('/instances', expressAuth, require('./instances')(manager));
+    app.use('/scaling', expressAuth, require('./scaling')(this._config, manager));
 
     // Socket I.O
     this._httpServer = http.Server(app);
     var io = socketIO(this._httpServer);
+    io.use(function(socket, next) {
+        return auth.socketio(socket, next);
+    });
 
     registerEvents(manager);
 
@@ -83,6 +90,15 @@ function Commander(config, manager) {
             var payload = JSON.stringify({
                 event: 'scaling:updated',
                 payload: scaling,
+            });
+
+            io.emit('event', payload);
+        });
+
+        master.on('stats', function (stats) {
+            var payload = JSON.stringify({
+                event: 'stats',
+                payload: stats,
             });
 
             io.emit('event', payload);

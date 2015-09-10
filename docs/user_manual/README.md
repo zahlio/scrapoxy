@@ -8,8 +8,7 @@
 - [Understand Scrapoxy](#understand-scrapoxy)
     - [Architecture](#architecture)
     - [Instances management](#instances-management)
-    - [Do Scrapoxy can proxy HTTPS requests ?](#do-scrapoxy-can-proxy-https-requests-)
-    - [Do I need to create an AMI (EC2 image) ?](#do-i-need-to-create-an-ami-ec2-image-)
+    - [Requests](#requests)
 - [Configuration](#configuration)
     - [Create configuration](#create-configuration)
     - [Options: Commander](#options-commander)
@@ -64,7 +63,16 @@ Scrapoxy can restart an instance if:
 - the living limit is reached: Scrapoxy regulary restarts the instance to change the IP address.
 
 
-### Do Scrapoxy can proxy HTTPS requests ?
+#### Do I need to create an AMI (EC2 image) ?
+
+By default, we provide you an AMI proxy instance. This is a CONNECT proxy opened on TCP port 3128.
+
+But you can use every software which accept the CONNECT method (Squid, Tinyproxy, etc.).
+
+
+### Requests
+
+#### Do Scrapoxy can proxy HTTPS requests ?
 
 Yes. However, Scrapoxy cannot use the CONNECT mechanism.
 
@@ -79,12 +87,20 @@ Location: https://www.google.com/index.html
 Accept: text/html
 ```
 
+#### What is the proxy that returned the response ?
+ 
+Scrapoxy adds to the response an HTTP header **x-cache-proxyname**.
+ 
+This header contains the name of the proxy.
 
-### Do I need to create an AMI (EC2 image) ?
 
-By default, we provide you an AMI proxy instance. This is a CONNECT proxy opened on TCP port 3128.
 
-But you can use every software which accept the CONNECT method (Squid, Tinyproxy, etc.).
+#### Can the scraper force the request to go through a specific proxy?
+
+Yes. The scraper adds the proxy name in the header **x-cache-proxyname**.
+
+When the scraper receives a response, this header is extracted.
+The scraper adds this header to the next request.
 
 
 ## Configuration

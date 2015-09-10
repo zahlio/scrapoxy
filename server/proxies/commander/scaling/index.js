@@ -10,7 +10,7 @@ module.exports = createRouter;
 
 ////////////
 
-function createRouter(manager) {
+function createRouter(config, manager) {
     var router = express.Router();
 
     router.get('/', getScaling);
@@ -22,8 +22,7 @@ function createRouter(manager) {
     ////////////
 
     function getScaling(req, res) {
-        var config = req.app.get('config'),
-            scaling = config.instance.scaling;
+        var scaling = config.instance.scaling;
 
         return res.status(200).send(scaling);
     }
@@ -33,8 +32,7 @@ function createRouter(manager) {
 
         tools.checkScalingIntegrity(payload);
 
-        var config = req.app.get('config'),
-            scaling = config.instance.scaling,
+        var scaling = config.instance.scaling,
             oldScaling = _.cloneDeep(scaling);
 
         scaling = _.merge(scaling, payload);

@@ -24,7 +24,7 @@ It is written in [Node.js](https://nodejs.org) and it is open source!
 ## What Scrapoxy does ?
 
 - Create your own pool of proxies
-- Route requests fairly (with round-robin by domain)
+- Route requests to proxies (a new request is sent to the next proxy)
 - Use standard User Agent (Chrome, Firefox and Safari)
 - Rotate IP address
 - Use multiple cloud platforms (in progress, done: AWS EC2)

@@ -4,8 +4,11 @@ var _ = require('lodash'),
     Promise = require('bluebird'),
     domain = require('./domain'),
     http = require('http'),
+    EventEmitter = require('events').EventEmitter,
     ProxyAgent = require('./proxy-agent'),
+    TimeCounter = require('./time-counter'),
     url = require('url'),
+    util = require('util'),
     winston = require('winston');
 
 
@@ -17,8 +20,16 @@ module.exports = ProxiesMaster;
 function ProxiesMaster(config, manager) {
     var self = this;
 
+    EventEmitter.call(self);
+
     self._config = config;
     self._manager = manager;
+
+    // Stats
+    self._requestsTimeAverageCounter = new TimeCounter();
+    self._requestsFinishedCounter = 0;
+
+    refreshStats();
 
     // Proxy Auth
     if (self._config.auth &&
@@ -39,6 +50,21 @@ function ProxiesMaster(config, manager) {
 
 
     ////////////
+
+    function refreshStats() {
+        setInterval(function() {
+            var requestsTimeAverage = self._requestsTimeAverageCounter.getAverageAndClear();
+
+            var stats = {
+                requests_time_average: requestsTimeAverage,
+                requests_finished: self._requestsFinishedCounter,
+            };
+
+            self._requestsFinishedCounter = 0;
+
+            self.emit('stats', stats);
+        }, config.statsSamplingDelay);
+    }
 
     function requestFn(req, res) {
         winston.debug('[ProxiesMaster] request (%s) %s %s', req.connection.remoteAddress, req.method, req.url);
@@ -103,12 +129,25 @@ function ProxiesMaster(config, manager) {
             res.end('Error in proxy request: ' + err.toString());
         });
 
+        // Start time
+        var start = process.hrtime();
+
         proxy_req.on('response', function(proxy_res) {
             proxy_res.on('error', function(err) {
                 winston.error('[ProxiesMaster] response (error proxy) %s %s => %s', req.method, req.url, err.toString());
 
                 res.writeHead(500);
                 res.end('Error in proxy response: ' + err.toString());
+            });
+
+            proxy_res.on('end', function() {
+                // Stop time and record time
+                var elapsed = process.hrtime(start);
+
+                self._requestsTimeAverageCounter.add(elapsed);
+
+                // Increment count
+                ++self._requestsFinishedCounter;
             });
 
             var headers = _.assign({}, proxy_res.headers, {
@@ -145,6 +184,8 @@ function ProxiesMaster(config, manager) {
         }
     }
 }
+util.inherits(ProxiesMaster, EventEmitter);
+
 
 ProxiesMaster.prototype.listen = function listenFn() {
     var self = this;
@@ -159,6 +200,7 @@ ProxiesMaster.prototype.listen = function listenFn() {
         });
     });
 };
+
 
 ProxiesMaster.prototype.shutdown = function shutdownFn() {
     winston.info('[ProxiesMaster] shutdown');

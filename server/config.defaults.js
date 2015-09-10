@@ -4,6 +4,8 @@
 module.exports = {
     proxy: {
         port: 8888,
+
+        statsSamplingDelay: 1000,
     },
 
     commander: {
