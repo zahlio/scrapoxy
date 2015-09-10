@@ -10,6 +10,7 @@ var Promise = require('bluebird'),
     http = require('http'),
     methodOverride = require('method-override'),
     morgan = require('morgan'),
+    path = require('path'),
     socketIO = require('socket.io'),
     winston = require('winston');
 
@@ -42,9 +43,10 @@ function Commander(config, manager, master) {
         return auth.express(req, res, next);
     }
 
-    app.use('/config', expressAuth, require('./config')(this._config, manager));
-    app.use('/instances', expressAuth, require('./instances')(manager));
-    app.use('/scaling', expressAuth, require('./scaling')(this._config, manager));
+    app.use('/api/config', expressAuth, require('./api/config')(this._config, manager));
+    app.use('/api/instances', expressAuth, require('./api/instances')(manager));
+    app.use('/api/scaling', expressAuth, require('./api/scaling')(this._config, manager));
+    app.use(express.static(path.join(__dirname, 'public')));
 
     // Socket I.O
     this._httpServer = http.Server(app);
