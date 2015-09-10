@@ -97,13 +97,10 @@ This header contains the name of the proxy.
 
 #### Can the scraper force the request to go through a specific proxy?
 
-Yes. 
+Yes. The scraper adds the proxy name in the header **x-cache-proxyname**.
 
-The scraper adds the proxy name in the header **x-cache-proxyname**.
-
-First, this header is extracted from the response of the initial request.
-
-And it is injected into the next request.
+When the scraper receives a response, this header is extracted.
+The scraper adds this header to the next request.
 
 
 ## Configuration
