@@ -10,7 +10,7 @@ module.exports = createRouter;
 
 ////////////
 
-function createRouter(manager) {
+function createRouter(config, manager) {
     var router = express.Router();
 
     router.get('/', getConfig);
@@ -22,8 +22,6 @@ function createRouter(manager) {
     ////////////
 
     function getConfig(req, res) {
-        var config = req.app.get('config');
-
         var viewConfig = tools.omitDeep(config, ['password', 'test']);
 
         return res.status(200).send(viewConfig);
@@ -38,8 +36,7 @@ function createRouter(manager) {
             tools.checkScalingIntegrity(payload.instance.scaling);
         }
 
-        var config = req.app.get('config'),
-            oldConfig = _.cloneDeep(config);
+        var oldConfig = _.cloneDeep(config);
 
         config = _.merge(config, payload);
 
