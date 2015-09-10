@@ -3,6 +3,19 @@
 
 # Changelog
 
+## 2.0.0
+
+### Breaking changes
+
+- **commander**: API routes are prefixed with '/api'
+
+## Features
+
+- **gui**: add GUI to control Scrapoxy
+- **gui**: add statistics to the GUI (count of requests / minute, average delay of requests / minute)
+- **doc**: add doc about HTTP headers
+
+
 ## 1.1.0
 
 ### Features

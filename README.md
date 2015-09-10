@@ -9,7 +9,7 @@ Scrapoxy is a **[proxy](https://en.wikipedia.org/wiki/Proxy_server) for [scraper
 
 You can crawl without thinking about hiding your IP address or avoiding IP blacklisting.
 
-It is written in [Node.js](https://nodejs.org) and it is open source!
+It is written in [Node.js](https://nodejs.org), [AngularJS](https://angularjs.org) and it is open source!
 
 
 ## How does Scrapoxy work ?
@@ -28,7 +28,8 @@ It is written in [Node.js](https://nodejs.org) and it is open source!
 - Use standard User Agent (Chrome, Firefox and Safari)
 - Rotate IP address
 - Use multiple cloud platforms (in progress, done: AWS EC2)
-- Control the pool from your scraper
+- Control the pool from your scraper with a REST API and a GUI
+- Optimize the scraping through statistics (like count of requests / minutes)
 
 
 ## Why Scrapoxy doesn't support anti-blacklisting ?
