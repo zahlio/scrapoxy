@@ -190,9 +190,15 @@ The delay is between mindelay and maxdelay.
 | port                | 8888          | TCP port of Scrapoxy |
 
 
+## Control Scrapoxy with a GUI
+
+You can access to the commander GUI at *http://localhost:8889/*
+
+
+
 ## Control Scrapoxy with a REST API
 
-By default, you can access to the commander at *http://localhost:8889*
+You can access to the commander API at *http://localhost:8889/api*
 
 
 ### Authenticate request
@@ -207,7 +213,7 @@ The value is the hash **base64** of the password set in the configuration (comma
 Request: 
 
 ```
-GET http://localhost:8889/instances
+GET http://localhost:8889/api/instances
 ```
 
 Response (JSON):
@@ -222,7 +228,7 @@ The body contains all informations about instances.
 Request: 
 
 ```
-POST http://localhost:8889/instances/stop
+POST http://localhost:8889/api/instances/stop
 ```
 
 JSON payload:
@@ -260,7 +266,7 @@ The instance does not exist.
 Request: 
 
 ```
-GET http://localhost:8889/scaling
+GET http://localhost:8889/api/scaling
 ```
 
 Response (JSON):
@@ -275,7 +281,7 @@ The body contains all the configuration of the scaling.
 Request: 
 
 ```
-PATCH http://localhost:8889/scaling
+PATCH http://localhost:8889/api/scaling
 ```
 
 JSON payload:
@@ -304,7 +310,7 @@ The scaling is not updated.
 Request: 
 
 ```
-GET http://localhost:8889/config
+GET http://localhost:8889/api/config
 ```
 
 Response (JSON):
@@ -319,7 +325,7 @@ The body contains all the configuration of Scrapoxy (including scaling).
 Request: 
 
 ```
-PATCH http://localhost:8889/config
+PATCH http://localhost:8889/api/config
 ```
 
 JSON payload:
