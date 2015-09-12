@@ -18,6 +18,7 @@
     - [Options: Instance / Autorestart](#options-instance--autorestart)
     - [Options: Instance / Scaling](#options-instance--scaling)
     - [Options: Proxy](#options-proxy)
+- [Control Scrapoxy with a GUI](#control-scrapoxy-with-a-gui)
 - [Control Scrapoxy with a REST API](#control-scrapoxy-with-a-rest-api)
     - [Authenticate request](#authenticate-request)
     - [Get all instances](#get-all-instances)
@@ -34,11 +35,12 @@
 
 ![Global Arch](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/user_manual/global_arch.jpg)
 
-Scrapoxy consists of 3 parts:
+Scrapoxy consists of 4 parts:
 
 - the **master**, which routes requests to proxies;
 - the **manager**, which starts and stops proxies;
-- the **commander**, which provides a REST API to receive orders.
+- the **commander**, which provides a REST API to receive orders;
+- the **gui**, which coneccts to the REST API.
 
 When Scrapoxy starts, the **manager** starts a new instance (if necessary), on the cloud.
 
@@ -177,9 +179,9 @@ The delay is between mindelay and maxdelay.
 
 | Option              | Default value | Description |
 |---------------------|---------------|-------------|
-| min                 | none          | Maximum count of instances at startup |
-| max                 | none          | Maximum count of instances when using Scrapoxy |
-| required            | none          | Actual count of instances (optional) |
+| min                 | none          | The desired count of instances when Scrapoxy is not used |
+| max                 | none          | The desired count of instances when Scrapoxy is used |
+| required            | none          | The count of actual instances |
 | downscaleDelay      | 600000        | (in ms) Time to wait to remove unused instances when Scrapoxy is not in use |
 
 
@@ -192,8 +194,7 @@ The delay is between mindelay and maxdelay.
 
 ## Control Scrapoxy with a GUI
 
-You can access to the commander GUI at *http://localhost:8889/*
-
+See [GUI Manual](../gui_manual/README.md).
 
 
 ## Control Scrapoxy with a REST API
