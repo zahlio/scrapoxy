@@ -30,7 +30,10 @@ function Commander(config, manager, master) {
     var app = express();
 
     // Init Express modules
-    app.use(morgan('combined'));
+    if (winston.level === 'debug') {
+        app.use(morgan('combined'));
+    }
+
     app.use(cors());
     app.use(compression());
     app.use(bodyParser.urlencoded({extended: false}));
@@ -111,12 +114,12 @@ function Commander(config, manager, master) {
 Commander.prototype.listen = function listenFn() {
     var self = this;
 
-    winston.info('[Commander] listen: port=%d', self._config.commander.port);
-
     return new Promise(function (resolve, reject) {
         // Start server
         self._server = self._httpServer.listen(self._config.commander.port, function (err) {
             if (err) return reject(new Error('[Commander] Cannot listen at port ' + self._config.commander.port + ': ' + err.toString()));
+
+            winston.info('GUI is available at http://localhost:%d', self._config.commander.port);
 
             resolve();
         });

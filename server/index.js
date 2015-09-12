@@ -65,7 +65,7 @@ function initConfig(configFilename) {
         template.write(configFilename, function(err) {
             if (err) return winston.error('[Template] Cannot write template to %s', configFilename);
 
-            winston.info('[Template] Template written in %s', configFilename);
+            winston.info('Template written in %s', configFilename);
         });
     });
 }

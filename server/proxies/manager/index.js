@@ -61,7 +61,7 @@ ProxiesManager.prototype.waitForAliveInstances = function waitForAliveInstancesF
 ProxiesManager.prototype.start = function startFn() {
     var self = this;
 
-    winston.info('[ProxiesManager] start');
+    winston.debug('[ProxiesManager] start');
 
     self._checkIntervalTimeout = setInterval(checkInstances, self._config.checkDelay);
 
@@ -154,7 +154,7 @@ ProxiesManager.prototype.start = function startFn() {
                 // Too much
                 var count = managedCount - self._config.scaling.required;
 
-                winston.info('[ProxiesManager] adjustInstances: remove %d instances', count);
+                winston.debug('[ProxiesManager] adjustInstances: remove %d instances', count);
 
                 var models = _(self._managedInstances)
                     .values()
@@ -168,7 +168,7 @@ ProxiesManager.prototype.start = function startFn() {
                 // Not enough
                 var count = self._config.scaling.required - managedCount;
 
-                winston.info('[ProxiesManager] adjustInstances: add %d instances', count);
+                winston.debug('[ProxiesManager] adjustInstances: add %d instances', count);
 
                 return self._cloud.createInstances(count);
             }
@@ -196,7 +196,7 @@ ProxiesManager.prototype.crashRandomInstance = function crashRandomInstanceFn() 
 ProxiesManager.prototype.stop = function stopFn() {
     var self = this;
 
-    winston.info('[ProxiesManager] stop');
+    winston.debug('[ProxiesManager] stop');
 
     self._config.scaling.required = 0;
 

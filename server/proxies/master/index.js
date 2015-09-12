@@ -190,11 +190,11 @@ util.inherits(ProxiesMaster, EventEmitter);
 ProxiesMaster.prototype.listen = function listenFn() {
     var self = this;
 
-    winston.info('[ProxiesMaster] listen: port=%d', self._config.port);
-
     return new Promise(function(resolve, reject) {
         self._server.listen(self._config.port, function(err) {
             if (err) return reject(new Error('[ProxiesMaster] Cannot listen at port ' + self._config.port + ': ' + err.toString()));
+
+            winston.info('Proxy is listening at http://localhost:%d', self._config.port);
 
             return resolve();
         });
@@ -203,7 +203,7 @@ ProxiesMaster.prototype.listen = function listenFn() {
 
 
 ProxiesMaster.prototype.shutdown = function shutdownFn() {
-    winston.info('[ProxiesMaster] shutdown');
+    winston.debug('[ProxiesMaster] shutdown');
 
     this._server.close();
 };
