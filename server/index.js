@@ -3,14 +3,15 @@
 'use strict';
 
 var _ = require('lodash'),
+    Promise = require('bluebird'),
     CloudEC2 = require('./cloud/ec2'),
     fs = require('fs'),
     path = require('path'),
     program = require('commander'),
     Proxies = require('./proxies'),
-    request = require('request'),
     sigstop = require('./common/sigstop'),
     template = require('./template'),
+    TestProxy = require('./test-proxy'),
     winston = require('winston');
 
 var configDefaults = require('./config.defaults');
@@ -36,10 +37,10 @@ program
     });
 
 program
-    .command('test [url]')
+    .command('test [url] [count]')
     .description('Test the proxy at url')
-    .action(function(url) {
-        testProxy(url)
+    .action(function(url, count) {
+        testProxy(url, count)
     });
 
 program
@@ -107,30 +108,32 @@ function startProxy(configFilename) {
 }
 
 
-function testProxy(url) {
-    if (!url || url.length <= 0) {
+function testProxy(proxyUrl, count) {
+    if (!proxyUrl || proxyUrl.length <= 0) {
         return console.log('Error: URL not specified');
     }
 
-    var opts = {
-        url: 'http://api.ipify.org',
-        proxy: url,
-    };
+    count = count || 10;
 
-    var num = 0;
-    for (var i = 0; i < 10; ++i) {
-        request(opts, function (err, response, body) {
-            if (err) {
-                return console.error(err.toString());
-            }
+    var testProxy = new TestProxy(proxyUrl);
 
-            if (response.statusCode !== 200) {
-                return console.error('(%d) %s', response.statusCode, body);
-            }
-
-            console.log('Request #%d: IP=%s', num++, body);
-        });
+    var promises = [];
+    for (var i = 0; i < count; ++i) {
+        promises.push(testProxy.request());
     }
+
+    Promise
+        .all(promises)
+        .then(function() {
+            console.log('IPs found:');
+
+            _.forEach(testProxy.getCount(), function(value, key) {
+                console.log('%s (%d times)', key, value);
+            });
+        })
+        .catch(function(err) {
+            console.log('Error: ', err);
+        });
 }
 
 
