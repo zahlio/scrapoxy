@@ -50,6 +50,7 @@ Look at the manuals:
 
 - the [Quick Start Manual](docs/quick_start_manual/README.md);
 - the [User Manual](docs/user_manual/README.md);
+- the [API Manual](docs/api_manual/README.md);
 - the [GUI Manual](docs/gui_manual/README.md);
 - the [Changelog](docs/CHANGELOG.md).
 
