@@ -28,8 +28,8 @@ It is written in [Node.js](https://nodejs.org), [AngularJS](https://angularjs.or
 - Use standard User Agent (Chrome, Firefox and Safari)
 - Rotate IP address
 - Use multiple cloud platforms (in progress, done: AWS EC2)
-- Control the pool from your scraper with a REST API and a GUI
-- Optimize the scraping through statistics (like count of requests / minutes)
+- Control the instances from your scraper with a REST API
+- Optimize the scraping through statistics (like count of requests per minutes)
 
 
 ## Why Scrapoxy doesn't support anti-blacklisting ?
@@ -50,6 +50,7 @@ Look at the manuals:
 
 - the [Quick Start Manual](docs/quick_start_manual/README.md);
 - the [User Manual](docs/user_manual/README.md);
+- the [GUI Manual](docs/gui_manual/README.md);
 - the [Changelog](docs/CHANGELOG.md).
 
 Look at the tutorials:
