@@ -132,7 +132,7 @@ function testProxy(proxyUrl, count) {
             });
         })
         .catch(function(err) {
-            console.log('Error: ', err);
+            console.log('Error:', err);
         });
 }
 

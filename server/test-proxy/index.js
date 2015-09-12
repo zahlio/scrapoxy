@@ -28,7 +28,7 @@ TestProxy.prototype.request = function requestFn(callback) {
             }
 
             if (response.statusCode !== 200) {
-                return reject(response.status + ': ' + body);
+                return reject(response.statusCode + ': ' + body);
             }
 
             var countIP = self._count[body] || 0;
