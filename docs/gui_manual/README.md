@@ -52,8 +52,8 @@ This panel manages the number of instances.
 
 Scrapoxy has 3 settings:
 
-- **Min**. The desired count of instances when Scrapoxy is not used;
-- **Max**. The desired count of instances when Scrapoxy is used;
+- **Min**. The desired count of instances when Scrapoxy is asleep;
+- **Max**. The desired count of instances when Scrapoxy is awake;
 - **Required**. The count of actual instances.
 
 To add or remove an instance, simply change the **Required** setting.

@@ -65,11 +65,26 @@ Scrapoxy can restart an instance if:
 - the living limit is reached: Scrapoxy regulary restarts the instance to change the IP address.
 
 
-#### Do I need to create an AMI (EC2 image) ?
+#### Do you need to create an AMI (EC2 image) ?
 
 By default, we provide you an AMI proxy instance. This is a CONNECT proxy opened on TCP port 3128.
 
 But you can use every software which accept the CONNECT method (Squid, Tinyproxy, etc.).
+
+
+#### Can you leave Scrapoxy started ?
+
+![aa](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/user_manual/asleep-awake.png)
+
+Yes. Scrapoxy has 2 modes: an **awake mode** and an **asleep mode**.
+
+When Scrapoxy receives no request after a while, he falls asleep.
+It sets the count of instances to minimum (**instance.scaling.min**).
+
+When Scrapoxy receives a request, it wakes up.
+It fixes the count of instances to maximum (**instance.scaling.max**).
+
+Note: Scrapoxy needs at least 1 instance to receive the awake request.
 
 
 ### Requests
@@ -179,8 +194,8 @@ The delay is between mindelay and maxdelay.
 
 | Option              | Default value | Description |
 |---------------------|---------------|-------------|
-| min                 | none          | The desired count of instances when Scrapoxy is not used |
-| max                 | none          | The desired count of instances when Scrapoxy is used |
+| min                 | none          | The desired count of instances when Scrapoxy is asleep |
+| max                 | none          | The desired count of instances when Scrapoxy is awake |
 | required            | none          | The count of actual instances |
 | downscaleDelay      | 600000        | (in ms) Time to wait to remove unused instances when Scrapoxy is not in use |
 
