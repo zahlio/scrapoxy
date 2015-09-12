@@ -3,6 +3,18 @@
 
 # Changelog
 
+## 2.0.1
+
+## Features
+
+- **test**: specify the count of requests with the test command 
+- **test**: count the requests by IP in the test command
+- **doc**: add GUI documentation
+- **doc**: add API documentation
+- **doc**: explain awake/asleep mode in user manual
+- **log**: add human readable message at startup
+
+
 ## 2.0.0
 
 ### Breaking changes
