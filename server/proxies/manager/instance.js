@@ -27,6 +27,7 @@ function Instance(manager, cloud, config) {
 
     self._model = null;
     self._alive = false;
+    self._aliveCount = void 0;
 
 
     // Register event
@@ -97,12 +98,31 @@ function Instance(manager, cloud, config) {
     ////////////
 
     function checkAlive() {
+        winston.debug('[Instance/%s] checkAlive: %s / %s', self._model.getName(), self._alive, (self._aliveCount ? self._aliveCount : '-'));
+
         pinger.ping(self._model.getAddress())
             .then(function() {
                 changeAlive(true);
+                self._aliveCount = void 0;
             })
             .catch(function() {
                 changeAlive(false);
+
+                if (self._aliveCount) {
+                    --self._aliveCount;
+                }
+                else {
+                    self._aliveCount = self._config.aliveMax;
+                }
+
+                if (self._aliveCount <= 0) {
+                    self._aliveCount = void 0;
+
+                    self.stop()
+                        .catch(function(err) {
+                            winston.error('[Instance/%s] error: ', self._model.getName(), err);
+                        });
+                }
             });
     }
 
