@@ -307,17 +307,19 @@ ProxiesManager.prototype.requestReceived = function requestReceivedFn() {
         return;
     }
 
-    self._config.scaling.required = self._config.scaling.max;
-    self.emit('scaling:updated', self._config.scaling);
-
-    if (self._scaleDownTimeout) {
-        clearTimeout(self._scaleDownTimeout);
-    }
-
-    self._scaleDownTimeout = setTimeout(function() {
-        self._config.scaling.required = self._config.scaling.min;
+    if (self._config.scaling.required !== self._config.scaling.max) {
+        self._config.scaling.required = self._config.scaling.max;
         self.emit('scaling:updated', self._config.scaling);
-    }, self._config.scaling.downscaleDelay);
+
+        if (self._scaleDownTimeout) {
+            clearTimeout(self._scaleDownTimeout);
+        }
+
+        self._scaleDownTimeout = setTimeout(function () {
+            self._config.scaling.required = self._config.scaling.min;
+            self.emit('scaling:updated', self._config.scaling);
+        }, self._config.scaling.downscaleDelay);
+    }
 };
 
 
