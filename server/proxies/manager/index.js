@@ -199,6 +199,7 @@ ProxiesManager.prototype.stop = function stopFn() {
     winston.debug('[ProxiesManager] stop');
 
     self._config.scaling.required = 0;
+    self.emit('scaling:updated', self._config.scaling);
 
     return waitForNoInstance()
         .then(function() {
@@ -307,6 +308,7 @@ ProxiesManager.prototype.requestReceived = function requestReceivedFn() {
     }
 
     self._config.scaling.required = self._config.scaling.max;
+    self.emit('scaling:updated', self._config.scaling);
 
     if (self._scaleDownTimeout) {
         clearTimeout(self._scaleDownTimeout);
@@ -314,6 +316,7 @@ ProxiesManager.prototype.requestReceived = function requestReceivedFn() {
 
     self._scaleDownTimeout = setTimeout(function() {
         self._config.scaling.required = self._config.scaling.min;
+        self.emit('scaling:updated', self._config.scaling);
     }, self._config.scaling.downscaleDelay);
 };
 
