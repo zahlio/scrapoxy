@@ -28,6 +28,8 @@ function ProxiesMaster(config, manager) {
     // Stats
     self._requestsTimeAverageCounter = new TimeCounter();
     self._requestsFinishedCounter = 0;
+    self._bytesSent = 0;
+    self._bytesReceived = 0;
 
     refreshStats();
 
@@ -53,14 +55,20 @@ function ProxiesMaster(config, manager) {
 
     function refreshStats() {
         setInterval(function() {
-            var requestsTimeAverage = self._requestsTimeAverageCounter.getAverageAndClear();
+            var requestsTimeAverage = self._requestsTimeAverageCounter.getAverageAndClear(),
+                kbytesSent = Math.floor(self._bytesSent / 1024),
+                kbytesReceived = Math.floor(self._bytesReceived / 1024);
 
             var stats = {
                 requests_time_average: requestsTimeAverage,
                 requests_finished: self._requestsFinishedCounter,
+                kbytes_sent: kbytesSent,
+                kbytes_received: kbytesReceived,
             };
 
             self._requestsFinishedCounter = 0;
+            self._bytesSent = 0;
+            self._bytesReceived = 0;
 
             self.emit('stats', stats);
         }, config.statsSamplingDelay);
@@ -144,10 +152,15 @@ function ProxiesMaster(config, manager) {
                 // Stop time and record time
                 var elapsed = process.hrtime(start);
 
+                // Add elapsed time
                 self._requestsTimeAverageCounter.add(elapsed);
 
                 // Increment count
                 ++self._requestsFinishedCounter;
+
+                // Add bytes (flow)
+                self._bytesSent += proxy_res.socket._bytesDispatched;
+                self._bytesReceived += proxy_res.socket.bytesRead;
             });
 
             var headers = _.assign({}, proxy_res.headers, {
