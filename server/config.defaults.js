@@ -17,7 +17,7 @@ module.exports = {
         checkAliveDelay: 20 * 1000, // 20sec
         stopIfCrashedDelay: 2 * 60 * 1000, // 120sec,
         autoRestartDelay: 60 * 60 * 1000, // 1h,
-        aliveMax: 2,
+        aliveMax: 10,
 
         autorestart: {
             minDelay: 1 * 60 * 60 * 1000, // 1h
