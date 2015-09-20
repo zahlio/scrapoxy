@@ -289,6 +289,25 @@ ProxiesManager.prototype.getNextRunningInstanceForDomain = function getNextRunni
     }
 };
 
+ProxiesManager.prototype.getFirstInstance = function getFirstInstanceFn(forceName) {
+    var self = this;
+
+    if (self._aliveInstances.length <= 0) {
+        return;
+    }
+
+    var nextInstance;
+    if (forceName) {
+        nextInstance = self._aliveInstancesMap[forceName];
+    }
+
+    if (!nextInstance) {
+        nextInstance = self._aliveInstances[0];
+    }
+
+    return nextInstance;
+};
+
 
 ProxiesManager.prototype.getInstancesStats = function getInstancesStatsFn() {
     winston.debug('[ProxiesManager] getInstancesStats');

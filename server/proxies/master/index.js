@@ -105,7 +105,8 @@ function ProxiesMaster(config, manager) {
 
         // Find instance
         var forceName = req.headers['x-cache-proxyname'],
-            instance = self._manager.getNextRunningInstanceForDomain(basedomain, forceName);
+            //instance = self._manager.getNextRunningInstanceForDomain(basedomain, forceName);
+            instance = self._manager.getFirstInstance(forceName);
 
         if (!instance) {
             winston.error('[ProxiesMaster] request: no running instance found');
