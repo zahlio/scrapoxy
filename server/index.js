@@ -6,6 +6,7 @@ var _ = require('lodash'),
     Promise = require('bluebird'),
     CloudEC2 = require('./cloud/ec2'),
     fs = require('fs'),
+    moment = require('moment'),
     path = require('path'),
     program = require('commander'),
     Proxies = require('./proxies'),
@@ -87,6 +88,14 @@ function startProxy(configFilename) {
     }
     catch(err) {
         return console.log('Error: Cannot load config (%s)', err.toString());
+    }
+
+    // Write logs (if specified)
+    if (config.logs && config.logs.path) {
+        winston.add(winston.transports.File, {
+            filename: config.logs.path + '/scrapoxy_' + moment().format('YYYYMMDD_HHmmss') + '.log',
+            json: false,
+        });
     }
 
     // Init Proxies Manager
