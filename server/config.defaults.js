@@ -4,8 +4,6 @@
 module.exports = {
     proxy: {
         port: 8888,
-
-        statsSamplingDelay: 1000,
     },
 
     commander: {
@@ -15,7 +13,7 @@ module.exports = {
     instance: {
         checkDelay: 10 * 1000, // 10sec
         checkAliveDelay: 20 * 1000, // 20sec
-        stopIfCrashedDelay: 2 * 60 * 1000, // 120sec,
+        stopIfCrashedDelay: 5 * 60 * 1000, // 5min,
         autoRestartDelay: 60 * 60 * 1000, // 1h,
         aliveMax: 10,
 
@@ -27,6 +25,12 @@ module.exports = {
         scaling: {
             downscaleDelay: 10 * 60 * 1000, // 10min
         },
+    },
+
+    stats: {
+        retention: 24 * 60 * 60 * 1000, // 24h
+
+        samplingDelay: 1000,
     },
 
     test: {

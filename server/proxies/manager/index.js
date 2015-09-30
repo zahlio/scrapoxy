@@ -14,10 +14,11 @@ module.exports = ProxiesManager;
 
 /////////
 
-function ProxiesManager(config, cloud) {
+function ProxiesManager(config, stats, cloud) {
     EventEmitter.call(this);
 
     this._config = config;
+    this._stats = stats;
     this._cloud = cloud;
 
     this._managedInstances = {};
@@ -101,7 +102,7 @@ ProxiesManager.prototype.start = function startFn() {
                     // Add
                     winston.debug('[ProxiesManager] checkInstances: add: ', model.toString());
 
-                    instance = new Instance(self, self._cloud, self._config);
+                    instance = new Instance(self, self._stats, self._cloud, self._config);
                     self._managedInstances[name] = instance;
 
                     registerEvents(instance);

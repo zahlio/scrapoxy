@@ -16,18 +16,20 @@ module.exports = Instance;
 
 ////////////
 
-function Instance(manager, cloud, config) {
+function Instance(manager, stats, cloud, config) {
     var self = this;
 
     EventEmitter.call(self);
 
     self._manager = manager;
+    self._stats = stats;
     self._cloud = cloud;
     self._config = config;
 
     self._model = null;
     self._alive = false;
     self._aliveCount = void 0;
+    self._rqCount = 0;
 
 
     // Register event
@@ -83,6 +85,10 @@ function Instance(manager, cloud, config) {
 
     // Crash
     self.on('alive:updated', function(alive) {
+        if (!alive) {
+            self._stats.addRqCount(self._rqCount);
+            self._rqCount = 0;
+        }
         if (alive) {
             if (self._checkStopIfCrashedTimeout) {
                 clearTimeout(self._checkStopIfCrashedTimeout);
@@ -229,6 +235,11 @@ Instance.prototype.updateHeaders = function updateHeadersFn(req) {
     req.headers['user-agent'] = this._useragent;
 
     delete req.headers['x-cache-proxyname'];
+};
+
+
+Instance.prototype.incrRequest = function incrRequestFn() {
+    ++this._rqCount;
 };
 
 

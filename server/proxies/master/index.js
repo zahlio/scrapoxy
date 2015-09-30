@@ -4,11 +4,8 @@ var _ = require('lodash'),
     Promise = require('bluebird'),
     domain = require('./domain'),
     http = require('http'),
-    EventEmitter = require('events').EventEmitter,
     ProxyAgent = require('./proxy-agent'),
-    TimeCounter = require('./time-counter'),
     url = require('url'),
-    util = require('util'),
     winston = require('winston');
 
 
@@ -17,21 +14,12 @@ module.exports = ProxiesMaster;
 
 ////////////
 
-function ProxiesMaster(config, manager) {
+function ProxiesMaster(config, manager, stats) {
     var self = this;
-
-    EventEmitter.call(self);
 
     self._config = config;
     self._manager = manager;
-
-    // Stats
-    self._requestsTimeAverageCounter = new TimeCounter();
-    self._requestsFinishedCounter = 0;
-    self._bytesSent = 0;
-    self._bytesReceived = 0;
-
-    refreshStats();
+    self._stats = stats;
 
     // Proxy Auth
     if (self._config.auth &&
@@ -52,27 +40,6 @@ function ProxiesMaster(config, manager) {
 
 
     ////////////
-
-    function refreshStats() {
-        setInterval(function() {
-            var requestsTimeAverage = self._requestsTimeAverageCounter.getAverageAndClear(),
-                kbytesSent = Math.floor(self._bytesSent / 1024),
-                kbytesReceived = Math.floor(self._bytesReceived / 1024);
-
-            var stats = {
-                requests_time_average: requestsTimeAverage,
-                requests_finished: self._requestsFinishedCounter,
-                kbytes_sent: kbytesSent,
-                kbytes_received: kbytesReceived,
-            };
-
-            self._requestsFinishedCounter = 0;
-            self._bytesSent = 0;
-            self._bytesReceived = 0;
-
-            self.emit('stats', stats);
-        }, config.statsSamplingDelay);
-    }
 
     function requestFn(req, res) {
         winston.debug('[ProxiesMaster] request (%s) %s %s', req.connection.remoteAddress, req.method, req.url);
@@ -105,8 +72,8 @@ function ProxiesMaster(config, manager) {
 
         // Find instance
         var forceName = req.headers['x-cache-proxyname'],
-            //instance = self._manager.getNextRunningInstanceForDomain(basedomain, forceName);
-            instance = self._manager.getFirstInstance(forceName);
+            instance = self._manager.getNextRunningInstanceForDomain(basedomain, forceName);
+            //instance = self._manager.getFirstInstance(forceName);
 
         if (!instance) {
             winston.error('[ProxiesMaster] request: no running instance found');
@@ -118,6 +85,7 @@ function ProxiesMaster(config, manager) {
 
         // Update headers
         instance.updateHeaders(req);
+
 
         // Make request
         winston.debug('[ProxiesMaster] makeRequest from %s: (%s) %s %s', instance.toString(), req.connection.remoteAddress, req.method, req.url);
@@ -138,7 +106,7 @@ function ProxiesMaster(config, manager) {
             res.end('Error in proxy request: ' + err.toString());
         });
 
-        // Start time
+        // Start timer
         var start = process.hrtime();
 
         proxy_req.on('response', function(proxy_res) {
@@ -150,18 +118,16 @@ function ProxiesMaster(config, manager) {
             });
 
             proxy_res.on('end', function() {
-                // Stop time and record time
-                var elapsed = process.hrtime(start);
+                // Stop timer and record duration
+                var duration = process.hrtime(start);
 
-                // Add elapsed time
-                self._requestsTimeAverageCounter.add(elapsed);
+                self._stats.requestEnd(
+                    duration,
+                    proxy_res.socket._bytesDispatched,
+                    proxy_res.socket.bytesRead
+                );
 
-                // Increment count
-                ++self._requestsFinishedCounter;
-
-                // Add bytes (flow)
-                self._bytesSent += proxy_res.socket._bytesDispatched;
-                self._bytesReceived += proxy_res.socket.bytesRead;
+                instance.incrRequest();
             });
 
             var headers = _.assign({}, proxy_res.headers, {
@@ -198,7 +164,6 @@ function ProxiesMaster(config, manager) {
         }
     }
 }
-util.inherits(ProxiesMaster, EventEmitter);
 
 
 ProxiesMaster.prototype.listen = function listenFn() {

@@ -4,6 +4,7 @@ var Promise = require('bluebird'),
     Commander = require('./commander'),
     Manager = require('./manager'),
     Master = require('./master'),
+    Stats = require('./stats'),
     winston = require('winston');
 
 
@@ -16,14 +17,17 @@ function Main(config, cloud) {
     this._config = config;
     this._cloud = cloud;
 
+    // Stats
+    this._stats = new Stats(this._config.stats);
+
     // Init Manager
-    this._manager = new Manager(this._config.instance, this._cloud);
+    this._manager = new Manager(this._config.instance, this._stats, this._cloud);
 
     // Init Master
-    this._master = new Master(this._config.proxy, this._manager);
+    this._master = new Master(this._config.proxy, this._manager, this._stats);
 
     // Init Commander
-    this._commander = new Commander(this._config, this._manager, this._master);
+    this._commander = new Commander(this._config, this._manager, this._stats);
 }
 
 
@@ -39,7 +43,7 @@ Main.prototype.listen = function listenFn() {
 
     // Start Commander
     return self._commander.listen()
-        .then(function() {
+        .then(function () {
             // Start Manager
             self._manager.start();
 
@@ -55,7 +59,7 @@ Main.prototype.listenAndWait = function listenAndWaitFn() {
     winston.debug('[Main] listenAndWait');
 
     return self.listen()
-        .then(function() {
+        .then(function () {
             return self._manager.waitForAliveInstances(self._config.instance.scaling.min);
         });
 };
