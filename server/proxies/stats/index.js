@@ -31,6 +31,14 @@ function StatsManager(config) {
     // Request count
     self._rqCount = void 0;
 
+    // Counter
+    self._counter = {
+        stop_order_count: 0,
+        rq_count: 0,
+        bytes_sent: 0,
+        bytes_received: 0,
+    };
+
     // Buffer
     self._buffer = createEmptyBuffer();
 
@@ -64,7 +72,7 @@ function StatsManager(config) {
                 bytes_sent: self._buffer.flow.bytes_sent,
                 bytes_received: self._buffer.flow.bytes_received,
             },
-            global: {},
+            global: _.cloneDeep(self._counter),
         };
 
         if (self._rqCount) {
@@ -87,14 +95,21 @@ StatsManager.prototype.requestEnd = function requestEndFn(duration, bytesSent, b
     this._buffer.rq.duration.add(duration);
 
     ++this._buffer.rq.count;
+    ++this._counter.rq_count;
 
     this._buffer.flow.bytes_sent += bytesSent;
+    this._counter.bytes_sent += bytesSent;
+
     this._buffer.flow.bytes_received += bytesReceived;
+    this._counter.bytes_received += bytesReceived;
 };
 
 
 StatsManager.prototype.addRqCount = function addRqCountFn(count) {
+    ++this._counter.stop_order_count;
+
     if (!count) {
+        // Don't add immediate blacklisting
         return;
     }
 

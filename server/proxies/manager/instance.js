@@ -64,7 +64,7 @@ function Instance(manager, stats, cloud, config) {
             self._useragent = void 0;
 
             // Set alive status
-            changeAlive(false);
+            self._changeAlive(false);
         }
 
         // Error
@@ -109,7 +109,7 @@ function Instance(manager, stats, cloud, config) {
 
         pinger.ping(self._model.getAddress())
             .then(function() {
-                changeAlive(true);
+                self._changeAlive(true);
                 self._aliveCount = void 0;
             })
             .catch(function() {
@@ -130,17 +130,8 @@ function Instance(manager, stats, cloud, config) {
                             winston.error('[Instance/%s] error: ', self._model.getName(), err);
                         });
                 }
+                self._changeAlive(false);
             });
-    }
-
-    function changeAlive(alive) {
-        winston.debug('[Instance/%s] changeAlive: %s => %s', self._model.getName(), self._alive, alive);
-
-        if (self._alive !== alive) {
-            self._alive = alive;
-
-            self.emit('alive:updated', alive);
-        }
     }
 
     function autorestart() {
@@ -211,6 +202,16 @@ Instance.prototype.setModel = function setModelFn(model) {
     }
 };
 
+Instance.prototype._changeAlive = function _changeAliveFn(alive) {
+    winston.debug('[Instance/%s] changeAlive: %s => %s', this._model.getName(), this._alive, alive);
+
+    if (this._alive !== alive) {
+        this._alive = alive;
+
+        this.emit('alive:updated', alive);
+    }
+};
+
 
 Instance.prototype.removedFromManager = function removedFromManagerFn() {
     this._model.setStatus(InstanceModel.REMOVED);
@@ -220,6 +221,8 @@ Instance.prototype.removedFromManager = function removedFromManagerFn() {
 
 
 Instance.prototype.stop = function stopFn() {
+    this._changeAlive(false);
+
     return this._cloud.stopInstance(this._model);
 };
 

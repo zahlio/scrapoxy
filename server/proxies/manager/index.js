@@ -349,7 +349,5 @@ ProxiesManager.prototype.stopInstance = function stopInstanceFn(name) {
         return;
     }
 
-    instance.emit('alive:updated', false);
-
     return instance.stop();
 };
