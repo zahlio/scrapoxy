@@ -18,6 +18,11 @@ var _ = require('lodash'),
 var configDefaults = require('./config.defaults');
 
 
+// Add timestamp to log
+winston.remove(winston.transports.Console);
+winston.add(winston.transports.Console, {timestamp: true});
+
+
 program
     .version('2.0.1')
     .option('-d, --debug', 'Debug mode (increase verbosity)', debugMode)
@@ -95,6 +100,7 @@ function startProxy(configFilename) {
         winston.add(winston.transports.File, {
             filename: config.logs.path + '/scrapoxy_' + moment().format('YYYYMMDD_HHmmss') + '.log',
             json: false,
+            timestamp: true,
         });
     }
 
