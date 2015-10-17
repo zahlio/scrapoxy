@@ -19,6 +19,8 @@ function CloudEC2(config, instancePort) {
     this._config = config;
     this._instancePort = instancePort;
 
+    this.name = 'awsec2';
+
     var opts = _.pick(this._config, ['accessKeyId', 'secretAccessKey', 'region']);
     this._ec2 = new AWS.EC2(opts);
 }
@@ -112,7 +114,7 @@ CloudEC2.prototype.getModels = function getInstancesFn() {
         return _.map(instancesDesc, function(instanceDesc) {
             return new InstanceModel(
                 instanceDesc.id,
-                'awsec2',
+                self.name,
                 convertStatus(instanceDesc.status),
                 buildAddress(instanceDesc.ip),
                 instanceDesc
