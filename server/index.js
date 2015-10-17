@@ -5,6 +5,8 @@
 var _ = require('lodash'),
     Promise = require('bluebird'),
     CloudEC2 = require('./cloud/ec2'),
+    CloudOVH = require('./cloud/ovh'),
+    CloudMultiple = require('./cloud/multiple'),
     fs = require('fs'),
     moment = require('moment'),
     path = require('path'),
@@ -104,8 +106,18 @@ function startProxy(configFilename) {
         });
     }
 
+    // Load clouds
+    var clouds = [];
+    if (config.ec2) {
+        clouds.push(new CloudEC2(config.ec2, config.instance.port));
+    }
+
+    if (config.ovh) {
+        clouds.push(new CloudOVH(config.ovh, config.instance.port));
+    }
+
     // Init Proxies Manager
-    var cloud = new CloudEC2(config.ec2, config.instance.port);
+    var cloud = new CloudMultiple(clouds);
 
     var main = new Proxies(config, cloud);
 
