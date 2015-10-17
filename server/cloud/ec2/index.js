@@ -27,13 +27,12 @@ function CloudEC2(config, instancePort) {
 }
 
 
-CloudEC2.ST_PENDING = 0;
-CloudEC2.ST_RUNNING = 16;
-CloudEC2.ST_SHUTTING_DOWN = 32;
-CloudEC2.ST_TERMINATED = 48;
-CloudEC2.ST_STOPPING = 64;
-CloudEC2.ST_STOPPED = 80;
-CloudEC2.ST_ERROR = 272;
+CloudEC2.ST_PENDING = "pending";
+CloudEC2.ST_RUNNING = "running";
+CloudEC2.ST_SHUTTING_DOWN = "shutting-down";
+CloudEC2.ST_TERMINATED = "terminated";
+CloudEC2.ST_STOPPING = "stopping";
+CloudEC2.ST_STOPPED = "stopped";
 
 
 CloudEC2.prototype.getModels = function getModelsFn() {
@@ -70,7 +69,7 @@ CloudEC2.prototype.getModels = function getModelsFn() {
         return _.map(instancesDesc, function(instanceDesc) {
             return {
                 id: instanceDesc.InstanceId,
-                status: instanceDesc.State.Code,
+                status: instanceDesc.State.Name,
                 ip: instanceDesc.PublicIpAddress,
                 tag: getTag(instanceDesc),
                 toString: function toStringFn() {
@@ -150,11 +149,9 @@ CloudEC2.prototype.getModels = function getModelsFn() {
                 case CloudEC2.ST_STOPPING: {
                     return InstanceModel.STOPPING;
                 }
-                case CloudEC2.ST_ERROR: {
-                    return InstanceModel.ERROR;
-                }
                 default: {
-                    throw new Error('Unknown status: ' + status);
+                    winston.error('[CloudEC2] Unknown status: ', status);
+                    return InstanceModel.ERROR;
                 }
             }
         }
@@ -175,8 +172,8 @@ CloudEC2.prototype.createInstances = function createInstancesFn(count) {
                 .pluck('Instances')
                 .flatten()
                 .filter(function(instance) {
-                    return instance.State.Code !== CloudEC2.ST_SHUTTING_DOWN
-                        && instance.State.Code !== CloudEC2.ST_TERMINATED
+                    return instance.State.Name !== CloudEC2.ST_SHUTTING_DOWN
+                        && instance.State.Name !== CloudEC2.ST_TERMINATED
                 })
                 .size();
 
