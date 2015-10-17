@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash'),
+    Promise = require('bluebird'),
     AWS = require('aws-sdk'),
     InstanceModel = require('../../proxies/manager/instance.model'),
     winston = require('winston');
