@@ -140,7 +140,8 @@ function testProxy(proxyUrl, count) {
         return console.log('Error: URL not specified');
     }
 
-    count = count || 10;
+    // Default: 10 / Max: 1000
+    count = Math.min(count || 10, 1000);
 
     var testProxy = new TestProxy(proxyUrl);
 
