@@ -1,6 +1,6 @@
 var ovh = require('ovh');
 
-var config = require('../server/my-config.json');
+var config = require('../../server/my-config.json');
 
 var client = ovh({
     endpoint: config.ovh.endpoint,
