@@ -152,7 +152,7 @@ function testProxy(proxyUrl, count) {
     Promise
         .all(promises)
         .then(function() {
-            console.log('IPs found:');
+            console.log('%d IPs found:', testProxy.size());
 
             _.forEach(testProxy.getCount(), function(value, key) {
                 console.log('%s (%d times)', key, value);
