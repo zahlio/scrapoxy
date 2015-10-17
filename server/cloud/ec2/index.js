@@ -36,10 +36,10 @@ CloudEC2.ST_STOPPED = 80;
 CloudEC2.ST_ERROR = 272;
 
 
-CloudEC2.prototype.getModels = function getInstancesFn() {
+CloudEC2.prototype.getModels = function getModelsFn() {
     var self = this;
 
-    winston.debug('[CloudEC2] getInstances');
+    winston.debug('[CloudEC2] getModels');
 
     return describeInstances()
         .then(summarizeInfo)
