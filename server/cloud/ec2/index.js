@@ -75,7 +75,7 @@ CloudEC2.prototype.getModels = function getModelsFn() {
                 tag: getTag(instanceDesc),
                 toString: function toStringFn() {
                     return '(id=' + this.id + ' / status=' + this.status + ' / ip=' + this.ip + ' / tag=' + this.tag + ')';
-                }
+                },
             };
         });
 
@@ -136,8 +136,8 @@ CloudEC2.prototype.getModels = function getModelsFn() {
             };
         }
 
-        function convertStatus(statusEC2) {
-            switch (statusEC2) {
+        function convertStatus(status) {
+            switch (status) {
                 case CloudEC2.ST_PENDING: {
                     return InstanceModel.STARTING;
                 }
@@ -154,7 +154,7 @@ CloudEC2.prototype.getModels = function getModelsFn() {
                     return InstanceModel.ERROR;
                 }
                 default: {
-                    throw new Error('Unknown status: ' + statusEC2);
+                    throw new Error('Unknown status: ' + status);
                 }
             }
         }
