@@ -42,7 +42,7 @@ function ProxiesMaster(config, manager, stats) {
     ////////////
 
     function requestFn(req, res) {
-        winston.debug('[ProxiesMaster] request (%s) %s %s', req.connection.remoteAddress, req.method, req.url);
+        //winston.debug('[ProxiesMaster] request (%s) %s %s', req.connection.remoteAddress, req.method, req.url);
 
         // Check auth
         if (self._auth) {
@@ -76,7 +76,7 @@ function ProxiesMaster(config, manager, stats) {
             //instance = self._manager.getFirstInstance(forceName);
 
         if (!instance) {
-            winston.error('[ProxiesMaster] request: no running instance found');
+            //winston.error('[ProxiesMaster] request: no running instance found');
 
             res.writeHead(407);
             return res.end('No running instance found');
@@ -88,7 +88,7 @@ function ProxiesMaster(config, manager, stats) {
 
 
         // Make request
-        winston.debug('[ProxiesMaster] makeRequest from %s: (%s) %s %s', instance.toString(), req.connection.remoteAddress, req.method, req.url);
+        //winston.debug('[ProxiesMaster] makeRequest from %s: (%s) %s %s', instance.toString(), req.connection.remoteAddress, req.method, req.url);
 
         var proxyOpts = _.assign(createProxyOpts(req.url), {
             method: req.method,

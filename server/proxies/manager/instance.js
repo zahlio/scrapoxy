@@ -86,17 +86,22 @@ function Instance(manager, stats, cloud, config) {
 
     // Crash
     self.on('alive:updated', function(alive) {
+        // Count stopped instances
         if (!alive) {
             self._stats.addRqCount(self._rqCount);
             self._rqCount = 0;
         }
+
+        // Crash timer
         if (alive) {
+            winston.debug('[Instance/%s] alive is up => timer stop', self._model.getName());
             if (self._checkStopIfCrashedTimeout) {
                 clearTimeout(self._checkStopIfCrashedTimeout);
                 self._checkStopIfCrashedTimeout = void 0;
             }
         }
         else {
+            winston.debug('[Instance/%s] alive is down => timer start', self._model.getName());
             self._checkStopIfCrashedTimeout = setTimeout(stopIfCrashed, self._config.stopIfCrashedDelay);
         }
     });
