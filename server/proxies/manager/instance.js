@@ -45,8 +45,8 @@ function Instance(manager, stats, cloud, config) {
             self._checkRestartTimeout = setTimeout(autorestart, delay);
 
             // Set useragent
-            //self._useragent = useragent.generateBrowser();
-            self._useragent = useragent.generateBot();
+            self._useragent = useragent.generateBrowser();
+            //self._useragent = useragent.generateBot();
         }
         else {
             // Stop monitor
