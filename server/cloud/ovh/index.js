@@ -32,6 +32,7 @@ function CloudOVH(config, instancePort) {
 
 CloudOVH.ST_ACTIVE = 'ACTIVE';
 CloudOVH.ST_BUILD = 'BUILD';
+CloudOVH.ST_DELETING = 'DELETING';
 CloudOVH.ST_ERROR = 'ERROR';
 
 
@@ -42,6 +43,7 @@ CloudOVH.prototype.getModels = function getModelsFn() {
 
     return self._describeInstances()
         .then(summarizeInfo)
+        .then(excludeTerminated)
         .then(excludeOutscope)
         .then(convertToModel);
 
@@ -70,6 +72,12 @@ CloudOVH.prototype.getModels = function getModelsFn() {
 
             return instanceDesc.ipAddresses[0].ip;
         }
+    }
+
+    function excludeTerminated(instancesDesc) {
+        return _.filter(instancesDesc, function(instanceDesc) {
+            return instanceDesc.status !== CloudOVH.ST_DELETING;
+        });
     }
 
     function excludeOutscope(instancesDesc) {
@@ -119,7 +127,8 @@ CloudOVH.prototype.getModels = function getModelsFn() {
                 }
                 default:
                 {
-                    throw new Error('Unknown status: ' + status);
+                    winston.error('[CloudEC2] Unknown status: ', status);
+                    return InstanceModel.ERROR;
                 }
             }
         }
@@ -134,7 +143,11 @@ CloudOVH.prototype.createInstances = function createInstancesFn(count) {
 
     return self._describeInstances()
         .then(function (instances) {
-            var actualCount = instances.length;
+            var actualCount = _(instances)
+                .filter(function(instance) {
+                    return instance.status !== CloudOVH.ST_DELETING;
+                })
+                .size();
 
             winston.debug('[CloudOVH] createInstances: actualCount=%d', actualCount);
 
@@ -340,41 +353,3 @@ CloudOVH.prototype._deleteInstance = function deleteInstanceFn(instanceId) {
         });
     });
 };
-
-
-/*
- CloudOVH.prototype.getCredential = function getCredentialFn(rules) {
- var self = this;
-
- return new Promise(function(resolve, reject) {
- var options = {
- accessRules: rules,
- };
-
- self._client.request('POST', '/auth/credential', options, function (err, credential) {
- if (err) return reject(err);
-
- resolve(credential);
- });
- });
- };
-
-
- CloudOVH.prototype.rebootInstance = function rebootInstanceFn(instanceId, type) {
- var self = this;
-
- return new Promise(function(resolve, reject) {
- var options = {
- serviceName: self._config.serviceId,
- instanceId: instanceId,
- type: type,
- };
-
- self._client.request('POST', '/cloud/project/{serviceName}/instance/{instanceId}/reboot', options, function (err, result) {
- if (err) return reject(err);
-
- resolve(result);
- });
- });
- };
- */
