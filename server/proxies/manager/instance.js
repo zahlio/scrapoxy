@@ -113,23 +113,6 @@ function Instance(manager, stats, cloud, config) {
                 self._aliveCount = void 0;
             })
             .catch(function() {
-                changeAlive(false);
-
-                if (self._aliveCount) {
-                    --self._aliveCount;
-                }
-                else {
-                    self._aliveCount = self._config.aliveMax;
-                }
-
-                if (self._aliveCount <= 0) {
-                    self._aliveCount = void 0;
-
-                    self.stop()
-                        .catch(function(err) {
-                            winston.error('[Instance/%s] error: ', self._model.getName(), err);
-                        });
-                }
                 self._changeAlive(false);
             });
     }
