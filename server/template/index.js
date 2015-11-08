@@ -38,6 +38,19 @@ var template = {
         },
         maxRunningInstances: 10,
     },
+
+    ovh: {
+        endpoint: 'ovh-eu',
+        appKey: 'YOUR APP KEY',
+        appSecret: 'YOUR APP SECRET',
+        consumerKey: 'YOUR CONSUMER KEY',
+        serviceId: 'YOUR SERVICE ID',
+        region: 'YOUR REGION (could be: SBG1)',
+        name: 'Proxy',
+        flavorName: 'vps-ssd-1',
+        snapshotName: 'YOUR SNAPSHOT NAME',
+        maxRunningInstances: 10,
+    },
 };
 
 function write(target, done) {
