@@ -216,7 +216,7 @@ CloudOVH.prototype.createInstances = function createInstancesFn(count) {
                 };
 
                 self._client.request('GET', '/cloud/project/{serviceName}/flavor', options, function (err, results) {
-                    if (err) return reject(err);
+                    if (err) return reject(err + ': ' + results);
 
                     var result = _.findWhere(results, {name: name});
                     if (!result) {
@@ -236,7 +236,7 @@ CloudOVH.prototype.createInstances = function createInstancesFn(count) {
                 };
 
                 self._client.request('GET', '/cloud/project/{serviceName}/snapshot', options, function (err, results) {
-                    if (err) return reject(err);
+                    if (err) return reject(err + ': ' + results);
 
                     var result = _.findWhere(results, {name: name});
                     if (!result) {
@@ -256,7 +256,7 @@ CloudOVH.prototype.createInstances = function createInstancesFn(count) {
                 };
 
                 self._client.request('GET', '/cloud/project/{serviceName}/sshkey', options, function (err, results) {
-                    if (err) return reject(err);
+                    if (err) return reject(err + ': ' + results);
 
                     var result = _.findWhere(results, {name: name});
                     if (!result) {
@@ -281,7 +281,7 @@ CloudOVH.prototype.createInstances = function createInstancesFn(count) {
             });
 
             self._client.request('POST', '/cloud/project/{serviceName}/instance', options, function (err, results) {
-                if (err) return reject(err);
+                if (err) return reject(err + ': ' + results);
 
                 resolve();
             });
@@ -346,10 +346,10 @@ CloudOVH.prototype._deleteInstance = function deleteInstanceFn(instanceId) {
             instanceId: instanceId,
         };
 
-        self._client.request('DELETE', '/cloud/project/{serviceName}/instance/{instanceId}', options, function (err, result) {
-            if (err) return reject(err);
+        self._client.request('DELETE', '/cloud/project/{serviceName}/instance/{instanceId}', options, function (err, results) {
+            if (err) return reject(err + ': ' + results);
 
-            resolve(result);
+            resolve(results);
         });
     });
 };
