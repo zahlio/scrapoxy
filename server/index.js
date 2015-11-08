@@ -6,7 +6,6 @@ var _ = require('lodash'),
     Promise = require('bluebird'),
     CloudEC2 = require('./cloud/ec2'),
     CloudOVH = require('./cloud/ovh'),
-    CloudMultiple = require('./cloud/multiple'),
     fs = require('fs'),
     moment = require('moment'),
     path = require('path'),
@@ -33,21 +32,21 @@ program
 program
     .command('start [my-config.json]')
     .description('Start proxy with a configuration')
-    .action(function(configFilename) {
+    .action(function (configFilename) {
         startProxy(configFilename)
     });
 
 program
     .command('init [my-config.json]')
     .description('Create configuration file with a template')
-    .action(function(configFilename) {
+    .action(function (configFilename) {
         initConfig(configFilename)
     });
 
 program
     .command('test [url] [count]')
     .description('Test the proxy at url')
-    .action(function(url, count) {
+    .action(function (url, count) {
         testProxy(url, count)
     });
 
@@ -66,12 +65,12 @@ function initConfig(configFilename) {
         return console.log('Error: Config file not specified');
     }
 
-    fs.exists(configFilename, function(exists) {
+    fs.exists(configFilename, function (exists) {
         if (exists) {
             return console.log('Error: config file already exists');
         }
 
-        template.write(configFilename, function(err) {
+        template.write(configFilename, function (err) {
             if (err) return winston.error('[Template] Cannot write template to %s', configFilename);
 
             winston.info('Template written in %s', configFilename);
@@ -93,7 +92,7 @@ function startProxy(configFilename) {
         var myConfig = require(configFilename);
         config = _.merge({}, configDefaults, myConfig);
     }
-    catch(err) {
+    catch (err) {
         return console.log('Error: Cannot load config (%s)', err.toString());
     }
 
@@ -106,25 +105,14 @@ function startProxy(configFilename) {
         });
     }
 
-    // Load clouds
-    var clouds = [];
-    if (config.ec2) {
-        clouds.push(new CloudEC2(config.ec2, config.instance.port));
-    }
-
-    if (config.ovh) {
-        clouds.push(new CloudOVH(config.ovh, config.instance.port));
-    }
-
-    // Init Proxies Manager
-    var cloud = new CloudMultiple(clouds);
-
+    // Initialize
+    var cloud = getCloud(config);
     var main = new Proxies(config, cloud);
 
     // Register stop event
-    sigstop(function() {
+    sigstop(function () {
         main.shutdown()
-            .then(function() {
+            .then(function () {
                 process.exit(0);
             });
     });
@@ -132,6 +120,23 @@ function startProxy(configFilename) {
 
     // Start
     main.listen();
+
+
+    ////////////
+
+    function getCloud(config) {
+        switch (config.type) {
+            case 'ovh':
+            {
+                return new CloudOVH(config.ovh, config.instance.port);
+            }
+
+            default:
+            {
+                return new CloudEC2(config.ec2, config.instance.port);
+            }
+        }
+    }
 }
 
 
@@ -152,14 +157,14 @@ function testProxy(proxyUrl, count) {
 
     Promise
         .all(promises)
-        .then(function() {
+        .then(function () {
             console.log('%d IPs found:', testProxy.size());
 
-            _.forEach(testProxy.getCount(), function(value, key) {
+            _.forEach(testProxy.getCount(), function (value, key) {
                 console.log('%s (%d times)', key, value);
             });
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.log('Error:', err);
         });
 }

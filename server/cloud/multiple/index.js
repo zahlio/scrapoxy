@@ -1,8 +1,11 @@
+/**
+ * UNUSED
+ */
+
 'use strict';
 
 var _ = require('lodash'),
     Promise = require('bluebird'),
-    AWS = require('aws-sdk'),
     winston = require('winston');
 
 

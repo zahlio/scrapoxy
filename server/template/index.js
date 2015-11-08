@@ -24,6 +24,8 @@ var template = {
         },
     },
 
+    type: 'ec2',
+
     ec2: {
         accessKeyId: 'YOUR ACCESS KEY ID',
         secretAccessKey: 'YOUR SECRET ACCESS KEY',
