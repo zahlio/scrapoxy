@@ -200,6 +200,14 @@ The delay is between mindelay and maxdelay.
 | port                | 8888          | TCP port of Scrapoxy |
 
 
+### Options: Logs
+
+| Option              | Default value | Description |
+|---------------------|---------------|-------------|
+| path                | none          | If specified, writes all logs in a dated file |
+
+
+
 ## Control Scrapoxy with a GUI
 
 See [GUI Manual](../gui_manual/README.md).

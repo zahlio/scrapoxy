@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash'),
+    Promise = require('bluebird'),
     AWS = require('aws-sdk'),
     InstanceModel = require('../../proxies/manager/instance.model'),
     winston = require('winston');
@@ -19,24 +20,25 @@ function CloudEC2(config, instancePort) {
     this._config = config;
     this._instancePort = instancePort;
 
+    this.name = 'awsec2';
+
     var opts = _.pick(this._config, ['accessKeyId', 'secretAccessKey', 'region']);
     this._ec2 = new AWS.EC2(opts);
 }
 
 
-CloudEC2.ST_PENDING = 0;
-CloudEC2.ST_RUNNING = 16;
-CloudEC2.ST_SHUTTING_DOWN = 32;
-CloudEC2.ST_TERMINATED = 48;
-CloudEC2.ST_STOPPING = 64;
-CloudEC2.ST_STOPPED = 80;
-CloudEC2.ST_ERROR = 272;
+CloudEC2.ST_PENDING = "pending";
+CloudEC2.ST_RUNNING = "running";
+CloudEC2.ST_SHUTTING_DOWN = "shutting-down";
+CloudEC2.ST_TERMINATED = "terminated";
+CloudEC2.ST_STOPPING = "stopping";
+CloudEC2.ST_STOPPED = "stopped";
 
 
-CloudEC2.prototype.getModels = function getInstancesFn() {
+CloudEC2.prototype.getModels = function getModelsFn() {
     var self = this;
 
-    winston.debug('[CloudEC2] getInstances');
+    winston.debug('[CloudEC2] getModels');
 
     return describeInstances()
         .then(summarizeInfo)
@@ -67,12 +69,12 @@ CloudEC2.prototype.getModels = function getInstancesFn() {
         return _.map(instancesDesc, function(instanceDesc) {
             return {
                 id: instanceDesc.InstanceId,
-                status: instanceDesc.State.Code,
+                status: instanceDesc.State.Name,
                 ip: instanceDesc.PublicIpAddress,
                 tag: getTag(instanceDesc),
                 toString: function toStringFn() {
                     return '(id=' + this.id + ' / status=' + this.status + ' / ip=' + this.ip + ' / tag=' + this.tag + ')';
-                }
+                },
             };
         });
 
@@ -112,7 +114,7 @@ CloudEC2.prototype.getModels = function getInstancesFn() {
         return _.map(instancesDesc, function(instanceDesc) {
             return new InstanceModel(
                 instanceDesc.id,
-                'awsec2',
+                self.name,
                 convertStatus(instanceDesc.status),
                 buildAddress(instanceDesc.ip),
                 instanceDesc
@@ -133,8 +135,8 @@ CloudEC2.prototype.getModels = function getInstancesFn() {
             };
         }
 
-        function convertStatus(statusEC2) {
-            switch (statusEC2) {
+        function convertStatus(status) {
+            switch (status) {
                 case CloudEC2.ST_PENDING: {
                     return InstanceModel.STARTING;
                 }
@@ -147,11 +149,9 @@ CloudEC2.prototype.getModels = function getInstancesFn() {
                 case CloudEC2.ST_STOPPING: {
                     return InstanceModel.STOPPING;
                 }
-                case CloudEC2.ST_ERROR: {
-                    return InstanceModel.ERROR;
-                }
                 default: {
-                    throw new Error('Unknown status: ' + statusEC2);
+                    winston.error('[CloudEC2] Unknown status: ', status);
+                    return InstanceModel.ERROR;
                 }
             }
         }
@@ -172,8 +172,8 @@ CloudEC2.prototype.createInstances = function createInstancesFn(count) {
                 .pluck('Instances')
                 .flatten()
                 .filter(function(instance) {
-                    return instance.State.Code !== CloudEC2.ST_SHUTTING_DOWN
-                        && instance.State.Code !== CloudEC2.ST_TERMINATED
+                    return instance.State.Name !== CloudEC2.ST_SHUTTING_DOWN
+                        && instance.State.Name !== CloudEC2.ST_TERMINATED
                 })
                 .size();
 

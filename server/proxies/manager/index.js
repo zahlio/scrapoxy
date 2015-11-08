@@ -14,10 +14,11 @@ module.exports = ProxiesManager;
 
 /////////
 
-function ProxiesManager(config, cloud) {
+function ProxiesManager(config, stats, cloud) {
     EventEmitter.call(this);
 
     this._config = config;
+    this._stats = stats;
     this._cloud = cloud;
 
     this._managedInstances = {};
@@ -101,7 +102,7 @@ ProxiesManager.prototype.start = function startFn() {
                     // Add
                     winston.debug('[ProxiesManager] checkInstances: add: ', model.toString());
 
-                    instance = new Instance(self, self._cloud, self._config);
+                    instance = new Instance(self, self._stats, self._cloud, self._config);
                     self._managedInstances[name] = instance;
 
                     registerEvents(instance);
@@ -289,6 +290,25 @@ ProxiesManager.prototype.getNextRunningInstanceForDomain = function getNextRunni
     }
 };
 
+ProxiesManager.prototype.getFirstInstance = function getFirstInstanceFn(forceName) {
+    var self = this;
+
+    if (self._aliveInstances.length <= 0) {
+        return;
+    }
+
+    var nextInstance;
+    if (forceName) {
+        nextInstance = self._aliveInstancesMap[forceName];
+    }
+
+    if (!nextInstance) {
+        nextInstance = self._aliveInstances[0];
+    }
+
+    return nextInstance;
+};
+
 
 ProxiesManager.prototype.getInstancesStats = function getInstancesStatsFn() {
     winston.debug('[ProxiesManager] getInstancesStats');
@@ -310,16 +330,16 @@ ProxiesManager.prototype.requestReceived = function requestReceivedFn() {
     if (self._config.scaling.required !== self._config.scaling.max) {
         self._config.scaling.required = self._config.scaling.max;
         self.emit('scaling:updated', self._config.scaling);
-
-        if (self._scaleDownTimeout) {
-            clearTimeout(self._scaleDownTimeout);
-        }
-
-        self._scaleDownTimeout = setTimeout(function () {
-            self._config.scaling.required = self._config.scaling.min;
-            self.emit('scaling:updated', self._config.scaling);
-        }, self._config.scaling.downscaleDelay);
     }
+
+    if (self._scaleDownTimeout) {
+        clearTimeout(self._scaleDownTimeout);
+    }
+
+    self._scaleDownTimeout = setTimeout(function () {
+        self._config.scaling.required = self._config.scaling.min;
+        self.emit('scaling:updated', self._config.scaling);
+    }, self._config.scaling.downscaleDelay);
 };
 
 
@@ -328,8 +348,6 @@ ProxiesManager.prototype.stopInstance = function stopInstanceFn(name) {
     if (!instance) {
         return;
     }
-
-    instance.emit('alive:updated', false);
 
     return instance.stop();
 };

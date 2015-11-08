@@ -16,18 +16,20 @@ module.exports = Instance;
 
 ////////////
 
-function Instance(manager, cloud, config) {
+function Instance(manager, stats, cloud, config) {
     var self = this;
 
     EventEmitter.call(self);
 
     self._manager = manager;
+    self._stats = stats;
     self._cloud = cloud;
     self._config = config;
 
     self._model = null;
     self._alive = false;
     self._aliveCount = void 0;
+    self._rqCount = 0;
 
 
     // Register event
@@ -43,7 +45,8 @@ function Instance(manager, cloud, config) {
             self._checkRestartTimeout = setTimeout(autorestart, delay);
 
             // Set useragent
-            self._useragent = useragent.generate();
+            self._useragent = useragent.generateBrowser();
+            //self._useragent = useragent.generateBot();
         }
         else {
             // Stop monitor
@@ -61,7 +64,7 @@ function Instance(manager, cloud, config) {
             self._useragent = void 0;
 
             // Set alive status
-            changeAlive(false);
+            self._changeAlive(false);
         }
 
         // Error
@@ -83,13 +86,22 @@ function Instance(manager, cloud, config) {
 
     // Crash
     self.on('alive:updated', function(alive) {
+        // Count stopped instances
+        if (!alive) {
+            self._stats.addRqCount(self._rqCount);
+            self._rqCount = 0;
+        }
+
+        // Crash timer
         if (alive) {
+            winston.debug('[Instance/%s] alive is up => timer stop', self._model.getName());
             if (self._checkStopIfCrashedTimeout) {
                 clearTimeout(self._checkStopIfCrashedTimeout);
                 self._checkStopIfCrashedTimeout = void 0;
             }
         }
         else {
+            winston.debug('[Instance/%s] alive is down => timer start', self._model.getName());
             self._checkStopIfCrashedTimeout = setTimeout(stopIfCrashed, self._config.stopIfCrashedDelay);
         }
     });
@@ -102,38 +114,12 @@ function Instance(manager, cloud, config) {
 
         pinger.ping(self._model.getAddress())
             .then(function() {
-                changeAlive(true);
+                self._changeAlive(true);
                 self._aliveCount = void 0;
             })
             .catch(function() {
-                changeAlive(false);
-
-                if (self._aliveCount) {
-                    --self._aliveCount;
-                }
-                else {
-                    self._aliveCount = self._config.aliveMax;
-                }
-
-                if (self._aliveCount <= 0) {
-                    self._aliveCount = void 0;
-
-                    self.stop()
-                        .catch(function(err) {
-                            winston.error('[Instance/%s] error: ', self._model.getName(), err);
-                        });
-                }
+                self._changeAlive(false);
             });
-    }
-
-    function changeAlive(alive) {
-        winston.debug('[Instance/%s] changeAlive: %s => %s', self._model.getName(), self._alive, alive);
-
-        if (self._alive !== alive) {
-            self._alive = alive;
-
-            self.emit('alive:updated', alive);
-        }
     }
 
     function autorestart() {
@@ -204,6 +190,16 @@ Instance.prototype.setModel = function setModelFn(model) {
     }
 };
 
+Instance.prototype._changeAlive = function _changeAliveFn(alive) {
+    winston.debug('[Instance/%s] changeAlive: %s => %s', this._model.getName(), this._alive, alive);
+
+    if (this._alive !== alive) {
+        this._alive = alive;
+
+        this.emit('alive:updated', alive);
+    }
+};
+
 
 Instance.prototype.removedFromManager = function removedFromManagerFn() {
     this._model.setStatus(InstanceModel.REMOVED);
@@ -213,6 +209,8 @@ Instance.prototype.removedFromManager = function removedFromManagerFn() {
 
 
 Instance.prototype.stop = function stopFn() {
+    this._changeAlive(false);
+
     return this._cloud.stopInstance(this._model);
 };
 
@@ -229,6 +227,11 @@ Instance.prototype.updateHeaders = function updateHeadersFn(req) {
     req.headers['user-agent'] = this._useragent;
 
     delete req.headers['x-cache-proxyname'];
+};
+
+
+Instance.prototype.incrRequest = function incrRequestFn() {
+    ++this._rqCount;
 };
 
 

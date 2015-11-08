@@ -24,6 +24,8 @@ var template = {
         },
     },
 
+    type: 'ec2',
+
     ec2: {
         accessKeyId: 'YOUR ACCESS KEY ID',
         secretAccessKey: 'YOUR SECRET ACCESS KEY',
@@ -34,6 +36,19 @@ var template = {
             ImageId: 'ami-1aa0ea6d', // Forward proxy node
             SecurityGroups: ['forward-proxy'],
         },
+        maxRunningInstances: 10,
+    },
+
+    ovh: {
+        endpoint: 'ovh-eu',
+        appKey: 'YOUR APP KEY',
+        appSecret: 'YOUR APP SECRET',
+        consumerKey: 'YOUR CONSUMER KEY',
+        serviceId: 'YOUR SERVICE ID',
+        region: 'YOUR REGION (could be: SBG1)',
+        name: 'Proxy',
+        flavorName: 'vps-ssd-1',
+        snapshotName: 'YOUR SNAPSHOT NAME',
         maxRunningInstances: 10,
     },
 };

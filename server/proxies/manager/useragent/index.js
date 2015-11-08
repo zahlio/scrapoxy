@@ -2,13 +2,14 @@
 
 
 module.exports = {
-    generate: generate,
+    generateBrowser: generateBrowser,
+    generateBot: generateBot,
 };
 
 
 ////////////
 
-var useragents = [
+var browsersUA = [
     'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.1 Safari/537.36',
     'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36',
@@ -46,8 +47,23 @@ var useragents = [
     'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_3; en-us) AppleWebKit/534.1+ (KHTML, like Gecko) Version/5.0 Safari/533.16',
 ];
 
-function generate() {
-    return useragents[
-        Math.floor(Math.random() * useragents.length)
+function generateBrowser() {
+    return browsersUA[
+        Math.floor(Math.random() * browsersUA.length)
     ];
 }
+
+
+var botsUA = [
+    'Googlebot/2.1 (+http://www.googlebot.com/bot.html)',
+    //'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)',
+    //'Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)',
+    //'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)'
+];
+
+function generateBot() {
+    return botsUA[
+        Math.floor(Math.random() * botsUA.length)
+        ];
+}
+

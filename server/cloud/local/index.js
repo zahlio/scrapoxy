@@ -19,6 +19,8 @@ function CloudLocal(proxyPath) {
 
     this._proxyPath = proxyPath;
 
+    this.name = 'local';
+
     this._portIncr = 0;
 
     this._locals = {};
@@ -41,7 +43,7 @@ CloudLocal.prototype.getModels = function getModelsFn() {
 
                 return new InstanceModel(
                     local.name,
-                    'local',
+                    self.name,
                     InstanceModel.STARTED,
                     address,
                     local

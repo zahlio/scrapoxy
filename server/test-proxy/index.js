@@ -1,4 +1,5 @@
-var Promise = require('bluebird'),
+var _ = require('lodash'),
+    Promise = require('bluebird'),
     request = require('request');
 
 module.exports = TestProxy;
@@ -42,4 +43,9 @@ TestProxy.prototype.request = function requestFn(callback) {
 
 TestProxy.prototype.getCount = function getCountFn() {
     return this._count;
+};
+
+
+TestProxy.prototype.size = function sizeFn() {
+    return _.keys(this._count).length;
 };

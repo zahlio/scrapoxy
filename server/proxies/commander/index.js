@@ -20,7 +20,7 @@ module.exports = Commander;
 
 ////////////
 
-function Commander(config, manager, master) {
+function Commander(config, manager, stats) {
     this._config = config;
 
     // Auth
@@ -49,6 +49,7 @@ function Commander(config, manager, master) {
     app.use('/api/config', expressAuth, require('./api/config')(this._config, manager));
     app.use('/api/instances', expressAuth, require('./api/instances')(manager));
     app.use('/api/scaling', expressAuth, require('./api/scaling')(this._config, manager));
+    app.use('/api/stats', expressAuth, require('./api/stats')(stats));
     app.use(express.static(path.join(__dirname, 'public')));
 
     // Socket I.O
@@ -100,7 +101,7 @@ function Commander(config, manager, master) {
             io.emit('event', payload);
         });
 
-        master.on('stats', function (stats) {
+        stats.on('stats', function (stats) {
             var payload = JSON.stringify({
                 event: 'stats',
                 payload: stats,
