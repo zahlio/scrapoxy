@@ -62,12 +62,12 @@ if (!program.args.length) {
 
 function initConfig(configFilename) {
     if (!configFilename || configFilename.length <= 0) {
-        return console.log('Error: Config file not specified');
+        return winston.error('Error: Config file not specified');
     }
 
     fs.exists(configFilename, function (exists) {
         if (exists) {
-            return console.log('Error: config file already exists');
+            return winston.error('Error: config file already exists');
         }
 
         template.write(configFilename, function (err) {
@@ -81,7 +81,7 @@ function initConfig(configFilename) {
 
 function startProxy(configFilename) {
     if (!configFilename || configFilename.length <= 0) {
-        return console.log('Error: Config file not specified');
+        return winston.error('Error: Config file not specified');
     }
 
     configFilename = path.resolve(process.cwd(), configFilename);
@@ -93,7 +93,7 @@ function startProxy(configFilename) {
         config = _.merge({}, configDefaults, myConfig);
     }
     catch (err) {
-        return console.log('Error: Cannot load config (%s)', err.toString());
+        return winston.error('Error: Cannot load config (%s)', err.toString());
     }
 
     // Write logs (if specified)
@@ -142,7 +142,7 @@ function startProxy(configFilename) {
 
 function testProxy(proxyUrl, count) {
     if (!proxyUrl || proxyUrl.length <= 0) {
-        return console.log('Error: URL not specified');
+        return winston.error('Error: URL not specified');
     }
 
     // Default: 10 / Max: 1000
@@ -158,14 +158,14 @@ function testProxy(proxyUrl, count) {
     Promise
         .all(promises)
         .then(function () {
-            console.log('%d IPs found:', testProxy.size());
+            winston.error('%d IPs found:', testProxy.size());
 
             _.forEach(testProxy.getCount(), function (value, key) {
-                console.log('%s (%d times)', key, value);
+                winston.error('%s (%d times)', key, value);
             });
         })
         .catch(function (err) {
-            console.log('Error:', err);
+            winston.error('Error:', err);
         });
 }
 
