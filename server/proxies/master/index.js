@@ -25,7 +25,9 @@ function ProxiesMaster(config, manager, stats) {
     if (self._config.auth &&
         self._config.auth.username &&
         self._config.auth.password ) {
-        self._.auth = 'Basic ' + new Buffer(self._config.auth.username + ':' + self._config.auth.password).toString('base64');
+        winston.debug("[ProxiesMaster] Found credentials with username '%s'", self._config.auth.username);
+
+        self._token = 'Basic ' + new Buffer(self._config.auth.username + ':' + self._config.auth.password).toString('base64');
     }
 
     // HTTP Agent
@@ -45,9 +47,12 @@ function ProxiesMaster(config, manager, stats) {
         //winston.debug('[ProxiesMaster] request (%s) %s %s', req.connection.remoteAddress, req.method, req.url);
 
         // Check auth
-        if (self._auth) {
-            if (!req.headers['proxy-authorization'] || req.headers['proxy-authorization'] !== self._auth) {
-                res.writeHead(407);
+        if (self._token) {
+            if (!req.headers['proxy-authorization'] || req.headers['proxy-authorization'] !== self._token) {
+                res.writeHead(407, {
+                    'Proxy-Authenticate': 'Basic realm="Scrapoxy"',
+                    'Content-Type': 'text/plain',
+                });
                 return res.end('Wrong proxy credentials');
             }
         }
