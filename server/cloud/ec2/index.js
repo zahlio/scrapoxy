@@ -248,7 +248,7 @@ CloudEC2.prototype.stopInstance = function stopInstanceFn(model) {
             'InstanceIds': [model.getCloudOpts().id],
         };
 
-        self._ec2.stopInstances(params, function (err) {
+        self._ec2.terminateInstances(params, function (err) {
             if (err) return reject(err);
 
             resolve();
