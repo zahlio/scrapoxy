@@ -113,8 +113,8 @@ CloudLocal.prototype.startInstance = function startInstanceFn(model) {
 };
 
 
-CloudLocal.prototype.stopInstance = function stopInstanceFn(model) {
-    winston.debug('[CloudLocal] stopInstance: model=', model.toString());
+CloudLocal.prototype.deleteInstance = function deleteInstanceFn(model) {
+    winston.debug('[CloudLocal] deleteInstance: model=', model.toString());
 
     return new Promise(function(resolve, reject) {
         var local = model.getCloudOpts();
@@ -140,7 +140,7 @@ CloudLocal.prototype.deleteInstances = function deleteInstancesFn(models) {
     return Promise.map(models, function(model) {
         delete self._locals[model.getCloudOpts().name];
 
-        return self.stopInstance(model);
+        return self.deleteInstance(model);
     });
 };
 

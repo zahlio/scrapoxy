@@ -76,7 +76,7 @@ describe('CloudLocal', function() {
         });
 
         it('should restart', function() {
-            return cloud.stopInstance(model)
+            return cloud.deleteInstance(model)
                 .delay(2000)
                 .then(function() {
                     return cloud.startInstance(model);
