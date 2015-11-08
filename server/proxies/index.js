@@ -17,6 +17,9 @@ function Main(config, cloud) {
     this._config = config;
     this._cloud = cloud;
 
+    // Show cloud name
+    winston.info('The selected cloud is %s', this._cloud.name);
+
     // Stats
     this._stats = new Stats(this._config.stats);
 

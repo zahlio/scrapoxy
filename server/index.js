@@ -107,6 +107,10 @@ function startProxy(configFilename) {
 
     // Initialize
     var cloud = getCloud(config);
+    if (!cloud) {
+        return winston.error('Error: Cloud is not specify or supported');
+    }
+
     var main = new Proxies(config, cloud);
 
     // Register stop event
@@ -126,14 +130,18 @@ function startProxy(configFilename) {
 
     function getCloud(config) {
         switch (config.type) {
-            case 'ovh':
+            case 'ovhcloud':
             {
-                return new CloudOVH(config.ovh, config.instance.port);
+                return new CloudOVH(config.ovhcloud, config.instance.port);
             }
 
-            default:
+            case 'awsec2':
             {
-                return new CloudEC2(config.ec2, config.instance.port);
+                return new CloudEC2(config.awsec2, config.instance.port);
+            }
+
+            default: {
+                return;
             }
         }
     }
