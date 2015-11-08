@@ -295,8 +295,8 @@ CloudOVH.prototype.startInstance = function startInstanceFn(model) {
 };
 
 
-CloudOVH.prototype.stopInstance = function stopInstanceFn(model) {
-    winston.debug('[CloudOVH] stopInstance: model=', model.toString());
+CloudOVH.prototype.deleteInstance = function deleteInstanceFn(model) {
+    winston.debug('[CloudOVH] deleteInstance: model=', model.toString());
 
     return this._deleteInstance(model.getCloudOpts().id);
 };

@@ -24,9 +24,9 @@ var template = {
         },
     },
 
-    type: 'ec2',
+    type: 'awsec2',
 
-    ec2: {
+    awsec2: {
         accessKeyId: 'YOUR ACCESS KEY ID',
         secretAccessKey: 'YOUR SECRET ACCESS KEY',
         region: 'YOUR REGION (could be: eu-west-1)',
@@ -39,7 +39,7 @@ var template = {
         maxRunningInstances: 10,
     },
 
-    ovh: {
+    ovhcloud: {
         endpoint: 'ovh-eu',
         appKey: 'YOUR APP KEY',
         appSecret: 'YOUR APP SECRET',

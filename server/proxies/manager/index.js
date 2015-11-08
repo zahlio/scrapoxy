@@ -343,11 +343,11 @@ ProxiesManager.prototype.requestReceived = function requestReceivedFn() {
 };
 
 
-ProxiesManager.prototype.stopInstance = function stopInstanceFn(name) {
+ProxiesManager.prototype.deleteInstance = function deleteInstanceFn(name) {
     var instance = this._managedInstances[name];
     if (!instance) {
         return;
     }
 
-    return instance.stop();
+    return instance.delete();
 };

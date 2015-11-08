@@ -238,17 +238,17 @@ CloudEC2.prototype.startInstance = function startInstanceFn(model) {
 };
 
 
-CloudEC2.prototype.stopInstance = function stopInstanceFn(model) {
+CloudEC2.prototype.deleteInstance = function deleteInstanceFn(model) {
     var self = this;
 
-    winston.debug('[CloudEC2] stopInstance: model=', model.toString());
+    winston.debug('[CloudEC2] deleteInstance: model=', model.toString());
 
     return new Promise(function(resolve, reject) {
         var params = {
             'InstanceIds': [model.getCloudOpts().id],
         };
 
-        self._ec2.stopInstances(params, function (err) {
+        self._ec2.terminateInstances(params, function (err) {
             if (err) return reject(err);
 
             resolve();

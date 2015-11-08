@@ -73,15 +73,15 @@ CloudMultiple.prototype.startInstance = function startInstanceFn(model) {
 };
 
 
-CloudMultiple.prototype.stopInstance = function stopInstanceFn(model) {
-    winston.debug('[CloudMultiple] stopInstance: model=', model.toString());
+CloudMultiple.prototype.deleteInstance = function deleteInstanceFn(model) {
+    winston.debug('[CloudMultiple] deleteInstance: model=', model.toString());
 
     var cloud = this._cloudsMap[model.getType()];
     if (!cloud) {
         throw new Error('Unknown type: ' + model.getType());
     }
 
-    return cloud.stopInstance(model);
+    return cloud.deleteInstance(model);
 };
 
 

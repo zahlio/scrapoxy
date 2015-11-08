@@ -31,7 +31,7 @@ function createRouter(manager) {
             return res.status(500).send('Name not found');
         }
 
-        var promise = manager.stopInstance(name);
+        var promise = manager.deleteInstance(name);
         if (!promise) {
             return res.status(404).send('Proxy ' + name + ' not found');
         }

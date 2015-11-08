@@ -69,7 +69,7 @@ function Instance(manager, stats, cloud, config) {
 
         // Error
         if (newstatus === InstanceModel.ERROR) {
-            self._cloud.stopInstance(self._model)
+            self._cloud.deleteInstance(self._model)
                 .catch(function(err) {
                     winston.error('[Instance/%s] error: ', self._model.getName(), err);
                 });
@@ -129,7 +129,7 @@ function Instance(manager, stats, cloud, config) {
             if (self._manager.getAliveInstances().length > 1) {
                 winston.debug('[Instance/%s] autorestart => cancelled (only 1 instance)', self._model.getName());
 
-                self.stop()
+                self.delete()
                     .catch(function(err) {
                         winston.error('[Instance/%s] error: ', self._model.getName(), err);
                     });
@@ -148,7 +148,7 @@ function Instance(manager, stats, cloud, config) {
         winston.debug('[Instance/%s] stopIfCrashed', self._model.getName());
 
         if (self._model.hasStatus(InstanceModel.STARTED)) {
-            self.stop()
+            self.delete()
                 .catch(function(err) {
                     winston.error('[Instance/%s] error: ', self._model.getName(), err);
                 });
@@ -208,10 +208,10 @@ Instance.prototype.removedFromManager = function removedFromManagerFn() {
 };
 
 
-Instance.prototype.stop = function stopFn() {
+Instance.prototype.delete = function deleteFn() {
     this._changeAlive(false);
 
-    return this._cloud.stopInstance(this._model);
+    return this._cloud.deleteInstance(this._model);
 };
 
 
