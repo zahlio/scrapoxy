@@ -166,10 +166,10 @@ function testProxy(proxyUrl, count) {
     Promise
         .all(promises)
         .then(function () {
-            winston.error('%d IPs found:', testProxy.size());
+            winston.info('%d IPs found:', testProxy.size());
 
             _.forEach(testProxy.getCount(), function (value, key) {
-                winston.error('%s (%d times)', key, value);
+                winston.info('%s (%d times)', key, value);
             });
         })
         .catch(function (err) {
