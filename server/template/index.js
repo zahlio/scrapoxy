@@ -40,15 +40,14 @@ var template = {
         },
 
         ovhcloud: {
-            endpoint: 'ovh-eu',
+            endpoint: 'YOUR ENDPOINT (could be: ovh-eu)',
             appKey: 'YOUR APP KEY',
             appSecret: 'YOUR APP SECRET',
             consumerKey: 'YOUR CONSUMER KEY',
             serviceId: 'YOUR SERVICE ID',
-            region: 'YOUR REGION (could be: SBG1)',
-            name: 'Proxy',
+            region: 'YOUR REGION (could be: GRA1)',
             flavorName: 'vps-ssd-1',
-            snapshotName: 'YOUR SNAPSHOT NAME',
+            snapshotName: 'YOUR SNAPSHOT NAME (could be: forward-proxy)',
             maxRunningInstances: 10,
         },
     },

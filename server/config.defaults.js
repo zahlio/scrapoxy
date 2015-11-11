@@ -29,6 +29,10 @@ module.exports = {
         awsec2: {
             tag: 'Proxy',
         },
+
+        ovhcloud: {
+            name: 'Proxy',
+        },
     },
 
     stats: {

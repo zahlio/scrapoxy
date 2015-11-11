@@ -44,6 +44,7 @@ If you cannot find your region, you can [Copy an AMI from a region to another](c
 ### Step 5: Update configuration
 
 Open *my-config.json*:
+
 ```
 {
   "providers": {
@@ -55,8 +56,9 @@ Open *my-config.json*:
         "InstanceType": "t1.micro",
         "ImageId": "ami-2d7b465a",
         "SecurityGroups": [ "forward-proxy" ],
-      },
-    },
+      }
+    }
+  }
 }
 ```
 
@@ -77,7 +79,7 @@ For credentials, there is 2 choices:
 | accessKeyId         | none          | Credentials for AWS (optional) |
 | secretAccessKey     | none          | Credentials for AWS (optional) |
 | region              | none          | AWS region (example: eu-west-1) |
-| tag                 | none          | Name of the AWS / EC2 instance |
+| tag                 | Proxy         | Name of the AWS / EC2 instance |
 | instance            | none          | see [awsec2 / instance](#options-awsec2--instance) |
 
 
@@ -94,4 +96,4 @@ Standard options are *InstanceType*, *ImageId*, *KeyName*, and *SecurityGroups*.
 
 * [Get AWS credentials](get_credentials/README.md)
 * [Create a security group](create_security_group/README.md)
-* [Copy an AMI from a region to another](copy_ami_to_region/README.md).
+* [Copy an AMI from a region to another](copy_ami_to_region/README.md)

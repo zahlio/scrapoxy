@@ -8,6 +8,7 @@ var _ = require('lodash'),
     ProviderOVHCloud = require('./providers/ovhcloud'),
     fs = require('fs'),
     moment = require('moment'),
+    ovh = require('ovh'),
     path = require('path'),
     program = require('commander'),
     Proxies = require('./proxies'),
@@ -49,6 +50,14 @@ program
     .action(function (url, count) {
         testProxy(url, count)
     });
+
+program
+    .command('ovh-consumerkey [endpoint] [appKey] [appSecret]')
+    .description('Get the OVH consumerKey')
+    .action(function (endpoint, appKey, appSecret) {
+        ovhConsumerKey(endpoint, appKey, appSecret)
+    });
+
 
 program
     .parse(process.argv);
@@ -166,15 +175,44 @@ function testProxy(proxyUrl, count) {
     Promise
         .all(promises)
         .then(function () {
-            winston.error('%d IPs found:', testProxy.size());
+            winston.info('%d IPs found:', testProxy.size());
 
             _.forEach(testProxy.getCount(), function (value, key) {
-                winston.error('%s (%d times)', key, value);
+                winston.info('%s (%d times)', key, value);
             });
         })
         .catch(function (err) {
             winston.error('Error:', err);
         });
+}
+
+
+function ovhConsumerKey(endpoint, appKey, appSecret) {
+    if (!appKey || appKey.length <= 0 ||
+        !appSecret || appSecret.length <= 0) {
+        return winston.error('Error: appKey or appSecret not specified');
+    }
+
+    var client = ovh({
+        endpoint: endpoint,
+        appKey: appKey,
+        appSecret: appSecret,
+        consumerKey: 'WFfsXEgHST3GevEmQQKK4YzpNI73UcmW',
+    });
+
+    client.request('POST', '/auth/credential', {
+        'accessRules': [
+            { 'method': 'GET', 'path': '/cloud/*'},
+            { 'method': 'POST', 'path': '/cloud/*'},
+            { 'method': 'PUT', 'path': '/cloud/*'},
+            { 'method': 'DELETE', 'path': '/cloud/*'}
+        ]
+    }, function (err, credential) {
+        if (err) return winston.error('Cannot get consumerKey: ', err);
+
+        winston.info('Your consumerKey is: %s', credential.consumerKey);
+        winston.info('Please validate your token here: %s', credential.validationUrl);
+    });
 }
 
 
