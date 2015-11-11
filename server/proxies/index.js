@@ -13,18 +13,18 @@ module.exports = Main;
 
 ////////////
 
-function Main(config, cloud) {
+function Main(config, provider) {
     this._config = config;
-    this._cloud = cloud;
+    this._provider = provider;
 
-    // Show cloud name
-    winston.info('The selected cloud is %s', this._cloud.name);
+    // Show provider name
+    winston.info('The selected provider is %s', this._provider.name);
 
     // Stats
     this._stats = new Stats(this._config.stats);
 
     // Init Manager
-    this._manager = new Manager(this._config.instance, this._stats, this._cloud);
+    this._manager = new Manager(this._config.instance, this._stats, this._provider);
 
     // Init Master
     this._master = new Master(this._config.proxy, this._manager, this._stats);

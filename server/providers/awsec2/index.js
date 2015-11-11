@@ -7,14 +7,14 @@ var _ = require('lodash'),
     winston = require('winston');
 
 
-module.exports = CloudEC2;
+module.exports = ProviderAWSEC2;
 
 
 ////////////
 
-function CloudEC2(config, instancePort) {
+function ProviderAWSEC2(config, instancePort) {
     if (!config || !instancePort) {
-        throw new Error('[CloudEC2] should be instanced with config and instancePort');
+        throw new Error('[ProviderAWSEC2] should be instanced with config and instancePort');
     }
 
     this._config = config;
@@ -27,18 +27,18 @@ function CloudEC2(config, instancePort) {
 }
 
 
-CloudEC2.ST_PENDING = "pending";
-CloudEC2.ST_RUNNING = "running";
-CloudEC2.ST_SHUTTING_DOWN = "shutting-down";
-CloudEC2.ST_TERMINATED = "terminated";
-CloudEC2.ST_STOPPING = "stopping";
-CloudEC2.ST_STOPPED = "stopped";
+ProviderAWSEC2.ST_PENDING = "pending";
+ProviderAWSEC2.ST_RUNNING = "running";
+ProviderAWSEC2.ST_SHUTTING_DOWN = "shutting-down";
+ProviderAWSEC2.ST_TERMINATED = "terminated";
+ProviderAWSEC2.ST_STOPPING = "stopping";
+ProviderAWSEC2.ST_STOPPED = "stopped";
 
 
-CloudEC2.prototype.getModels = function getModelsFn() {
+ProviderAWSEC2.prototype.getModels = function getModelsFn() {
     var self = this;
 
-    winston.debug('[CloudEC2] getModels');
+    winston.debug('[ProviderAWSEC2] getModels');
 
     return describeInstances()
         .then(summarizeInfo)
@@ -51,8 +51,8 @@ CloudEC2.prototype.getModels = function getModelsFn() {
 
 
     function describeInstances() {
-        return new Promise(function(resolve, reject) {
-            self._ec2.describeInstances({}, function(err, data) {
+        return new Promise(function (resolve, reject) {
+            self._ec2.describeInstances({}, function (err, data) {
                 if (err) return reject(err);
 
                 var instances = _(data.Reservations)
@@ -66,7 +66,7 @@ CloudEC2.prototype.getModels = function getModelsFn() {
     }
 
     function summarizeInfo(instancesDesc) {
-        return _.map(instancesDesc, function(instanceDesc) {
+        return _.map(instancesDesc, function (instanceDesc) {
             return {
                 id: instanceDesc.InstanceId,
                 status: instanceDesc.State.Name,
@@ -86,7 +86,9 @@ CloudEC2.prototype.getModels = function getModelsFn() {
             }
 
             var first = _(instanceDesc.Tags)
-                .filter(function(tag) { return tag.Key === 'Name'; })
+                .filter(function (tag) {
+                    return tag.Key === 'Name';
+                })
                 .first();
 
             if (!first) {
@@ -98,20 +100,20 @@ CloudEC2.prototype.getModels = function getModelsFn() {
     }
 
     function excludeTerminated(instancesDesc) {
-        return _.filter(instancesDesc, function(instanceDesc) {
-            return instanceDesc.status !== CloudEC2.ST_TERMINATED &&
-                instanceDesc.status !== CloudEC2.ST_SHUTTING_DOWN;
+        return _.filter(instancesDesc, function (instanceDesc) {
+            return instanceDesc.status !== ProviderAWSEC2.ST_TERMINATED &&
+                instanceDesc.status !== ProviderAWSEC2.ST_SHUTTING_DOWN;
         });
     }
 
     function excludeOutscope(instancesDesc) {
-        return _.filter(instancesDesc, function(instanceDesc) {
+        return _.filter(instancesDesc, function (instanceDesc) {
             return instanceDesc.tag && instanceDesc.tag.indexOf(self._config.tag) == 0;
         });
     }
 
     function convertToModel(instancesDesc) {
-        return _.map(instancesDesc, function(instanceDesc) {
+        return _.map(instancesDesc, function (instanceDesc) {
             return new InstanceModel(
                 instanceDesc.id,
                 self.name,
@@ -137,20 +139,25 @@ CloudEC2.prototype.getModels = function getModelsFn() {
 
         function convertStatus(status) {
             switch (status) {
-                case CloudEC2.ST_PENDING: {
+                case ProviderAWSEC2.ST_PENDING:
+                {
                     return InstanceModel.STARTING;
                 }
-                case CloudEC2.ST_RUNNING: {
+                case ProviderAWSEC2.ST_RUNNING:
+                {
                     return InstanceModel.STARTED;
                 }
-                case CloudEC2.ST_STOPPED: {
+                case ProviderAWSEC2.ST_STOPPED:
+                {
                     return InstanceModel.STOPPED;
                 }
-                case CloudEC2.ST_STOPPING: {
+                case ProviderAWSEC2.ST_STOPPING:
+                {
                     return InstanceModel.STOPPING;
                 }
-                default: {
-                    winston.error('[CloudEC2] Unknown status: ', status);
+                default:
+                {
+                    winston.error('[ProviderAWSEC2] Unknown status: ', status);
                     return InstanceModel.ERROR;
                 }
             }
@@ -159,28 +166,28 @@ CloudEC2.prototype.getModels = function getModelsFn() {
 };
 
 
-CloudEC2.prototype.createInstances = function createInstancesFn(count) {
+ProviderAWSEC2.prototype.createInstances = function createInstancesFn(count) {
     var self = this;
 
-    winston.debug('[CloudEC2] createInstances: count=%d', count);
+    winston.debug('[ProviderAWSEC2] createInstances: count=%d', count);
 
-    return new Promise(function(resolve, reject) {
-        self._ec2.describeInstances({}, function(err, data) {
+    return new Promise(function (resolve, reject) {
+        self._ec2.describeInstances({}, function (err, data) {
             if (err) return reject(err);
 
             var actualCount = _(data.Reservations)
                 .pluck('Instances')
                 .flatten()
-                .filter(function(instance) {
-                    return instance.State.Name !== CloudEC2.ST_SHUTTING_DOWN
-                        && instance.State.Name !== CloudEC2.ST_TERMINATED
+                .filter(function (instance) {
+                    return instance.State.Name !== ProviderAWSEC2.ST_SHUTTING_DOWN
+                        && instance.State.Name !== ProviderAWSEC2.ST_TERMINATED
                 })
                 .size();
 
-            winston.debug('[CloudEC2] createInstances: actualCount=%d', actualCount);
+            winston.debug('[ProviderAWSEC2] createInstances: actualCount=%d', actualCount);
 
-            if (actualCount + count > self._config.maxRunningInstances) {
-                return reject(new Error('[CloudEC2] createInstances: Cannot start instances (limit reach): ' + actualCount + ' + ' + count + ' > ' + self._config.maxRunningInstances));
+            if (self._config.maxRunningInstances && actualCount + count > self._config.maxRunningInstances) {
+                return reject(new Error('[ProviderAWSEC2] createInstances: Cannot start instances (limit reach): ' + actualCount + ' + ' + count + ' > ' + self._config.maxRunningInstances));
             }
 
             var params = _.assign({}, self._config.instance, {
@@ -192,13 +199,13 @@ CloudEC2.prototype.createInstances = function createInstancesFn(count) {
                 },
             });
 
-            self._ec2.runInstances(params, function(err, data) {
+            self._ec2.runInstances(params, function (err, data) {
                 if (err) return reject(err);
 
                 var ids = _.pluck(data.Instances, 'InstanceId');
 
                 // Need to add some delay because EC2 API is not so fast!
-                setTimeout(function() {
+                setTimeout(function () {
                     var params = {
                         Resources: ids,
                         Tags: [{
@@ -207,7 +214,7 @@ CloudEC2.prototype.createInstances = function createInstancesFn(count) {
                         }],
                     };
 
-                    self._ec2.createTags(params, function(err) {
+                    self._ec2.createTags(params, function (err) {
                         if (err) return reject(err);
 
                         resolve();
@@ -219,14 +226,14 @@ CloudEC2.prototype.createInstances = function createInstancesFn(count) {
 };
 
 
-CloudEC2.prototype.startInstance = function startInstanceFn(model) {
+ProviderAWSEC2.prototype.startInstance = function startInstanceFn(model) {
     var self = this;
 
-    winston.debug('[CloudEC2] startInstance: model=', model.toString());
+    winston.debug('[ProviderAWSEC2] startInstance: model=', model.toString());
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         var params = {
-            'InstanceIds': [model.getCloudOpts().id],
+            'InstanceIds': [model.getProviderOpts().id],
         };
 
         self._ec2.startInstances(params, function (err) {
@@ -238,14 +245,14 @@ CloudEC2.prototype.startInstance = function startInstanceFn(model) {
 };
 
 
-CloudEC2.prototype.deleteInstance = function deleteInstanceFn(model) {
+ProviderAWSEC2.prototype.deleteInstance = function deleteInstanceFn(model) {
     var self = this;
 
-    winston.debug('[CloudEC2] deleteInstance: model=', model.toString());
+    winston.debug('[ProviderAWSEC2] deleteInstance: model=', model.toString());
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         var params = {
-            'InstanceIds': [model.getCloudOpts().id],
+            'InstanceIds': [model.getProviderOpts().id],
         };
 
         self._ec2.terminateInstances(params, function (err) {
@@ -257,19 +264,21 @@ CloudEC2.prototype.deleteInstance = function deleteInstanceFn(model) {
 };
 
 
-CloudEC2.prototype.deleteInstances = function deleteInstancesFn(models) {
+ProviderAWSEC2.prototype.deleteInstances = function deleteInstancesFn(models) {
     var self = this;
 
-    winston.debug('[CloudEC2] deleteInstances: models=', _.map(models, function(model) {return model.toString(); }));
+    winston.debug('[ProviderAWSEC2] deleteInstances: models=', _.map(models, function (model) {
+        return model.toString();
+    }));
 
     if (models.length <= 0) {
         return;
     }
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         var params = {
             'InstanceIds': _.map(models, function (model) {
-                return model.getCloudOpts().id;
+                return model.getProviderOpts().id;
             }),
         };
 

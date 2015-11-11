@@ -8,7 +8,7 @@ var _ = require('lodash'),
 
 var config = require('./config'),
     app = require('./test-server'),
-    cloud = require('./cloud');
+    provider = require('./provider');
 
 
 describe('restart crashed instance', function() {
@@ -17,7 +17,7 @@ describe('restart crashed instance', function() {
     var proxies;
 
     before(function() {
-        proxies = new Proxies(config, cloud);
+        proxies = new Proxies(config, provider);
 
         return proxies.listenAndWait();
     });

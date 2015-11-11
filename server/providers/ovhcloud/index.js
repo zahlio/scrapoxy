@@ -7,14 +7,14 @@ var _ = require('lodash'),
     winston = require('winston');
 
 
-module.exports = CloudOVH;
+module.exports = ProviderOVHCloud;
 
 
 ////////////
 
-function CloudOVH(config, instancePort) {
+function ProviderOVHCloud(config, instancePort) {
     if (!config || !instancePort) {
-        throw new Error('[CloudEC2] should be instanced with config and instancePort');
+        throw new Error('[ProviderOVHCloud] should be instanced with config and instancePort');
     }
 
     this._config = config;
@@ -30,16 +30,16 @@ function CloudOVH(config, instancePort) {
     this._client = ovh(opts);
 }
 
-CloudOVH.ST_ACTIVE = 'ACTIVE';
-CloudOVH.ST_BUILD = 'BUILD';
-CloudOVH.ST_DELETING = 'DELETING';
-CloudOVH.ST_ERROR = 'ERROR';
+ProviderOVHCloud.ST_ACTIVE = 'ACTIVE';
+ProviderOVHCloud.ST_BUILD = 'BUILD';
+ProviderOVHCloud.ST_DELETING = 'DELETING';
+ProviderOVHCloud.ST_ERROR = 'ERROR';
 
 
-CloudOVH.prototype.getModels = function getModelsFn() {
+ProviderOVHCloud.prototype.getModels = function getModelsFn() {
     var self = this;
 
-    winston.debug('[CloudOVH] getModels');
+    winston.debug('[ProviderOVHCloud] getModels');
 
     return self._describeInstances()
         .then(summarizeInfo)
@@ -76,7 +76,7 @@ CloudOVH.prototype.getModels = function getModelsFn() {
 
     function excludeTerminated(instancesDesc) {
         return _.filter(instancesDesc, function(instanceDesc) {
-            return instanceDesc.status !== CloudOVH.ST_DELETING;
+            return instanceDesc.status !== ProviderOVHCloud.ST_DELETING;
         });
     }
 
@@ -113,21 +113,21 @@ CloudOVH.prototype.getModels = function getModelsFn() {
 
         function convertStatus(status) {
             switch (status) {
-                case CloudOVH.ST_ACTIVE:
+                case ProviderOVHCloud.ST_ACTIVE:
                 {
                     return InstanceModel.STARTED;
                 }
-                case CloudOVH.ST_BUILD:
+                case ProviderOVHCloud.ST_BUILD:
                 {
                     return InstanceModel.STARTING;
                 }
-                case CloudOVH.ST_ERROR:
+                case ProviderOVHCloud.ST_ERROR:
                 {
                     return InstanceModel.ERROR;
                 }
                 default:
                 {
-                    winston.error('[CloudEC2] Unknown status: ', status);
+                    winston.error('[ProviderOVHCloud] Unknown status: ', status);
                     return InstanceModel.ERROR;
                 }
             }
@@ -136,23 +136,23 @@ CloudOVH.prototype.getModels = function getModelsFn() {
 };
 
 
-CloudOVH.prototype.createInstances = function createInstancesFn(count) {
+ProviderOVHCloud.prototype.createInstances = function createInstancesFn(count) {
     var self = this;
 
-    winston.debug('[CloudOVH] createInstances: count=%d', count);
+    winston.debug('[ProviderOVHCloud] createInstances: count=%d', count);
 
     return self._describeInstances()
         .then(function (instances) {
             var actualCount = _(instances)
                 .filter(function(instance) {
-                    return instance.status !== CloudOVH.ST_DELETING;
+                    return instance.status !== ProviderOVHCloud.ST_DELETING;
                 })
                 .size();
 
-            winston.debug('[CloudOVH] createInstances: actualCount=%d', actualCount);
+            winston.debug('[ProviderOVHCloud] createInstances: actualCount=%d', actualCount);
 
-            if (actualCount + count > self._config.maxRunningInstances) {
-                return reject(new Error('[CloudOVH] createInstances: Cannot start instances (limit reach): ' + actualCount + ' + ' + count + ' > ' + self._config.maxRunningInstances));
+            if (self._config.maxRunningInstances && actualCount + count > self._config.maxRunningInstances) {
+                return reject(new Error('[ProviderOVHCloud] createInstances: Cannot start instances (limit reach): ' + actualCount + ' + ' + count + ' > ' + self._config.maxRunningInstances));
             }
 
             return init()
@@ -290,22 +290,22 @@ CloudOVH.prototype.createInstances = function createInstancesFn(count) {
 };
 
 
-CloudOVH.prototype.startInstance = function startInstanceFn(model) {
+ProviderOVHCloud.prototype.startInstance = function startInstanceFn(model) {
     throw new Error('Unsupported method');
 };
 
 
-CloudOVH.prototype.deleteInstance = function deleteInstanceFn(model) {
-    winston.debug('[CloudOVH] deleteInstance: model=', model.toString());
+ProviderOVHCloud.prototype.deleteInstance = function deleteInstanceFn(model) {
+    winston.debug('[ProviderOVHCloud] deleteInstance: model=', model.toString());
 
-    return this._deleteInstance(model.getCloudOpts().id);
+    return this._deleteInstance(model.getProviderOpts().id);
 };
 
 
-CloudOVH.prototype.deleteInstances = function deleteInstancesFn(models) {
+ProviderOVHCloud.prototype.deleteInstances = function deleteInstancesFn(models) {
     var self = this;
 
-    winston.debug('[CloudOVH] deleteInstances: models=', _.map(models, function (model) {
+    winston.debug('[ProviderOVHCloud] deleteInstances: models=', _.map(models, function (model) {
         return model.toString();
     }));
 
@@ -314,12 +314,12 @@ CloudOVH.prototype.deleteInstances = function deleteInstancesFn(models) {
     }
 
     return Promise.map(models, function (model) {
-        return self._deleteInstance(model.getCloudOpts().id);
+        return self._deleteInstance(model.getProviderOpts().id);
     });
 };
 
 
-CloudOVH.prototype._describeInstances = function _describeInstancesFn() {
+ProviderOVHCloud.prototype._describeInstances = function _describeInstancesFn() {
     var self = this;
 
     return new Promise(function (resolve, reject) {
@@ -337,7 +337,7 @@ CloudOVH.prototype._describeInstances = function _describeInstancesFn() {
 };
 
 
-CloudOVH.prototype._deleteInstance = function deleteInstanceFn(instanceId) {
+ProviderOVHCloud.prototype._deleteInstance = function deleteInstanceFn(instanceId) {
     var self = this;
 
     return new Promise(function (resolve, reject) {

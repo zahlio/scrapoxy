@@ -5,26 +5,26 @@ var Promise = require('bluebird'),
     should = require('should'),
     winston = require('winston');
 
-var CloudLocal = require('./index');
+var ProviderLocal = require('./index');
 
 
-describe('CloudLocal', function() {
+describe('ProviderLocal', function() {
     this.timeout(10 * 1000);
 
-    var cloud;
+    var provider;
 
     before(function() {
-        cloud = new CloudLocal('./server/cloud/local/test-proxy/index.js');
+        provider = new ProviderLocal('./server/provider/local/test-proxy/index.js');
     });
 
     describe('start/stop', function() {
         var models;
 
         it('should start', function() {
-            return cloud.createInstances(2)
+            return provider.createInstances(2)
                 .delay(2000)
                 .then(function() {
-                    return cloud.getModels();
+                    return provider.getModels();
                 })
                 .then(function(mds) {
                     mds.should.have.length(2);
@@ -40,7 +40,7 @@ describe('CloudLocal', function() {
         });
 
         it('should shutdown', function() {
-            return cloud.deleteInstances(models)
+            return provider.deleteInstances(models)
                 .delay(2000);
         });
 
@@ -61,10 +61,10 @@ describe('CloudLocal', function() {
         var model;
 
         it('should start', function() {
-            return cloud.createInstances(1)
+            return provider.createInstances(1)
                 .delay(2000)
                 .then(function() {
-                    return cloud.getModels();
+                    return provider.getModels();
                 })
                 .then(function(mds) {
                     mds.should.have.length(1);
@@ -76,17 +76,17 @@ describe('CloudLocal', function() {
         });
 
         it('should restart', function() {
-            return cloud.deleteInstance(model)
+            return provider.deleteInstance(model)
                 .delay(2000)
                 .then(function() {
-                    return cloud.startInstance(model);
+                    return provider.startInstance(model);
                 })
                 .delay(2000)
                 .tap(function() {
                     return pinger.pingRetry(model.getAddress(), 2, 2000);
                 })
                 .then(function() {
-                    return cloud.deleteInstances([model]);
+                    return provider.deleteInstances([model]);
                 })
         });
     });

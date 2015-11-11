@@ -14,12 +14,12 @@ module.exports = ProxiesManager;
 
 /////////
 
-function ProxiesManager(config, stats, cloud) {
+function ProxiesManager(config, stats, provider) {
     EventEmitter.call(this);
 
     this._config = config;
     this._stats = stats;
-    this._cloud = cloud;
+    this._provider = provider;
 
     this._managedInstances = {};
     this._aliveInstances = [];
@@ -72,7 +72,7 @@ ProxiesManager.prototype.start = function startFn() {
     function checkInstances() {
         winston.debug('[ProxiesManager] checkInstances');
 
-        self._cloud.getModels()
+        self._provider.getModels()
             .then(updateInstances)
             .then(adjustInstances)
             .catch(function(err) {
@@ -102,7 +102,7 @@ ProxiesManager.prototype.start = function startFn() {
                     // Add
                     winston.debug('[ProxiesManager] checkInstances: add: ', model.toString());
 
-                    instance = new Instance(self, self._stats, self._cloud, self._config);
+                    instance = new Instance(self, self._stats, self._provider, self._config);
                     self._managedInstances[name] = instance;
 
                     registerEvents(instance);
@@ -163,7 +163,7 @@ ProxiesManager.prototype.start = function startFn() {
                     .map(function(instance) { return instance.getModel(); })
                     .value();
 
-                return self._cloud.deleteInstances(models);
+                return self._provider.deleteInstances(models);
             }
             else if (managedCount < self._config.scaling.required) {
                 // Not enough
@@ -171,7 +171,7 @@ ProxiesManager.prototype.start = function startFn() {
 
                 winston.debug('[ProxiesManager] adjustInstances: add %d instances', count);
 
-                return self._cloud.createInstances(count);
+                return self._provider.createInstances(count);
             }
         }
     }
@@ -190,7 +190,7 @@ ProxiesManager.prototype.crashRandomInstance = function crashRandomInstanceFn() 
 
     var instance = this._managedInstances[randomName];
 
-    return this._cloud.deleteInstances([instance.getModel()]);
+    return this._provider.deleteInstances([instance.getModel()]);
 };
 
 

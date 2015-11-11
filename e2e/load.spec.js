@@ -10,7 +10,7 @@ var _ = require('lodash'),
 
 var config = require('./config'),
     app = require('./test-server'),
-    cloud = require('./cloud');
+    provider = require('./provider');
 
 
 // Proxy config
@@ -28,7 +28,7 @@ describe('test load with proxies', function() {
     var proxies;
 
     before(function() {
-        proxies = new Proxies(config, cloud);
+        proxies = new Proxies(config, provider);
 
         return proxies.listenAndWait();
     });

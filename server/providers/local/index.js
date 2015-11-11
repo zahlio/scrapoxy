@@ -7,14 +7,14 @@ var _ = require('lodash'),
     winston = require('winston');
 
 
-module.exports = CloudLocal;
+module.exports = ProviderLocal;
 
 
 ////////////
 
-function CloudLocal(proxyPath) {
+function ProviderLocal(proxyPath) {
     if (!proxyPath) {
-        throw new Error('[CloudLocal] should be instanced with proxyPath');
+        throw new Error('[ProviderLocal] should be instanced with proxyPath');
     }
 
     this._proxyPath = proxyPath;
@@ -27,10 +27,10 @@ function CloudLocal(proxyPath) {
 }
 
 
-CloudLocal.prototype.getModels = function getModelsFn() {
+ProviderLocal.prototype.getModels = function getModelsFn() {
     var self = this;
 
-    winston.debug('[CloudLocal] getInstances');
+    winston.debug('[ProviderLocal] getInstances');
 
     return new Promise(function(resolve, reject) {
         var models = _(self._locals)
@@ -56,10 +56,10 @@ CloudLocal.prototype.getModels = function getModelsFn() {
 };
 
 
-CloudLocal.prototype.createInstances = function createInstancesFn(count) {
+ProviderLocal.prototype.createInstances = function createInstancesFn(count) {
     var self = this;
 
-    winston.debug('[CloudLocal] createInstances: count=%d', count);
+    winston.debug('[ProviderLocal] createInstances: count=%d', count);
 
     return createLocals(count)
         .map(function(local) {
@@ -93,10 +93,10 @@ CloudLocal.prototype.createInstances = function createInstancesFn(count) {
 };
 
 
-CloudLocal.prototype.startInstance = function startInstanceFn(model) {
-    winston.debug('[CloudLocal] startInstance: model=', model.toString());
+ProviderLocal.prototype.startInstance = function startInstanceFn(model) {
+    winston.debug('[ProviderLocal] startInstance: model=', model.toString());
 
-    var local = model.getCloudOpts();
+    var local = model.getProviderOpts();
     if (local.child) {
         throw new Error('Cannot start a started instance');
     }
@@ -113,11 +113,11 @@ CloudLocal.prototype.startInstance = function startInstanceFn(model) {
 };
 
 
-CloudLocal.prototype.deleteInstance = function deleteInstanceFn(model) {
-    winston.debug('[CloudLocal] deleteInstance: model=', model.toString());
+ProviderLocal.prototype.deleteInstance = function deleteInstanceFn(model) {
+    winston.debug('[ProviderLocal] deleteInstance: model=', model.toString());
 
     return new Promise(function(resolve, reject) {
-        var local = model.getCloudOpts();
+        var local = model.getProviderOpts();
         if (!local.child || local.child.killed) {
             resolve();
         }
@@ -132,36 +132,36 @@ CloudLocal.prototype.deleteInstance = function deleteInstanceFn(model) {
 };
 
 
-CloudLocal.prototype.deleteInstances = function deleteInstancesFn(models) {
+ProviderLocal.prototype.deleteInstances = function deleteInstancesFn(models) {
     var self = this;
 
-    winston.debug('[CloudLocal] deleteInstances: models=', _.map(models, function (model) { return model.toString();}));
+    winston.debug('[ProviderLocal] deleteInstances: models=', _.map(models, function (model) { return model.toString();}));
 
     return Promise.map(models, function(model) {
-        delete self._locals[model.getCloudOpts().name];
+        delete self._locals[model.getProviderOpts().name];
 
         return self.deleteInstance(model);
     });
 };
 
 
-CloudLocal.prototype._startInstance = function _startInstanceFn(local) {
+ProviderLocal.prototype._startInstance = function _startInstanceFn(local) {
     var self = this;
 
-    winston.debug('[CloudLocal] _startInstance: local=%s', local.toString());
+    winston.debug('[ProviderLocal] _startInstance: local=%s', local.toString());
 
     return new Promise(function(resolve, reject) {
         var child = child_process.exec('node ' + self._proxyPath + ' ' + local.name + ' ' + local.port);
         child.stdout.on('data', function(data) {
-            winston.debug('[CloudLocal/%s] (stdout) %s', local.name, data);
+            winston.debug('[ProviderLocal/%s] (stdout) %s', local.name, data);
         });
 
         child.stderr.on('data', function(data) {
-            winston.debug('[CloudLocal/%s] (stderr) %s', local.name, data);
+            winston.debug('[ProviderLocal/%s] (stderr) %s', local.name, data);
         });
 
         child.on('close', function() {
-            winston.debug('[CloudLocal/%s] Close', local.name);
+            winston.debug('[ProviderLocal/%s] Close', local.name);
         });
 
         local.child = child;
@@ -171,7 +171,7 @@ CloudLocal.prototype._startInstance = function _startInstanceFn(local) {
 };
 
 
-CloudLocal.prototype._getNextPort = function _getNextPortFn() {
+ProviderLocal.prototype._getNextPort = function _getNextPortFn() {
     var port = this._portIncr;
 
     ++this._portIncr;

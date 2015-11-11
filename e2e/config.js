@@ -36,12 +36,15 @@ module.exports = _.merge({
         },
     },
 
-    ec2: {
-        region: 'eu-west-1',
-        tag: 'Proxy',
-        instance: {
-            InstanceType: 't1.micro',
+    providers: {
+        type: 'awsec2',
+
+        awsec2: {
+            region: 'eu-west-1',
+            instance: {
+                InstanceType: 't1.micro',
+            },
+            maxRunningInstances: 10,
         },
-        maxRunningInstances: 10,
     },
 }, secret);

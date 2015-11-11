@@ -14,8 +14,6 @@ module.exports = {
         checkDelay: 10 * 1000, // 10sec
         checkAliveDelay: 20 * 1000, // 20sec
         stopIfCrashedDelay: 5 * 60 * 1000, // 5min,
-        autoRestartDelay: 60 * 60 * 1000, // 1h,
-        aliveMax: 10,
 
         autorestart: {
             minDelay: 1 * 60 * 60 * 1000, // 1h
@@ -24,6 +22,12 @@ module.exports = {
 
         scaling: {
             downscaleDelay: 10 * 60 * 1000, // 10min
+        },
+    },
+
+    providers: {
+        awsec2: {
+            tag: 'Proxy',
         },
     },
 
