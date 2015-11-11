@@ -23,7 +23,7 @@ Remember your *Access Key* and *Secret Access Key*.
 
 ### Step 2: Connect to your region
 
-![region](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/providers/awsec2/changeregion.jpg)
+![region](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/providers/awsec2/change_region.jpg)
 
 
 ### Step 3: Create a security group
