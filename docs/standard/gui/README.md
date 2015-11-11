@@ -1,7 +1,7 @@
 ![Scrapoxy](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/logo.png)
 
 
-# GUI Manual
+# Manage Scrapoxy with a GUI
 
 ## Table of contents
 
@@ -13,6 +13,9 @@
     - [Status of an instance](#status-of-an-instance)
     - [Remove an instance](#remove-an-instance)
 - [Page: Stats](#page-stats)
+    - [Global](#global)
+    - [Requests](#requests)
+    - [Flow](#flow)
     - [How to increase the number of requests per minute?](#how-to-increase-the-number-of-requests-per-minute-)
     - [Do I overload the target website?](#do-i-overload-the-target-website-)
 
@@ -40,6 +43,8 @@ Scrapoxy GUI has many pages:
 - **Instances**. This page contains the list of instances managed by Scrapoxy;
 - **Stats**. This page contains statistics on the use of Scrapoxy.
 
+To login page redirects to the Instances page.
+
 
 ## Page: Instances
 
@@ -48,7 +53,7 @@ Scrapoxy GUI has many pages:
 
 ![Scaling](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_scaling.jpg)
 
-This panel manages the number of instances.
+This panel shows the number of instances.
 
 Scrapoxy has 3 settings:
 
@@ -56,7 +61,9 @@ Scrapoxy has 3 settings:
 - **Max**. The desired count of instances when Scrapoxy is awake;
 - **Required**. The count of actual instances.
 
-To add or remove an instance, simply change the **Required** setting.
+To add or remove an instance, click on the **Scaling** button and change the **Required** setting:
+
+![Scaling_change](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_scaling_change.jpg)
 
 
 ### Status of an instance
@@ -68,27 +75,30 @@ Each instance is described in a panel.
 This panel contains many information:
 
 - Name of the instance;
-- Cloud type;
-- Instance status on the cloud;
+- IP of the instance;
+- Provider type;
+- Instance status on the provider;
 - Instance status in Scrapoxy.
 
-Scrapoxy relays requests to **started**
-(![Started](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_started.png))
-and **alived**
-(![Alive](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_alive.png))
-instances.
+Scrapoxy relays requests to instances which are **started** and **alived**
+(![Started](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_started.png)
++
+![Alive](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_alive.png)).
 
 
-#### Type of cloud
+#### Type of provider
 
 <table>
   <tr>
-    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_awsec2.png"></td><td>AWS EC2</td>
+    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_awsec2.png"></td><td>AWS / EC2</td>
+  </tr>
+  <tr>
+    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_ovhcloud.png"></td><td>OVH Cloud</td>
   </tr>
 </table>
 
 
-#### Status in the cloud
+#### Status in the provider
 
 <table>
   <tr>
@@ -129,14 +139,47 @@ The instance stops and is replaced by another.
 
 ## Page: Stats
 
+There are 3 panels in stats:
+
+- **Global stats**. This panel contains global stats;
+- **Requests**. This panel contains the count of requests;
+- **Flow**. This panel contains the flow requests.
+
+
+### Global
+
+![Stats](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_stats_global.jpg)
+
+This panel has 4 indicators:
+
+- the total **count of requests** to monitor performance;
+- the total **count of received and sent data** to control the volume of data;
+- the total of **stop instance orders**, to monitor anti-blacklisting;
+- the **count of requests received by an instance** (minimum, average, maximum) to check anti-blacklisting performance.
+
+
+### Requests
+
 ![Stats](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_stats_requests.jpg)
 
-Scrapoxy combines 2 statistics on 1 chart.
+This panel combines 2 statistics on 1 chart.
 
 It measures:
 
-- the count of requests per minute;
-- the average execution time of a request (round trip), per minute.
+- the **count of requests** per minute;
+- the **average execution time** of a request (round trip), per minute.
+
+
+### Flow
+
+![Stats](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_stats_flow.jpg)
+
+This panel combines 2 statistics on 1 chart.
+
+It measures:
+
+- the flow **received** by Scrapoxy;
+- the flow **sent** by Scrapoxy.
 
 
 ### How to increase the number of requests per minute ?

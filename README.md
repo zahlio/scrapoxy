@@ -27,7 +27,7 @@ It is written in [Node.js](https://nodejs.org), [AngularJS](https://angularjs.or
 - Route requests to proxies (a new request is sent to the next proxy)
 - Use standard User Agent (Chrome, Firefox and Safari)
 - Rotate IP address
-- Use multiple cloud platforms (in progress, done: AWS EC2)
+- Use multiple providers platforms (AWS, OVH)
 - Control the instances from your scraper with a REST API
 - Optimize the scraping through statistics (like count of requests per minutes)
 
@@ -46,23 +46,31 @@ You could use [Scrapy framework](http://scrapy.org) ([Python](https://www.python
 
 # Documentation
 
-Look at the manuals:
+You can begin with the [Quick Start](docs/quick_start/README.md) or look at the [Changelog](CHANGELOG.md).
 
-- the [Quick Start Manual](docs/quick_start_manual/README.md);
-- the [User Manual](docs/user_manual/README.md);
-- the [API Manual](docs/api_manual/README.md);
-- the [GUI Manual](docs/gui_manual/README.md);
-- the [Changelog](docs/CHANGELOG.md).
+Now, you can continue with:
 
-Look at the tutorials:
+- [Configure Scrapoxy](docs/standard/config/README.md)
+- Add Providers
+    - [AWS/EC2](docs/standard/providers/awsec2/README.md)
+    - [OVH Cloud](docs/standard/providers/ovhcloud/README.md)
+- [Manage Scrapoxy with a GUI](docs/standard/gui/README.md)
 
-- AWS:
-    - [Get credentials](docs/tutorials/aws/get_credentials/README.md)
-    - [Create a security group](docs/tutorials/aws/create_security_group/README.md)
-    - Create a proxy AMI (image) (TODO)
-- Start Scrapoxy with PM2 (TODO)
-- Create a Scrapy scraper with Scrapoxy (TODO)
-- Create an anti-blacklisting middleware with Scrapy (TODO)
+And become an expert with:
+
+- [Understand Scrapoxy](docs/advanced/understand/README.md)
+- [Control Scrapoxy with a REST API](docs/advanced/api/README.md)
+- [Secure Scrapoxy](docs/advanced/security/README.md)
+- [Launch Scrapoxy at startup](docs/advanced/startup/README.md)
+
+You can complete with tutorials:
+
+- [Create a scraper with Scrapy and Scrapoxy](docs/tutorials/scrapy/README.md)
+
+
+# Contribute
+
+You can open an issue on this repository for any feedback (bug, question, request, pull request, etc.).
 
 
 # Licence

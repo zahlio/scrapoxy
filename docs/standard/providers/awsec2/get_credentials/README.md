@@ -1,7 +1,7 @@
 ![Scrapoxy](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/logo.png)
 
 
-# Tutorial: AWS / Get credentials
+# Tutorial: AWS / EC2 - Get credentials
 
 ## Step 1: Connect to your AWS console
 

@@ -1,7 +1,12 @@
 ![Scrapoxy](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/logo.png)
 
 
-# Quick Start Manual
+# Quick Start
+
+This tutorials works on AWS / EC2, with region **eu-west-1**.
+
+See the [AW2 / EC2 - Get started](../standard/providers/awsec2/README.md#get-started) if you want to change region.
+
 
 ## Step 1: Install Node.js
 
@@ -17,35 +22,30 @@ $ npm install -g scrapoxy
 
 ## Step 3: Get AWS credentials
 
-See [Get AWS credentials](../tutorials/aws/get_credentials/README.md).
+See [Get AWS credentials](../standard/providers/awsec2/get_credentials/README.md).
 
 
 ## Step 4: Create a security group
 
-To use the default AMI, create a security group named 'forward-proxy' with port TCP/3128. 
-
-See [Create a security group](../tutorials/aws/create_security_group/README.md).
+See [Create a security group](../standard/providers/awsec2/create_security_group/README.md).
 
 
 ## Step 5: Generate configuration
 
 ```
-$ scrapoxy init my-config.js
+$ scrapoxy init my-config.json
 ```
 
 
 ## Step 6: Edit configuration 
 
-Edit *my-config.js*:
-
-1. Replace *accessKeyId* and *secretAccessKey* by your credentials;
-2. Replace *region* by your AWS region (see the [list of regions](http://docs.aws.amazon.com/general/latest/gr/rande.html)).
+Edit *my-config.json* and replace *accessKeyId* and *secretAccessKey* by your credentials.
 
 
 ## Step 6: Start Scrapoxy
 
 ```
-$ scrapoxy start my-config.js
+$ scrapoxy start my-config.json
 ```
 
 

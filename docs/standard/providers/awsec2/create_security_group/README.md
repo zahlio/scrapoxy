@@ -1,7 +1,14 @@
 ![Scrapoxy](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/logo.png)
 
 
-# Tutorial: AWS / Create a security group
+# Tutorial: AWS / EC2 - Create a security group
+
+Security groups (and AMI) are restricted to a region. 
+
+A security group in eu-west-1 is not available in eu-central-1.
+
+You must create a security group by region.
+
 
 ## Step 1: Connect to your AWS console
 

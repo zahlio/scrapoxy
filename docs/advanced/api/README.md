@@ -1,7 +1,7 @@
 ![Scrapoxy](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/logo.png)
 
 
-# API Manual
+# Control Scrapoxy with a REST API
 
 ## Table of contents
 
