@@ -10,8 +10,9 @@ Go to OVH dashboard and select your new project.
 
 ## Step 2: Create a new server
 
-1. Click on 'Add'
-2. Click on 'Add a server'
+1. Click on 'Infrastructure'
+2. Click on 'Add'
+3. Click on 'Add a server'
 
 ![step_1](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/providers/ovhcloud/create_image/step_1.jpg)
 
