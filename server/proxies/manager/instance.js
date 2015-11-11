@@ -16,14 +16,14 @@ module.exports = Instance;
 
 ////////////
 
-function Instance(manager, stats, cloud, config) {
+function Instance(manager, stats, provider, config) {
     var self = this;
 
     EventEmitter.call(self);
 
     self._manager = manager;
     self._stats = stats;
-    self._cloud = cloud;
+    self._provider = provider;
     self._config = config;
 
     self._model = null;
@@ -69,7 +69,7 @@ function Instance(manager, stats, cloud, config) {
 
         // Error
         if (newstatus === InstanceModel.ERROR) {
-            self._cloud.deleteInstance(self._model)
+            self._provider.deleteInstance(self._model)
                 .catch(function(err) {
                     winston.error('[Instance/%s] error: ', self._model.getName(), err);
                 });
@@ -77,7 +77,7 @@ function Instance(manager, stats, cloud, config) {
 
         // Restart if stopped
         if (newstatus === InstanceModel.STOPPED) {
-            self._cloud.startInstance(self._model)
+            self._provider.startInstance(self._model)
                 .catch(function(err) {
                     winston.error('[Instance/%s] error: ', self._model.getName(), err);
                 });
@@ -211,7 +211,7 @@ Instance.prototype.removedFromManager = function removedFromManagerFn() {
 Instance.prototype.delete = function deleteFn() {
     this._changeAlive(false);
 
-    return this._cloud.deleteInstance(this._model);
+    return this._provider.deleteInstance(this._model);
 };
 
 

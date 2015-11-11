@@ -6,13 +6,13 @@ module.exports = InstanceModel;
 
 ////////////
 
-function InstanceModel(name, type, status, address, cloudOps) {
+function InstanceModel(name, type, status, address, providerOpts) {
     this._name = name;
     this._type = type;
     this._status = status;
     this._address = address;
 
-    this._cloudOpts = cloudOps;
+    this._providerOpts = providerOpts;
 }
 
 
@@ -54,8 +54,8 @@ InstanceModel.prototype.setAddress = function setAddressFn(address) {
 };
 
 
-InstanceModel.prototype.getCloudOpts = function getCloudOptsFn() {
-    return this._cloudOpts;
+InstanceModel.prototype.getProviderOpts = function getProviderOptsFn() {
+    return this._providerOpts;
 };
 
 
@@ -73,8 +73,8 @@ InstanceModel.prototype.toString = function toStringFn() {
     if (this._address) {
         var addressStr = this._address.hostname + ":" + this._address.port;
 
-        return this._name + "@" + addressStr + " / cloudOps=" + this._cloudOpts.toString();
+        return this._name + "@" + addressStr + " / providerOpts=" + this._providerOpts.toString();
     }
 
-    return this._name + " / cloudOps=" + this._cloudOpts.toString();
+    return this._name + " / providerOpts=" + this._providerOpts.toString();
 };

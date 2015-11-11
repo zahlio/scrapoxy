@@ -4,8 +4,8 @@
 
 var _ = require('lodash'),
     Promise = require('bluebird'),
-    CloudEC2 = require('./cloud/ec2'),
-    CloudOVH = require('./cloud/ovh'),
+    ProviderAWSEC2 = require('./providers/awsec2'),
+    ProviderOVHCloud = require('./providers/ovhcloud'),
     fs = require('fs'),
     moment = require('moment'),
     path = require('path'),
@@ -106,12 +106,12 @@ function startProxy(configFilename) {
     }
 
     // Initialize
-    var cloud = getCloud(config);
-    if (!cloud) {
-        return winston.error('Error: Cloud is not specify or supported');
+    var provider = getProvider(config);
+    if (!provider) {
+        return winston.error('Error: Provider is not specify or supported');
     }
 
-    var main = new Proxies(config, cloud);
+    var main = new Proxies(config, provider);
 
     // Register stop event
     sigstop(function () {
@@ -128,16 +128,16 @@ function startProxy(configFilename) {
 
     ////////////
 
-    function getCloud(config) {
-        switch (config.type) {
+    function getProvider(config) {
+        switch (config.providers.type) {
             case 'ovhcloud':
             {
-                return new CloudOVH(config.ovhcloud, config.instance.port);
+                return new ProviderOVHCloud(config.providers.ovhcloud, config.instance.port);
             }
 
             case 'awsec2':
             {
-                return new CloudEC2(config.awsec2, config.instance.port);
+                return new ProviderAWSEC2(config.providers.awsec2, config.instance.port);
             }
 
             default: {

@@ -3,6 +3,22 @@
 
 # Changelog
 
+## 2.1.0
+
+## Features
+
+- **gui**: add update popup when the status of an instance changes.
+- **gui**: add error popup when GUI cannot retrieve data
+- **stability**: correct a lot of behavior to prevent instance cycling
+- **ovh**: add OVH provider
+- **instance**: always terminate an instance when stopping (prefer terminate instead of stop/start)
+
+## Bug fixes
+
+- **gui**: emit event when scaling is changed by engine (before, event was triggered by GUI)  
+- **auth**: add working basic auth (rfc 2617)
+
+
 ## 2.0.1
 
 ## Features
