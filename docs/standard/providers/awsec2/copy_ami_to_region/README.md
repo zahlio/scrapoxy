@@ -58,4 +58,4 @@ Go to [AWS console](https://console.aws.amazon.com).
  
 The new AMI ID is in the column 'AMI ID'.
 
-![step_4](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/providers/awsec2/copy_ami_to_region/step_4.jpg)
+![step_4](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/providers/awsec2/copy_ami_to_region/step_5.jpg)
