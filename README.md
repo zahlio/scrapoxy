@@ -46,7 +46,7 @@ You could use [Scrapy framework](http://scrapy.org) ([Python](https://www.python
 
 # Documentation
 
-You can begin with the [Quick Start](docs/quick_start/README.md) or look at the [Changelog](CHANGELOG.md).
+You can begin with the [QUICK START](docs/quick_start/README.md) or look at the [CHANGELOG](CHANGELOG.md).
 
 Now, you can continue with:
 

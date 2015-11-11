@@ -27,7 +27,7 @@ You can access to the GUI at *http://localhost:8889/*
 
 ## Login
 
-![Login](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_login.png)
+![Login](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_login.png)
 
 Enter your password.
 
@@ -36,7 +36,7 @@ The password is defined in the configuration file, key **commander.password**.
 
 ## Dashboard
 
-![General](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_general.jpg)
+![General](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_general.jpg)
 
 Scrapoxy GUI has many pages:
 
@@ -51,7 +51,7 @@ To login page redirects to the Instances page.
 
 ### Scaling
 
-![Scaling](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_scaling.jpg)
+![Scaling](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_scaling.jpg)
 
 This panel shows the number of instances.
 
@@ -63,12 +63,12 @@ Scrapoxy has 3 settings:
 
 To add or remove an instance, click on the **Scaling** button and change the **Required** setting:
 
-![Scaling_change](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_scaling_change.jpg)
+![Scaling_change](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_scaling_change.jpg)
 
 
 ### Status of an instance
 
-![Instance](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance.png)
+![Instance](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance.png)
 
 Each instance is described in a panel.
 
@@ -81,19 +81,19 @@ This panel contains many information:
 - Instance status in Scrapoxy.
 
 Scrapoxy relays requests to instances which are **started** and **alived**
-(![Started](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_started.png)
+(![Started](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance_started.png)
 +
-![Alive](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_alive.png)).
+![Alive](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance_alive.png)).
 
 
 #### Type of provider
 
 <table>
   <tr>
-    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_awsec2.png"></td><td>AWS / EC2</td>
+    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance_awsec2.png"></td><td>AWS / EC2</td>
   </tr>
   <tr>
-    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_ovhcloud.png"></td><td>OVH Cloud</td>
+    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance_ovhcloud.png"></td><td>OVH Cloud</td>
   </tr>
 </table>
 
@@ -102,16 +102,16 @@ Scrapoxy relays requests to instances which are **started** and **alived**
 
 <table>
   <tr>
-    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_starting.png"></td><td>Starting</td>
+    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance_starting.png"></td><td>Starting</td>
   </tr>
   <tr>
-    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_started.png"></td><td>Started</td>
+    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance_started.png"></td><td>Started</td>
   </tr>
   <tr>
-    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_stopping.png"></td><td>Stopping</td>
+    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance_stopping.png"></td><td>Stopping</td>
   </tr>
   <tr>
-    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_stopped.png"></td><td>Stopped</td>
+    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance_stopped.png"></td><td>Stopped</td>
   </tr>
 </table>
 
@@ -120,17 +120,17 @@ Scrapoxy relays requests to instances which are **started** and **alived**
 
 <table>
   <tr>
-    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_alive.png"></td><td>Alive</td>
+    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance_alive.png"></td><td>Alive</td>
   </tr>
   <tr>
-    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_dead.png"></td><td>Dead</td>
+    <td><img src="https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance_dead.png"></td><td>Dead</td>
   </tr>
 </table>
     
 
 ### Remove an instance
 
-![Instance_del](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_instance_del.png)
+![Instance_del](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_instance_del.png)
 
 Click an instance to delete it.
 
@@ -148,7 +148,7 @@ There are 3 panels in stats:
 
 ### Global
 
-![Stats](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_stats_global.jpg)
+![Stats](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_stats_global.jpg)
 
 This panel has 4 indicators:
 
@@ -160,7 +160,7 @@ This panel has 4 indicators:
 
 ### Requests
 
-![Stats](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_stats_requests.jpg)
+![Stats](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_stats_requests.jpg)
 
 This panel combines 2 statistics on 1 chart.
 
@@ -172,7 +172,7 @@ It measures:
 
 ### Flow
 
-![Stats](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/gui_manual/gui_stats_flow.jpg)
+![Stats](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/gui/gui_stats_flow.jpg)
 
 This panel combines 2 statistics on 1 chart.
 

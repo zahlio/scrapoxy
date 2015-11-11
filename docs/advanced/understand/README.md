@@ -18,7 +18,7 @@
 
 ## Architecture
 
-![Global Arch](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/user_manual/global_arch.jpg)
+![Global Arch](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/advanced/understand/global_arch.jpg)
 
 Scrapoxy consists of 4 parts:
 
@@ -59,7 +59,7 @@ But you can use every software which accept the CONNECT method (Squid, Tinyproxy
 
 ### Can you leave Scrapoxy started ?
 
-![aa](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/user_manual/asleep-awake.png)
+![aa](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/advanced/understand/asleep-awake.png)
 
 Yes. Scrapoxy has 2 modes: an **awake mode** and an **asleep mode**.
 
