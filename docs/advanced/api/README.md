@@ -47,6 +47,33 @@ Response (JSON):
 The body contains all informations about instances.
 
 
+Example:
+
+```
+var request = require('request');
+
+var password = 'YOUR_COMMANDER_PASSWORD';
+
+var opts = {
+    method: 'GET',
+    url: 'http://localhost:8889/api/instances',
+    headers: {
+        'Authorization': new Buffer(password).toString('base64'),
+    },
+};
+
+request(opts, function (err, res, body) {
+    if (err) return console.log('Error: ', err);
+
+    console.log('Status: %d\n\n', res.statusCode);
+
+    var bodyParsed = JSON.parse(body);
+
+    console.log(bodyParsed);
+});
+```
+
+
 ### Stop an instance
 
 Request: 
@@ -85,6 +112,35 @@ he body contains the remaining count of alive instances.
 The instance does not exist.
 
 
+Example:
+
+```
+var request = require('request');
+
+var password = 'YOUR_COMMANDER_PASSWORD',
+    instanceName = 'YOUR INSTANCE NAME';
+
+var opts = {
+    method: 'POST',
+    url: 'http://localhost:8889/api/instances/stop',
+    json: {
+        name: instanceName,
+    },
+    headers: {
+        'Authorization': new Buffer(password).toString('base64'),
+    },
+};
+
+request(opts, function (err, res, body) {
+    if (err) return console.log('Error: ', err);
+
+    console.log('Status: %d\n\n', res.statusCode);
+
+    console.log(body);
+});
+```
+
+
 ## Scaling
 
 ### Get the scaling
@@ -100,6 +156,33 @@ Response (JSON):
 **Status: 200**
 
 The body contains all the configuration of the scaling.
+
+
+Example:
+
+```
+var request = require('request');
+
+var password = 'YOUR_COMMANDER_PASSWORD';
+
+var opts = {
+    method: 'GET',
+    url: 'http://localhost:8889/api/scaling',
+    headers: {
+        'Authorization': new Buffer(password).toString('base64'),
+    },
+};
+
+request(opts, function (err, res, body) {
+    if (err) return console.log('Error: ', err);
+
+    console.log('Status: %d\n\n', res.statusCode);
+
+    var bodyParsed = JSON.parse(body);
+
+    console.log(bodyParsed);
+});
+```
 
 
 ### Update the scaling
@@ -131,6 +214,36 @@ The scaling is updated.
 The scaling is not updated.
 
 
+Example:
+
+```
+var request = require('request');
+
+var password = 'YOUR_COMMANDER_PASSWORD';
+
+var opts = {
+    method: 'PATCH',
+    url: 'http://localhost:8889/api/scaling',
+    json: {
+        min: 1,
+        required: 5,
+        max: 10,
+    },
+    headers: {
+        'Authorization': new Buffer(password).toString('base64'),
+    },
+};
+
+request(opts, function (err, res, body) {
+    if (err) return console.log('Error: ', err);
+
+    console.log('Status: %d\n\n', res.statusCode);
+
+    console.log(body);
+});
+```
+
+
 ## Configuration
 
 ### Get the configuration
@@ -146,6 +259,33 @@ Response (JSON):
 **Status: 200**
 
 The body contains all the configuration of Scrapoxy (including scaling).
+
+
+Example:
+
+```
+var request = require('request');
+
+var password = 'YOUR_COMMANDER_PASSWORD';
+
+var opts = {
+    method: 'GET',
+    url: 'http://localhost:8889/api/config',
+    headers: {
+        'Authorization': new Buffer(password).toString('base64'),
+    },
+};
+
+request(opts, function (err, res, body) {
+    if (err) return console.log('Error: ', err);
+
+    console.log('Status: %d\n\n', res.statusCode);
+
+    var bodyParsed = JSON.parse(body);
+
+    console.log(bodyParsed);
+});
+```
 
 
 ### Update the configuration
@@ -176,3 +316,35 @@ The configuration is updated.
 **Status: 204**
 
 The configuration is not updated.
+
+
+Example:
+
+```
+var request = require('request');
+
+var password = 'YOUR_COMMANDER_PASSWORD';
+
+var opts = {
+    method: 'PATCH',
+    url: 'http://localhost:8889/api/config',
+    json: {
+        instance: {
+            scaling: {
+                max: 300,
+            },
+        },
+    },
+    headers: {
+        'Authorization': new Buffer(password).toString('base64'),
+    },
+};
+
+request(opts, function (err, res, body) {
+    if (err) return console.log('Error: ', err);
+
+    console.log('Status: %d\n\n', res.statusCode);
+
+    console.log(body);
+});
+```
