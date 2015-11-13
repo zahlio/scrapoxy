@@ -19,6 +19,12 @@ See the [Node Installation Manual](https://github.com/nodejs/node-v0.x-archive/w
 $ npm install -g scrapoxy
 ```
 
+If it doesn't work, you can try:
+
+```
+$ sudo apt-get install build-essential
+```
+
 
 ## Step 3: Get AWS credentials
 
