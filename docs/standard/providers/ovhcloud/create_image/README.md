@@ -49,13 +49,13 @@ Remember the **SSH command**.
 Connect to the instance and install proxy:
 
 ```
-$ curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -
-$ sudo apt-get install --yes nodejs
-$ curl --silent --location https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/tools/install/proxy.js | sudo tee /root/proxy.js > /dev/null
-$ curl --silent --location https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/tools/install/proxyup.sh | sudo tee /etc/init.d/proxyup.sh > /dev/null
-$ sudo chmod a+x /etc/init.d/proxyup.sh
-$ sudo update-rc.d proxyup.sh defaults
-$ sudo /etc/init.d/proxyup.sh start
+curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -
+sudo apt-get install --yes nodejs
+curl --silent --location https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/tools/install/proxy.js | sudo tee /root/proxy.js > /dev/null
+curl --silent --location https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/tools/install/proxyup.sh | sudo tee /etc/init.d/proxyup.sh > /dev/null
+sudo chmod a+x /etc/init.d/proxyup.sh
+sudo update-rc.d proxyup.sh defaults
+sudo /etc/init.d/proxyup.sh start
 ```
 
 

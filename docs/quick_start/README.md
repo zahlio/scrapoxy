@@ -16,13 +16,13 @@ See the [Node Installation Manual](https://github.com/nodejs/node-v0.x-archive/w
 ## Step 2: Install Scrapoxy from NPM
 
 ```
-$ npm install -g scrapoxy
+sudo apt-get install build-essential
 ```
 
 If it doesn't work, you can try:
 
 ```
-$ sudo apt-get install build-essential
+sudo npm install -g scrapoxy
 ```
 
 
@@ -39,7 +39,7 @@ See [Create a security group](../standard/providers/awsec2/create_security_group
 ## Step 5: Generate configuration
 
 ```
-$ scrapoxy init my-config.json
+scrapoxy init my-config.json
 ```
 
 
@@ -51,7 +51,7 @@ Edit *my-config.json* and replace *accessKeyId* and *secretAccessKey* by your cr
 ## Step 6: Start Scrapoxy
 
 ```
-$ scrapoxy start my-config.json
+scrapoxy start my-config.json -d
 ```
 
 
@@ -66,5 +66,5 @@ Scrapoxy is reachable at *http://localhost:8888*
 2. Test in a new terminal:
 
 ```
-$ scrapoxy test http://localhost:8888
+scrapoxy test http://localhost:8888
 ```

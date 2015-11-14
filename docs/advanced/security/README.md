@@ -45,20 +45,20 @@ The URL is: ```http://myuser:mypassword@localhost:8888```
 ### Step 1: Allow SSH
 
 ```
-$ sudo ufw allow ssh
+sudo ufw allow ssh
 ```
 
 ### Step 2: Allow Scrapoxy
 
 ```
-$ sudo ufw allow tcp/8888
-$ sudo ufw allow tcp/8889
+sudo ufw allow tcp/8888
+sudo ufw allow tcp/8889
 ```
 
 ### Step 3: Enable UFW
 
 ```
-$ sudo ufw enable
+sudo ufw enable
 ```
 
 Enter 'y'.
@@ -67,5 +67,5 @@ Enter 'y'.
 ### Step 4: Check UFW status and rules
 
 ```
-$ sudo ufw status
+sudo ufw status
 ```

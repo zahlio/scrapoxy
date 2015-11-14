@@ -11,14 +11,14 @@ Scrapoxy is installed with a valid configuration (see [QUICK_START](../../quick_
 ## Step 1: Install PM2
 
 ```
-$ sudo npm install -g pm2
+sudo npm install -g pm2
 ```
 
 
 ## Step 2: Launch PM2 at instance startup
 
 ```
-$ sudo pm2 startup ubuntu -u <YOUR USERNAME>
+sudo pm2 startup ubuntu -u <YOUR USERNAME>
 ```
 
 1. Replace *ubuntu* by your distribution name (see [PM2 documentation](http://pm2.keymetrics.io/docs/usage/startup/)).
@@ -45,14 +45,14 @@ Create a PM2 configuration file *scrapoxy.json5* for Scrapoxy:
 ## Step 4: Start configuration
 
 ```
-$ pm2 start scrapoxy.json5
+pm2 start scrapoxy.json5
 ```
 
 
 ## Step 5: Save configuration
 
 ```
-$ pm2 save
+pm2 save
 ```
 
 
@@ -61,7 +61,7 @@ $ pm2 save
 If you need to stop Scrapoxy in PM2:
 
 ```
-$ pm2 stop scrapoxy.json5
+pm2 stop scrapoxy.json5
 ```
 
 Warning: PM2 doesn't kill properly instances. You must delete manually.

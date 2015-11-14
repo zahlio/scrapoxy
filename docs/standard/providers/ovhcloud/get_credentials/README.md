@@ -26,7 +26,7 @@ Remember 'Application Key' and 'Application Secret'
 Use Scrapoxy to get your key: 
 
 ```
-$ scrapoxy ovh-consumerkey <endpoint> <Application Key> <Application Secret>
+scrapoxy ovh-consumerkey <endpoint> <Application Key> <Application Secret>
 ```
 
 Endpoints are :
