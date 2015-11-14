@@ -56,7 +56,7 @@ Open *my-config.json*:
       "appSecret": "YOUR APP SECRET",
       "consumerKey": "YOUR CONSUMERKEY",
       "serviceId": "YOUR SERVICEID",
-      "region": "YOUR REGION (could be: GRA1)",
+      "region": "YOUR REGION (could be: BHS1, GRA1 or SBG1)",
       "sshKeyName": "YOUR SSH KEY (could be: mykey)",
       "flavorName": "vps-ssd-1",
       "snapshotName": "YOUR SNAPSHOT NAME (could be: forward-proxy)"

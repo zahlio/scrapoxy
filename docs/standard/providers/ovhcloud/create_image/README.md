@@ -30,6 +30,8 @@ Go to OVH dashboard and select your new project.
 
 ## Step 4: Get login information
 
+When the instance is ready:
+
 1. Click on the 'v' on the top right corner
 2. Click on 'Login information'
 

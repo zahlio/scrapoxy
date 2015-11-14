@@ -18,7 +18,7 @@
 
 Remember 'Application Key' and 'Application Secret'
 
-![step_1](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/providers/ovhcloud/get_credentials/step_2.jpg)
+![step_2](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/providers/ovhcloud/get_credentials/step_2.jpg)
 
 
 ## Step 3: Get the consumerKey
@@ -34,4 +34,15 @@ Endpoints are :
 * **ovh-eu** for OVH Europe
 * **ovh-ca** for OVH North-America
 
-Remember 'consumerKey' and click on URL to validate key.
+Remember 'consumerKey' and **click on validation URL** to validate key.
+
+
+## Step 4: Add permission
+
+When you open validation URL:
+
+1. Enter ID and password
+2. Choose 'Unlimited' validity
+3. Click on 'Authorize Access'
+
+![step_3](https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/docs/standard/providers/ovhcloud/get_credentials/step_3.jpg)
