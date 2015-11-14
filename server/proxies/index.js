@@ -74,5 +74,8 @@ Main.prototype.shutdown = function shutdownFn() {
     this._master.shutdown();
     this._commander.shutdown();
 
-    return this._manager.stop();
+    return this._manager.stop()
+        .then(function() {
+            winston.info('All instances are stopped.');
+        });
 };
