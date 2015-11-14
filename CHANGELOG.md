@@ -3,6 +3,14 @@
 
 # Changelog
 
+## 2.1.1
+
+## Bug fixes
+
+- **main**: add message when all instances are stopped (at end)
+- **doc**: correct misc stuff in doc
+
+
 ## 2.1.0
 
 ## Features
