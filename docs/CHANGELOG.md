@@ -7,16 +7,30 @@
 
 ## Features
 
+- **ovh**: add OVH provider with documentation
+- **security**: add basic auth to Scrapoxy (RFC 2617)
+- **stats**: add flow stats
+- **stats**: add scale for stats (1m/1h/1d)
+- **stats**: store stats on server
+- **stats**: add globals stats
+- **doc**: split of the documentation in 3 parts: quick start, standard usage and advanced usage
+- **doc**: add tutorials for AWS / EC2
+- **gui**: add a scaling popup instead of direct edit (with integrity check)
 - **gui**: add update popup when the status of an instance changes.
 - **gui**: add error popup when GUI cannot retrieve data
-- **stability**: correct a lot of behavior to prevent instance cycling
-- **ovh**: add OVH provider
+- **logs**: write logs to disk
+- **instance**: add cloud name
+- **instance**: show instance IP
 - **instance**: always terminate an instance when stopping (prefer terminate instead of stop/start)
+- **test**: allow more than 8 requests (max 1000)
+- **ec2**: force to terminate/recreate instance instead of stop/restart
+
 
 ## Bug fixes
 
 - **gui**: emit event when scaling is changed by engine (before, event was triggered by GUI)  
-- **auth**: add working basic auth (rfc 2617)
+- **stability**: correct a lot of behavior to prevent instance cycling
+- **ec2**: use status name instead of status code
 
 
 ## 2.0.1
@@ -36,6 +50,7 @@
 ### Breaking changes
 
 - **commander**: API routes are prefixed with '/api'
+
 
 ## Features
 
