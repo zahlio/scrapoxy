@@ -3,6 +3,13 @@
 
 # Changelog
 
+## 2.1.2
+
+## Bug fixes
+
+- **gui**: correct token encoding for GUI
+
+
 ## 2.1.1
 
 ## Bug fixes
