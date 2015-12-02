@@ -1,6 +1,5 @@
 'use strict';
 
-
 module.exports = {
     proxy: {
         port: 8888,
@@ -14,6 +13,7 @@ module.exports = {
         checkDelay: 10 * 1000, // 10sec
         checkAliveDelay: 20 * 1000, // 20sec
         stopIfCrashedDelay: 5 * 60 * 1000, // 5min,
+        addProxyNameInRequest: false,
 
         autorestart: {
             minDelay: 1 * 60 * 60 * 1000, // 1h

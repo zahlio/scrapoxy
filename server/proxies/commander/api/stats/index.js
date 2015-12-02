@@ -1,41 +1,33 @@
 'use strict';
 
-var _ = require('lodash'),
-    express = require('express'),
-    tools = require('../tools');
+const Router = require('koa-router');
 
 
-module.exports = createRouter;
-
-
-////////////
-
-function createRouter(stats) {
-    var router = express.Router();
+module.exports = (stats) => {
+    const router = new Router();
 
     router.get('/', getStats);
 
-    return router;
+    return router.routes();
 
 
     ////////////
 
-    function getStats(req, res) {
-        var retention = parseRetention(req);
+    function *getStats() {
+        const retention = parseRetention(this.request.query);
 
-        var items = stats.getHistory(retention);
-
-        return res.status(200).send(items);
+        this.status = 200;
+        this.body = stats.getHistory(retention);
 
 
         ////////////
 
-        function parseRetention(req) {
-            if (!req.query || !req.query.retention) {
+        function parseRetention(q) {
+            if (!q || !q.retention) {
                 return;
             }
 
-            var i = parseInt(req.query.retention);
+            const i = parseInt(q.retention);
             if (!i) {
                 return;
             }
@@ -43,4 +35,4 @@ function createRouter(stats) {
             return i;
         }
     }
-}
+};

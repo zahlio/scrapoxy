@@ -1,5 +1,8 @@
 'use strict';
 
+const Promise = require('bluebird');
+
+
 module.exports = sequential;
 
 
@@ -12,15 +15,11 @@ function sequential(from, to, func, delay, idx) {
         return Promise.resolve();
     }
     else {
-        var item = from[idx];
+        const item = from[idx];
 
         return func(item)
-            .then(function(res) {
-                to[idx] = res;
-            })
+            .then((res) => to[idx] = res)
             .delay(delay)
-            .then(function() {
-                return sequential(from, to, func, delay, idx + 1);
-            });
+            .then(() => sequential(from, to, func, delay, idx + 1));
     }
 }

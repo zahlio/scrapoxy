@@ -1,49 +1,44 @@
 'use strict';
 
-var _ = require('lodash'),
-    express = require('express'),
+const _ = require('lodash'),
+    Router = require('koa-router'),
     tools = require('../tools');
 
 
-module.exports = createRouter;
-
-
-////////////
-
-function createRouter(config, manager) {
-    var router = express.Router();
+module.exports = (config, manager) => {
+    const router = new Router();
 
     router.get('/', getScaling);
     router.patch('/', updateScaling);
 
-    return router;
+    return router.routes();
 
 
     ////////////
 
-    function getScaling(req, res) {
-        var scaling = config.instance.scaling;
-
-        return res.status(200).send(scaling);
+    function *getScaling() {
+        this.status = 200;
+        this.body = config.instance.scaling;
     }
 
-    function updateScaling(req, res) {
-        var payload = req.body;
+    function *updateScaling() {
+        const payload = this.request.body;
 
         tools.checkScalingIntegrity(payload);
 
-        var scaling = config.instance.scaling,
+        const scaling = config.instance.scaling,
             oldScaling = _.cloneDeep(scaling);
 
-        scaling = _.merge(scaling, payload);
+        _.merge(scaling, payload);
 
         if (_.isEqual(scaling, oldScaling)) {
-            return res.sendStatus(204);
+            this.status = 204;
         }
         else {
             manager.emit('scaling:updated', scaling);
 
-            return res.status(200).send(scaling);
+            this.status = 200;
+            this.body = scaling;
         }
     }
-}
+};

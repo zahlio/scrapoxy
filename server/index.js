@@ -2,7 +2,7 @@
 
 'use strict';
 
-var _ = require('lodash'),
+const _ = require('lodash'),
     Promise = require('bluebird'),
     ProviderAWSEC2 = require('./providers/awsec2'),
     ProviderOVHCloud = require('./providers/ovhcloud'),
@@ -17,7 +17,7 @@ var _ = require('lodash'),
     TestProxy = require('./test-proxy'),
     winston = require('winston');
 
-var configDefaults = require('./config.defaults');
+const configDefaults = require('./config.defaults');
 
 
 // Add timestamp to log
@@ -33,30 +33,22 @@ program
 program
     .command('start [my-config.json]')
     .description('Start proxy with a configuration')
-    .action(function (configFilename) {
-        startProxy(configFilename)
-    });
+    .action((configFilename) => startProxy(configFilename));
 
 program
     .command('init [my-config.json]')
     .description('Create configuration file with a template')
-    .action(function (configFilename) {
-        initConfig(configFilename)
-    });
+    .action((configFilename) => initConfig(configFilename));
 
 program
     .command('test [url] [count]')
     .description('Test the proxy at url')
-    .action(function (url, count) {
-        testProxy(url, count)
-    });
+    .action((url, count) => testProxy(url, count));
 
 program
     .command('ovh-consumerkey [endpoint] [appKey] [appSecret]')
     .description('Get the OVH consumerKey')
-    .action(function (endpoint, appKey, appSecret) {
-        ovhConsumerKey(endpoint, appKey, appSecret)
-    });
+    .action((endpoint, appKey, appSecret) => ovhConsumerKey(endpoint, appKey, appSecret));
 
 
 program
@@ -74,13 +66,15 @@ function initConfig(configFilename) {
         return winston.error('Error: Config file not specified');
     }
 
-    fs.exists(configFilename, function (exists) {
+    fs.exists(configFilename, (exists) => {
         if (exists) {
             return winston.error('Error: config file already exists');
         }
 
-        template.write(configFilename, function (err) {
-            if (err) return winston.error('[Template] Cannot write template to %s', configFilename);
+        template.write(configFilename, (err) => {
+            if (err) {
+                return winston.error('[Template] Cannot write template to %s', configFilename);
+            }
 
             winston.info('Template written in %s', configFilename);
         });
@@ -96,10 +90,9 @@ function startProxy(configFilename) {
     configFilename = path.resolve(process.cwd(), configFilename);
 
     // Load config
-    var config;
+    let config;
     try {
-        var myConfig = require(configFilename);
-        config = _.merge({}, configDefaults, myConfig);
+        config = _.merge({}, configDefaults, require(configFilename));
     }
     catch (err) {
         return winston.error('Error: Cannot load config (%s)', err.toString());
@@ -108,27 +101,26 @@ function startProxy(configFilename) {
     // Write logs (if specified)
     if (config.logs && config.logs.path) {
         winston.add(winston.transports.File, {
-            filename: config.logs.path + '/scrapoxy_' + moment().format('YYYYMMDD_HHmmss') + '.log',
+            filename: `{config.logs.path}/scrapoxy_${moment().format('YYYYMMDD_HHmmss')}.log`,
             json: false,
             timestamp: true,
         });
     }
 
     // Initialize
-    var provider = getProvider(config);
+    const provider = getProvider(config);
     if (!provider) {
         return winston.error('Error: Provider is not specify or supported');
     }
 
-    var main = new Proxies(config, provider);
+    const main = new Proxies(config, provider);
 
     // Register stop event
-    sigstop(function () {
-        main.shutdown()
-            .then(function () {
-                process.exit(0);
-            });
-    });
+    sigstop(
+        () => main.shutdown().then(
+            () => process.exit(0)
+        )
+    );
 
 
     // Start
@@ -137,19 +129,20 @@ function startProxy(configFilename) {
 
     ////////////
 
-    function getProvider(config) {
-        switch (config.providers.type) {
+    function getProvider(cfg) {
+        switch (cfg.providers.type) {
             case 'ovhcloud':
             {
-                return new ProviderOVHCloud(config.providers.ovhcloud, config.instance.port);
+                return new ProviderOVHCloud(cfg.providers.ovhcloud, cfg.instance.port);
             }
 
             case 'awsec2':
             {
-                return new ProviderAWSEC2(config.providers.awsec2, config.instance.port);
+                return new ProviderAWSEC2(cfg.providers.awsec2, cfg.instance.port);
             }
 
-            default: {
+            default:
+            {
                 return;
             }
         }
@@ -165,50 +158,48 @@ function testProxy(proxyUrl, count) {
     // Default: 10 / Max: 1000
     count = Math.min(count || 10, 1000);
 
-    var testProxy = new TestProxy(proxyUrl);
+    const proxy = new TestProxy(proxyUrl);
 
-    var promises = [];
-    for (var i = 0; i < count; ++i) {
-        promises.push(testProxy.request());
+    const promises = [];
+    for (let i = 0; i < count; ++i) {
+        promises.push(proxy.request());
     }
 
     Promise
         .all(promises)
-        .then(function () {
-            winston.info('%d IPs found:', testProxy.size());
+        .then(() => {
+            winston.info('%d IPs found:', proxy.size);
 
-            _.forEach(testProxy.getCount(), function (value, key) {
-                winston.info('%s (%d times)', key, value);
-            });
+            proxy.count.forEach(
+                (value, key) => winston.info('%s (%d times)', key, value)
+            );
         })
-        .catch(function (err) {
-            winston.error('Error:', err);
-        });
+        .catch((err) => winston.error('Error:', err));
 }
 
 
 function ovhConsumerKey(endpoint, appKey, appSecret) {
-    if (!appKey || appKey.length <= 0 ||
-        !appSecret || appSecret.length <= 0) {
+    if (!appKey || appKey.length <= 0 || !appSecret || appSecret.length <= 0) {
         return winston.error('Error: appKey or appSecret not specified');
     }
 
-    var client = ovh({
-        endpoint: endpoint,
-        appKey: appKey,
-        appSecret: appSecret,
-        consumerKey: 'WFfsXEgHST3GevEmQQKK4YzpNI73UcmW',
+    const client = ovh({
+        endpoint,
+        appKey,
+        appSecret,
     });
 
     client.request('POST', '/auth/credential', {
         'accessRules': [
-            { 'method': 'GET', 'path': '/cloud/*'},
-            { 'method': 'POST', 'path': '/cloud/*'},
-            { 'method': 'PUT', 'path': '/cloud/*'},
-            { 'method': 'DELETE', 'path': '/cloud/*'}
-        ]
-    }, function (err, credential) {
-        if (err) return winston.error('Cannot get consumerKey: ', err);
+            {'method': 'GET', 'path': '/cloud/*'},
+            {'method': 'POST', 'path': '/cloud/*'},
+            {'method': 'PUT', 'path': '/cloud/*'},
+            {'method': 'DELETE', 'path': '/cloud/*'},
+        ],
+    }, (err, credential) => {
+        if (err) {
+            return winston.error('Cannot get consumerKey: ', err);
+        }
 
         winston.info('Your consumerKey is: %s', credential.consumerKey);
         winston.info('Please validate your token here: %s', credential.validationUrl);

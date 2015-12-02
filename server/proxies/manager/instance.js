@@ -1,240 +1,257 @@
 'use strict';
 
-
-var _ = require('lodash'),
+const _ = require('lodash'),
     EventEmitter = require('events').EventEmitter,
     InstanceModel = require('./instance.model'),
     pinger = require('../../common/pinger'),
-    util = require('util'),
     useragent = require('./useragent'),
     winston = require('winston');
 
 
+module.exports = class Instance extends EventEmitter {
+    constructor(manager, stats, provider, config) {
+        super();
 
-module.exports = Instance;
+        const self = this;
+
+        self._manager = manager;
+        self._stats = stats;
+        self._provider = provider;
+        self._config = config;
+
+        self._model = void 0;
+        self._alive = false;
+        self._aliveCount = void 0;
+        self._rqCount = 0;
+
+
+        // Check is alive
+        self.on('status:updated', (newstatus) => {
+            // Alive
+            if (newstatus === InstanceModel.STARTED) {
+                // Start monitor
+                winston.debug('[Instance/%s] checkAlive every %d secs', self._model.name, self._config.checkAliveDelay);
+                self._checkAliveTimeout = setInterval(() => {
+                    winston.debug('[Instance/%s] checkAlive: %s / %s', self._model.name, self._alive, self._aliveCount ? self._aliveCount : '-');
+
+                    pinger.ping(self._model.address)
+                        .then(() => {
+                            self._changeAlive(true);
+                            self._aliveCount = void 0;
+                        })
+                        .catch(() => self._changeAlive(false));
+                }, self._config.checkAliveDelay);
+            }
+            else {
+                // Stop monitor
+                if (self._checkAliveTimeout) {
+                    clearInterval(self._checkAliveTimeout);
+                    self._checkAliveTimeout = void 0;
+                }
+
+                // Set alive status
+                self._changeAlive(false);
+            }
+        });
+
+        // Autorestart
+        self.on('status:updated', (newstatus) => {
+            // Alive
+            if (newstatus === InstanceModel.STARTED) {
+                const delay = getRandomDelay(self._config.autorestart.minDelay, self._config.autorestart.maxDelay);
+                winston.debug('[Instance/%s] autorestart in %d secs', self._model.name, delay);
+                self._checkRestartTimeout = setTimeout(autorestart, delay);
+            }
+            else if (self._checkRestartTimeout) {
+                clearTimeout(self._checkRestartTimeout);
+                self._checkRestartTimeout = void 0;
+            }
+        });
+
+        // Change user agent
+        self.on('status:updated', (newstatus) => {
+            // Alive
+            if (newstatus === InstanceModel.STARTED) {
+                // Set useragent
+                self._useragent = useragent.generateBrowser();
+                //self._useragent = useragent.generateBot();
+            }
+            else {
+                // Unset useragent
+                self._useragent = void 0;
+            }
+        });
+
+        // Remove instance on error
+        self.on('status:updated', (newstatus) => {
+            // Error
+            if (newstatus === InstanceModel.ERROR) {
+                self._provider.removeInstance(self._model)
+                    .catch((err) => winston.error('[Instance/%s] error: ', self._model.name, err));
+            }
+        });
+
+        // Restart instance if stopped
+        self.on('status:updated', (newstatus) => {
+            // Restart if stopped
+            if (newstatus === InstanceModel.STOPPED) {
+                self._provider.startInstance(self._model)
+                    .catch((err) => winston.error('[Instance/%s] error: ', self._model.name, err));
+            }
+        });
+
+        // Count stopped instances
+        self.on('alive:updated', (alive) => {
+            if (!alive) {
+                self._stats.addRqCount(self._rqCount);
+                self._rqCount = 0;
+            }
+        });
+
+        // Remove crashed instance
+        self.on('alive:updated', (alive) => {
+            // Crash timer
+            if (alive) {
+                winston.debug('[Instance/%s] alive is up => timer stop', self._model.name);
+                if (self._checkStopIfCrashedTimeout) {
+                    clearTimeout(self._checkStopIfCrashedTimeout);
+                    self._checkStopIfCrashedTimeout = void 0;
+                }
+            }
+            else {
+                winston.debug('[Instance/%s] alive is down => timer start', self._model.name);
+                self._checkStopIfCrashedTimeout = setTimeout(() => {
+                    winston.debug('[Instance/%s] stopIfCrashed', self._model.name);
+
+                    if (self._model.status === InstanceModel.STARTED) {
+                        self.remove()
+                            .catch((err) => winston.error('[Instance/%s] error: ', self._model.name, err));
+                    }
+                }, self._config.stopIfCrashedDelay);
+            }
+        });
+
+
+        ////////////
+
+        function autorestart() {
+            winston.debug('[Instance/%s] autorestart', self._model.name);
+
+            if (self._model.status === InstanceModel.STARTED) {
+                if (self._manager.aliveInstances.length > 1) {
+                    self.remove()
+                        .catch((err) => winston.error('[Instance/%s] error: ', self._model.name, err));
+                }
+                else {
+                    const delay = Math.floor(
+                        self._config.autorestart.minDelay +
+                        Math.random() * (self._config.autorestart.maxDelay - self._config.autorestart.minDelay)
+                    );
+
+                    winston.debug('[Instance/%s] autorestart cancelled (only 1 instance). restarting in %d secs...', self._model.name, delay);
+
+                    self._checkRestartTimeout = setTimeout(autorestart, delay);
+                }
+            }
+        }
+    }
+
+
+    get name() {
+        return this._model.name;
+    }
+
+
+    get model() {
+        return this._model;
+    }
+
+    set model(model) {
+        const oldstatus = this._model ? this._model.status : void 0;
+
+        this._model = model;
+
+        if (this._model.status !== oldstatus) {
+            this.emit('status:updated', this._model.status, oldstatus);
+        }
+    }
+
+
+    get proxyParameters() {
+        const address = this._model.address;
+
+        return {
+            'hostname': address.hostname,
+            'port': address.port,
+            'username': this._config.username,
+            'password': this._config.password,
+        };
+    }
+
+
+    get stats() {
+        return _.merge({}, this._model.stats, {
+            alive: this._alive,
+            useragent: this._useragent,
+        });
+    }
+
+
+    removedFromManager() {
+        this._model.status = InstanceModel.REMOVED;
+
+        this.emit('status:updated', InstanceModel.REMOVED, this._model.status);
+    }
+
+
+    remove() {
+        this._changeAlive(false);
+
+        return this._provider.removeInstance(this._model);
+    }
+
+
+    updateRequestHeaders(headers) {
+        headers['user-agent'] = this._useragent;
+
+        if (this._config.addProxyNameInRequest) {
+            headers['x-cache-proxyname'] = this.name;
+        }
+        else {
+            delete headers['x-cache-proxyname'];
+        }
+    }
+
+
+    updateResponseHeaders(headers) {
+        headers['x-cache-proxyname'] = this.name;
+    }
+
+
+    incrRequest() {
+        ++this._rqCount;
+    }
+
+
+    toString() {
+        return this._model.toString();
+    }
+
+
+    _changeAlive(alive) {
+        winston.debug('[Instance/%s] changeAlive: %s => %s', this._model.name, this._alive, alive);
+
+        if (this._alive !== alive) {
+            this._alive = alive;
+
+            this.emit('alive:updated', alive);
+        }
+    }
+};
 
 
 ////////////
 
-function Instance(manager, stats, provider, config) {
-    var self = this;
-
-    EventEmitter.call(self);
-
-    self._manager = manager;
-    self._stats = stats;
-    self._provider = provider;
-    self._config = config;
-
-    self._model = null;
-    self._alive = false;
-    self._aliveCount = void 0;
-    self._rqCount = 0;
-
-
-    // Register event
-    self.on('status:updated', function(newstatus) {
-        // Alive
-        if (newstatus === InstanceModel.STARTED) {
-            // Start monitor
-            winston.debug('[Instance/%s] checkAlive every %d secs', self._model.getName(), self._config.checkAliveDelay);
-            self._checkAliveTimeout = setInterval(checkAlive, self._config.checkAliveDelay);
-
-            var delay = Math.floor(self._config.autorestart.minDelay +  Math.random() * (self._config.autorestart.maxDelay - self._config.autorestart.minDelay));
-            winston.debug('[Instance/%s] autorestart in %d secs', self._model.getName(), delay);
-            self._checkRestartTimeout = setTimeout(autorestart, delay);
-
-            // Set useragent
-            self._useragent = useragent.generateBrowser();
-            //self._useragent = useragent.generateBot();
-        }
-        else {
-            // Stop monitor
-            if (self._checkAliveTimeout) {
-                clearInterval(self._checkAliveTimeout);
-                self._checkAliveTimeout = void 0;
-            }
-
-            if (self._checkRestartTimeout) {
-                clearTimeout(self._checkRestartTimeout);
-                self._checkRestartTimeout = void 0;
-            }
-
-            // Unset useragent
-            self._useragent = void 0;
-
-            // Set alive status
-            self._changeAlive(false);
-        }
-
-        // Error
-        if (newstatus === InstanceModel.ERROR) {
-            self._provider.deleteInstance(self._model)
-                .catch(function(err) {
-                    winston.error('[Instance/%s] error: ', self._model.getName(), err);
-                });
-        }
-
-        // Restart if stopped
-        if (newstatus === InstanceModel.STOPPED) {
-            self._provider.startInstance(self._model)
-                .catch(function(err) {
-                    winston.error('[Instance/%s] error: ', self._model.getName(), err);
-                });
-        }
-    });
-
-    // Crash
-    self.on('alive:updated', function(alive) {
-        // Count stopped instances
-        if (!alive) {
-            self._stats.addRqCount(self._rqCount);
-            self._rqCount = 0;
-        }
-
-        // Crash timer
-        if (alive) {
-            winston.debug('[Instance/%s] alive is up => timer stop', self._model.getName());
-            if (self._checkStopIfCrashedTimeout) {
-                clearTimeout(self._checkStopIfCrashedTimeout);
-                self._checkStopIfCrashedTimeout = void 0;
-            }
-        }
-        else {
-            winston.debug('[Instance/%s] alive is down => timer start', self._model.getName());
-            self._checkStopIfCrashedTimeout = setTimeout(stopIfCrashed, self._config.stopIfCrashedDelay);
-        }
-    });
-
-
-    ////////////
-
-    function checkAlive() {
-        winston.debug('[Instance/%s] checkAlive: %s / %s', self._model.getName(), self._alive, (self._aliveCount ? self._aliveCount : '-'));
-
-        pinger.ping(self._model.getAddress())
-            .then(function() {
-                self._changeAlive(true);
-                self._aliveCount = void 0;
-            })
-            .catch(function() {
-                self._changeAlive(false);
-            });
-    }
-
-    function autorestart() {
-        winston.debug('[Instance/%s] autorestart', self._model.getName());
-
-        if (self._model.hasStatus(InstanceModel.STARTED)) {
-            if (self._manager.getAliveInstances().length > 1) {
-                winston.debug('[Instance/%s] autorestart => cancelled (only 1 instance)', self._model.getName());
-
-                self.delete()
-                    .catch(function(err) {
-                        winston.error('[Instance/%s] error: ', self._model.getName(), err);
-                    });
-            }
-            else {
-                var delay = Math.floor(self._config.autorestart.minDelay +  Math.random() * (self._config.autorestart.maxDelay - self._config.autorestart.minDelay));
-
-                winston.debug('[Instance/%s] autorestarting in %d secs...', self._model.getName(), delay);
-
-                self._checkRestartTimeout = setTimeout(autorestart, delay);
-            }
-        }
-    }
-
-    function stopIfCrashed() {
-        winston.debug('[Instance/%s] stopIfCrashed', self._model.getName());
-
-        if (self._model.hasStatus(InstanceModel.STARTED)) {
-            self.delete()
-                .catch(function(err) {
-                    winston.error('[Instance/%s] error: ', self._model.getName(), err);
-                });
-        }
-    }
+function getRandomDelay(min, max) {
+    return Math.floor(min + Math.random() * (max - min));
 }
-util.inherits(Instance, EventEmitter);
-
-
-Instance.prototype.getName = function getNameFn() {
-    return this._model.getName();
-};
-
-
-Instance.prototype.getModel = function getModelFn() {
-    return this._model;
-};
-
-
-Instance.prototype.getProxyParameters = function getProxyParametersFn() {
-    var address = this._model.getAddress();
-
-    return {
-        'hostname': address.hostname,
-        'port': address.port,
-        'username': this._config.username,
-        'password': this._config.password,
-    };
-};
-
-
-Instance.prototype.setModel = function setModelFn(model) {
-    var oldstatus = this._model ? this._model.getStatus() : void 0;
-
-    this._model = model;
-
-    if (!this._model.hasStatus(oldstatus)) {
-        this.emit('status:updated', this._model.getStatus(), oldstatus);
-    }
-};
-
-Instance.prototype._changeAlive = function _changeAliveFn(alive) {
-    winston.debug('[Instance/%s] changeAlive: %s => %s', this._model.getName(), this._alive, alive);
-
-    if (this._alive !== alive) {
-        this._alive = alive;
-
-        this.emit('alive:updated', alive);
-    }
-};
-
-
-Instance.prototype.removedFromManager = function removedFromManagerFn() {
-    this._model.setStatus(InstanceModel.REMOVED);
-
-    this.emit('status:updated', InstanceModel.REMOVED, this._model.getStatus());
-};
-
-
-Instance.prototype.delete = function deleteFn() {
-    this._changeAlive(false);
-
-    return this._provider.deleteInstance(this._model);
-};
-
-
-Instance.prototype.getStats = function getStatsFn() {
-    return _.assign(this._model.getStats(), {
-        alive: this._alive,
-        useragent: this._useragent,
-    });
-};
-
-
-Instance.prototype.updateHeaders = function updateHeadersFn(req) {
-    req.headers['user-agent'] = this._useragent;
-
-    delete req.headers['x-cache-proxyname'];
-};
-
-
-Instance.prototype.incrRequest = function incrRequestFn() {
-    ++this._rqCount;
-};
-
-
-Instance.prototype.toString = function toStringFn() {
-    return this._model.toString();
-};

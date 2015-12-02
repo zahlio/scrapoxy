@@ -1,20 +1,19 @@
 'use strict';
 
-var _ = require('lodash'),
+const _ = require('lodash'),
     Promise = require('bluebird'),
+    expect = require('chai').expect,
     Proxies = require('../server/proxies'),
-    sequential = require('./sequential'),
-    simplerequest = require('./simplerequest'),
-    should = require('should'),
-    winston = require('winston');
+    sequential = require('./common/sequential'),
+    simplerequest = require('./common/simplerequest'),
+    TestServer = require('./test-server');
 
-var config = require('./config'),
-    app = require('./test-server'),
+const config = require('./config'),
     provider = require('./provider');
 
 
 // Proxy config
-var proxy = {
+const proxy = {
     hostname: '127.0.0.1',
     port: config.proxy.port,
     //username: config.proxy.auth.username,
@@ -22,67 +21,66 @@ var proxy = {
 };
 
 
-describe('test load with proxies', function() {
+describe('test load with proxies', function desc() {
     this.timeout(4 * 60 * 1000);
 
-    var proxies;
+    const server = new TestServer();
+    let proxies;
 
-    before(function() {
+    before(() => {
+        server.start();
+
         proxies = new Proxies(config, provider);
 
         return proxies.listenAndWait();
     });
 
-    after(function() {
-        return proxies.shutdown();
+    after(() => {
+        proxies.shutdown();
+
+        server.stop();
     });
 
-    it('should have enough good requests', function(done) {
-        //var urls = new Array(10 * 1000);
-        var urls = new Array(7 * 1000);
+    it('should have enough good requests', (done) => {
+        const urls = new Array(7 * 1000);
         _.fill(urls, config.test.mirror);
 
-        var chunks =_.chunk(urls, 50);
-        var result = new Array(chunks.length);
+        const chunks = _.chunk(urls, 50);
+        const result = new Array(chunks.length);
 
-        sequential(chunks, result, function(chunk) {
-            return Promise.map(chunk, function(url) {
-                return simplerequest.putWithProxy(url, {}, proxy)
-                    .then(function (response) {
-                        return response.statusCode;
-                    })
-                    .catch(function() {
-                        return 999;
-                    })
-                    .then(function(status) {
-                        return status;
-                    });
-            });
-        }, 50, 0)
-            .then(function() {
-                var count = _(result)
+        sequential(chunks, result,
+            (chunk) => Promise
+                .map(chunk,
+                (url) => simplerequest
+                    .putWithProxy(url, {}, proxy)
+                    .then((response) => response.statusCode)
+                    .catch(() => 999)
+                    .then((status) => status)
+            )
+            , 50, 0)
+            .then(() => {
+                const count = _(result)
                     .flatten()
                     .countBy()
                     .value();
 
-                var total = _(count)
+                const total = _(count)
                     .values()
                     .sum();
 
-                var count = _(count)
+                const countCode = _(count)
                     .pairs()
-                    .map(function(d) {
-                        return {
-                            code: d[0],
-                            count: d[1],
-                            rate: Math.round((100.0 * d[1]) / total),
-                        };
+                    .map((d) => ({
+                        code: d[0],
+                        count: d[1],
+                        rate: Math.round(100.0 * d[1] / total),
                     })
+                )
                     .indexBy('code')
                     .value();
 
                 // min 90% of response statuses must be 200
-                count['200'].rate.should.be.above(90);
+                expect(countCode['200'].rate).to.be.above(90);
 
                 done();
             });

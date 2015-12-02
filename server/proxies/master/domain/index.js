@@ -1,11 +1,11 @@
 'use strict';
 
-var url = require('url');
+const url = require('url');
 
 
 module.exports = {
-    getBaseDomainForUri: getBaseDomainForUri,
-    convertHostnamePathToUri: convertHostnamePathToUri,
+    getBaseDomainForUri,
+    convertHostnamePathToUri,
 };
 
 
@@ -16,7 +16,7 @@ function getBaseDomainForUri(uri) {
         return;
     }
 
-    var urlOpts = url.parse(uri);
+    const urlOpts = url.parse(uri);
     if (!urlOpts.hostname) {
         return;
     }
@@ -35,30 +35,31 @@ function getBaseDomainForUri(uri) {
     }
 
     function getMasterDomain(hostname) {
-        var part = hostname.split('.');
+        const part = hostname.split('.');
         if (part.length < 2) {
             return hostname;
         }
 
-        return part[part.length - 2] + '.' + part[part.length - 1];
+        return `${part[part.length - 2]}.${part[part.length - 1]}`;
     }
 }
 
+
 function convertHostnamePathToUri(hostname, path) {
     if (hostname) {
-        var urlOpts = {
+        const urlOpts = {
             protocol: 'http',
-            hostname: hostname
+            hostname,
         };
 
-        var base = url.format(urlOpts);
+        const base = url.format(urlOpts);
 
         if (path) {
             return url.resolve(base, path);
-        } else {
-            return base;
         }
-    } else {
-        return path;
+
+        return base;
     }
+
+    return path;
 }

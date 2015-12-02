@@ -1,54 +1,49 @@
 'use strict';
 
-var Promise = require('bluebird'),
+const Promise = require('bluebird'),
     http = require('http'),
     querystring = require('querystring'),
-    url = require('url');
+    url = require('url'),
+    winston = require('winston');
 
 
-var agent = new http.Agent();
+const agent = new http.Agent();
 
 
 module.exports = {
-    getWithProxy: getWithProxy,
-    postWithProxy: postWithProxy,
-    putWithProxy: putWithProxy,
+    getWithProxy,
+    postWithProxy,
+    putWithProxy,
 };
 
 
 ////////////
 
 function getWithProxy(uri, proxy) {
-    return new Promise(function(resolve, reject) {
-        var srvUrl = url.parse(uri);
+    return new Promise((resolve, reject) => {
+        const srvUrl = url.parse(uri);
 
-        var opts = {
+        const opts = {
             hostname: proxy.hostname,
             port: proxy.port,
             method: 'GET',
             path: uri,
-            agent: agent,
+            agent,
             headers: {
                 Host: srvUrl.host,
-            }
+            },
         };
 
         addAuthToOptsIfNecessary(proxy, opts);
 
-        var req = http.request(opts, function(res) {
-            var chunks = [];
+        const req = http.request(opts, (res) => {
+            const chunks = [];
 
-            res.setEncoding('utf8');
+            res.on('error', (err) => reject(err));
 
-            res.on('error', function(err) {
-                reject(err);
-            });
+            res.on('data', (chunk) => chunks.push(chunk));
 
-            res.on('data', function(chunk) {
-                chunks.push(chunk);
-            });
-
-            res.on('end', function() {
+            res.on('end', () => {
                 res.body = Buffer.concat(chunks).toString();
 
                 try {
@@ -62,9 +57,7 @@ function getWithProxy(uri, proxy) {
             });
         });
 
-        req.on('error', function(err) {
-            reject(err);
-        });
+        req.on('error', (err) => reject(err));
 
         req.end();
     });
@@ -79,42 +72,38 @@ function putWithProxy(uri, data, proxy) {
 }
 
 function _postPutWithProxyImpl(method, uri, data, proxy) {
-    return new Promise(function(resolve, reject) {
-        var rawData = querystring.stringify(data);
+    return new Promise((resolve, reject) => {
+        const rawData = querystring.stringify(data);
 
-        var srvUrl = url.parse(uri);
+        const srvUrl = url.parse(uri);
 
-        var opts = {
+        const opts = {
             hostname: proxy.hostname,
             port: proxy.port,
-            method: method,
+            method,
             path: uri,
-            agent: agent,
+            agent,
             headers: {
                 'Host': srvUrl.host,
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Content-Length': Buffer.byteLength(rawData),
-            }
+            },
         };
 
         addAuthToOptsIfNecessary(proxy, opts);
 
-        var req = http.request(opts, function(res) {
-            var chunks = [];
+        const req = http.request(opts, (res) => {
+            const chunks = [];
 
-            res.setEncoding('utf8');
-
-            res.on('error', function(err) {
-                console.log('[SR] res error');
+            res.on('error', (err) => {
+                winston.error('[SR] res error');
 
                 reject(err);
             });
 
-            res.on('data', function(chunk) {
-                chunks.push(chunk);
-            });
+            res.on('data', (chunk) => chunks.push(chunk));
 
-            res.on('end', function() {
+            res.on('end', () => {
                 res.body = Buffer.concat(chunks).toString();
 
                 try {
@@ -128,8 +117,8 @@ function _postPutWithProxyImpl(method, uri, data, proxy) {
             });
         });
 
-        req.on('error', function(err) {
-            console.log('[SR] req error');
+        req.on('error', (err) => {
+            winston.error('[SR] req error');
 
             reject(err);
         });
@@ -141,6 +130,7 @@ function _postPutWithProxyImpl(method, uri, data, proxy) {
 
 function addAuthToOptsIfNecessary(proxy, opts) {
     if (proxy.username && proxy.password) {
-        opts.headers['Proxy-Authorization'] = 'Basic ' + new Buffer(proxy.username + ':' + proxy.password).toString('base64');
+        const usernamePasswordB64 = new Buffer(`${proxy.username}:${proxy.password}`).toString('base64');
+        opts.headers['Proxy-Authorization'] = new Buffer(`Basic ${usernamePasswordB64}`);
     }
 }

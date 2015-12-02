@@ -1,15 +1,14 @@
 'use strict';
 
-
 module.exports = {
-    generateBrowser: generateBrowser,
-    generateBot: generateBot,
+    generateBrowser,
+    generateBot,
 };
 
 
 ////////////
 
-var browsersUA = [
+const browsersUA = [
     'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.1 Safari/537.36',
     'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36',
@@ -48,13 +47,11 @@ var browsersUA = [
 ];
 
 function generateBrowser() {
-    return browsersUA[
-        Math.floor(Math.random() * browsersUA.length)
-    ];
+    return browsersUA[Math.floor(Math.random() * browsersUA.length)];
 }
 
 
-var botsUA = [
+const botsUA = [
     'Googlebot/2.1 (+http://www.googlebot.com/bot.html)',
     //'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)',
     //'Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)',
@@ -62,8 +59,6 @@ var botsUA = [
 ];
 
 function generateBot() {
-    return botsUA[
-        Math.floor(Math.random() * botsUA.length)
-        ];
+    return botsUA[Math.floor(Math.random() * botsUA.length)];
 }
 

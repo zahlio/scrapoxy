@@ -1,353 +1,334 @@
 'use strict';
 
-
-var _ = require('lodash'),
+const _ = require('lodash'),
     Promise = require('bluebird'),
     EventEmitter = require('events').EventEmitter,
     Instance = require('./instance'),
-    util = require('util'),
     winston = require('winston');
 
 
-module.exports = ProxiesManager;
+module.exports = class Manager extends EventEmitter {
+    constructor(config, stats, provider) {
+        super();
 
+        this._config = config;
+        this._stats = stats;
+        this._provider = provider;
 
-/////////
+        this._managedInstances = new Map();
+        this._aliveInstances = [];
+        this._aliveInstancesMap = new Map();
 
-function ProxiesManager(config, stats, provider) {
-    EventEmitter.call(this);
+        this._domains = new Map();
 
-    this._config = config;
-    this._stats = stats;
-    this._provider = provider;
-
-    this._managedInstances = {};
-    this._aliveInstances = [];
-    this._aliveInstancesMap = {};
-
-    this._domains = {};
-
-    this._config.scaling.required = this._config.scaling.required || this._config.scaling.min;
-}
-util.inherits(ProxiesManager, EventEmitter);
-
-
-ProxiesManager.prototype.getInstances = function getInstances() {
-    return _.values(this._managedInstances);
-};
-
-
-ProxiesManager.prototype.getAliveInstances = function getAliveInstancesFn() {
-    return this._aliveInstances;
-};
-
-
-ProxiesManager.prototype.waitForAliveInstances = function waitForAliveInstancesFn(count) {
-    var self = this;
-
-    winston.debug('[ProxiesManager] waitForAliveInstances: count=%d', count);
-
-    if (self._aliveInstances.length === count) {
-        return Promise.resolve();
+        this._config.scaling.required = this._config.scaling.required || this._config.scaling.min;
     }
-    else {
-        return Promise.delay(2000)
-            .then(function() {
-                return self.waitForAliveInstances(count);
-            });
+
+
+    get instances() {
+        return Array.from(this._managedInstances.values());
     }
-};
 
 
-ProxiesManager.prototype.start = function startFn() {
-    var self = this;
-
-    winston.debug('[ProxiesManager] start');
-
-    self._checkIntervalTimeout = setInterval(checkInstances, self._config.checkDelay);
+    get aliveInstances() {
+        return this._aliveInstances;
+    }
 
 
-    ////////////
+    get stats() {
+        return this.instances.map((i) => i.stats);
+    }
 
-    function checkInstances() {
-        winston.debug('[ProxiesManager] checkInstances');
 
-        self._provider.getModels()
-            .then(updateInstances)
-            .then(adjustInstances)
-            .catch(function(err) {
-                winston.error('[ProxiesManager] error: ', err);
+    waitForAliveInstances(count) {
+        winston.debug('[Manager] waitForAliveInstances: count=%d', count);
+
+        if (this._aliveInstances.length === count) {
+            return Promise.resolve();
+        }
+        else {
+            return Promise
+                .delay(2000)
+                .then(() => this.waitForAliveInstances(count));
+        }
+    }
+
+
+    start() {
+        const self = this;
+
+        winston.debug('[Manager] start');
+
+        self._checkIntervalTimeout = setInterval(checkInstances, self._config.checkDelay);
+
+
+        ////////////
+
+        function checkInstances() {
+            winston.debug('[Manager] checkInstances');
+
+            self._provider.models
+                .then(updateInstances)
+                .then(adjustInstances)
+                .catch((err) => winston.error('[Manager] error: ', err));
+
+
+            ////////////
+
+            function updateInstances(models) {
+                const existingNames = Array.from(self._managedInstances.keys());
+
+                models.forEach((model) => {
+                    const name = model.name;
+
+                    let instance = self._managedInstances.get(name);
+                    if (instance) {
+                        // Modify
+                        instance.model = model;
+
+                        const idx = existingNames.indexOf(name);
+                        if (idx >= 0) {
+                            existingNames.splice(idx, 1);
+                        }
+                    }
+                    else {
+                        // Add
+                        winston.debug('[Manager] checkInstances: add: ', model.toString());
+
+                        instance = new Instance(self, self._stats, self._provider, self._config);
+                        self._managedInstances.set(name, instance);
+
+                        registerEvents(instance);
+
+                        instance.model = model;
+                    }
+                });
+
+                // Remove
+                existingNames.forEach((name) => {
+                    const instance = self._managedInstances.get(name);
+
+                    winston.debug('[Manager] checkInstances: remove: ', instance.model.toString());
+
+                    self._managedInstances.delete(name);
+
+                    instance.removedFromManager();
+                });
+            }
+
+            function registerEvents(instance) {
+                instance.on('status:updated', () => self.emit('status:updated', instance.stats));
+
+                instance.on('alive:updated', (alive) => {
+                    const name = instance.name;
+                    if (alive) {
+                        self._aliveInstances.push(instance);
+                        self._aliveInstancesMap.set(name, instance);
+                    }
+                    else {
+                        const idx = self._aliveInstances.indexOf(instance);
+                        if (idx >= 0) {
+                            self._aliveInstances.splice(idx, 1);
+                        }
+
+                        self._aliveInstancesMap.delete(name);
+                    }
+
+                    self.emit('alive:updated', instance.stats);
+                });
+            }
+
+            function adjustInstances() {
+                const managedCount = self._managedInstances.size;
+                winston.debug('[Manager] adjustInstances: required:%d / actual:%d', self._config.scaling.required, managedCount);
+
+                if (managedCount > self._config.scaling.required) {
+                    // Too much
+                    const count = managedCount - self._config.scaling.required;
+
+                    winston.debug('[Manager] adjustInstances: remove %d instances', count);
+
+                    const models = _(Array.from(self._managedInstances.values()))
+                        .takeRight(count)
+                        .map((instance) => instance.model) // get function
+                        .value();
+
+                    return self._provider.removeInstances(models);
+                }
+                else if (managedCount < self._config.scaling.required) {
+                    // Not enough
+                    const count = self._config.scaling.required - managedCount;
+
+                    winston.debug('[Manager] adjustInstances: add %d instances', count);
+
+                    return self._provider.createInstances(count);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * For testing purpose
+     */
+    crashRandomInstance() {
+        const names = Array.from(this._managedInstances.keys());
+
+        const randomName = names[Math.floor(Math.random() * names.length)];
+
+        winston.debug('[Manager] crashRandomInstance: name=%s', randomName);
+
+        const instance = this._managedInstances.get(randomName);
+
+        return this._provider.removeInstances([instance.model]);
+    }
+
+
+    stop() {
+        const self = this;
+
+        winston.debug('[Manager] stop');
+
+        self._config.scaling.required = 0;
+        self.emit('scaling:updated', self._config.scaling);
+
+        return waitForNoInstance()
+            .then(() => {
+                if (self._checkIntervalTimeout) {
+                    clearInterval(self._checkIntervalTimeout);
+                }
             });
 
 
         ////////////
 
-        function updateInstances(models) {
-            var existingNames = _.keys(self._managedInstances);
+        function waitForNoInstance() {
+            return new Promise((resolve) => {
+                checkNoInstance();
 
-            models.forEach(function(model) {
-                var name = model.getName();
 
-                var instance = self._managedInstances[name];
-                if (instance) {
-                    // Modify
-                    instance.setModel(model);
+                ////////////
 
-                    var idx = existingNames.indexOf(name);
-                    if (idx >= 0) {
-                        existingNames.splice(idx, 1);
+                function checkNoInstance() {
+                    const managedCount = self._managedInstances.size;
+                    if (managedCount <= 0) {
+                        resolve();
+                    }
+                    else {
+                        setTimeout(checkNoInstance, self._config.checkDelay);
                     }
                 }
-                else {
-                    // Add
-                    winston.debug('[ProxiesManager] checkInstances: add: ', model.toString());
-
-                    instance = new Instance(self, self._stats, self._provider, self._config);
-                    self._managedInstances[name] = instance;
-
-                    registerEvents(instance);
-
-                    instance.setModel(model);
-                }
-            });
-
-            // Remove
-            existingNames.forEach(function(name) {
-                var instance = self._managedInstances[name];
-
-                winston.debug('[ProxiesManager] checkInstances: remove: ', instance.getModel().toString());
-
-                delete self._managedInstances[name];
-
-                instance.removedFromManager();
             });
         }
-
-        function registerEvents(instance) {
-            instance.on('status:updated', function() {
-                self.emit('status:updated', instance.getStats());
-            });
-
-            instance.on('alive:updated', function(alive) {
-                var name = instance.getName();
-                if (alive) {
-                    self._aliveInstances.push(instance);
-                    self._aliveInstancesMap[name] = instance;
-                }
-                else {
-                    var idx = self._aliveInstances.indexOf(instance);
-                    if (idx >= 0) {
-                        self._aliveInstances.splice(idx, 1);
-                    }
-
-                    delete self._aliveInstancesMap[name];
-                }
-
-                self.emit('alive:updated', instance.getStats());
-            });
-        }
-
-        function adjustInstances() {
-            var managedCount = Object.keys(self._managedInstances).length;
-            winston.debug('[ProxiesManager] adjustInstances: required:%d / actual:%d', self._config.scaling.required, managedCount);
-
-            if (managedCount > self._config.scaling.required) {
-                // Too much
-                var count = managedCount - self._config.scaling.required;
-
-                winston.debug('[ProxiesManager] adjustInstances: remove %d instances', count);
-
-                var models = _(self._managedInstances)
-                    .values()
-                    .takeRight(count)
-                    .map(function(instance) { return instance.getModel(); })
-                    .value();
-
-                return self._provider.deleteInstances(models);
-            }
-            else if (managedCount < self._config.scaling.required) {
-                // Not enough
-                var count = self._config.scaling.required - managedCount;
-
-                winston.debug('[ProxiesManager] adjustInstances: add %d instances', count);
-
-                return self._provider.createInstances(count);
-            }
-        }
-    }
-};
-
-
-/**
- * For testing purpose
- */
-ProxiesManager.prototype.crashRandomInstance = function crashRandomInstanceFn() {
-    var names = _.keys(this._managedInstances);
-
-    var randomName = names[Math.floor(Math.random() * names.length)];
-
-    winston.debug('[ProxiesManager] crashRandomInstance: name=%s', randomName);
-
-    var instance = this._managedInstances[randomName];
-
-    return this._provider.deleteInstances([instance.getModel()]);
-};
-
-
-ProxiesManager.prototype.stop = function stopFn() {
-    var self = this;
-
-    winston.debug('[ProxiesManager] stop');
-
-    self._config.scaling.required = 0;
-    self.emit('scaling:updated', self._config.scaling);
-
-    return waitForNoInstance()
-        .then(function() {
-            if (self._checkIntervalTimeout) {
-                clearInterval(self._checkIntervalTimeout);
-            }
-        });
-
-
-    ////////////
-
-    function waitForNoInstance() {
-        return new Promise(function(resolve, reject) {
-            checkNoInstance();
-
-
-            ////////////
-
-            function checkNoInstance() {
-                var managedCount = Object.keys(self._managedInstances).length;
-                if (managedCount <= 0) {
-                    resolve();
-                }
-                else {
-                    setTimeout(checkNoInstance, self._config.checkDelay);
-                }
-            }
-        });
-    }
-};
-
-
-ProxiesManager.prototype.getNextRunningInstanceForDomain = function getNextRunningInstanceForDomainFn(domain, forceName) {
-    var self = this;
-
-    if (self._aliveInstances.length <= 0) {
-        return;
     }
 
-    domain = domain || '';
 
-    var nextInstance;
-    if (forceName) {
-        nextInstance = self._aliveInstancesMap[forceName];
-    }
+    getNextRunningInstanceForDomain(domain, forceName) {
+        const self = this;
 
-    if (!nextInstance) {
-        var actualInstance = self._domains[domain];
-
-        nextInstance = getNextRunningInstance(actualInstance);
-    }
-
-    self._domains[domain] = nextInstance;
-
-    return nextInstance;
-
-
-    ////////////
-
-    function getNextRunningInstance(instance) {
         if (self._aliveInstances.length <= 0) {
             return;
         }
 
-        var idx;
-        if (instance) {
-            idx = self._aliveInstances.indexOf(instance);
-            if (idx >= 0) {
-                ++idx;
-                if (idx >= self._aliveInstances.length) {
+        domain = domain || '';
+
+        let nextInstance;
+        if (forceName) {
+            nextInstance = self._aliveInstancesMap.get(forceName);
+        }
+
+        if (!nextInstance) {
+            const actualInstance = self._domains.get(domain);
+
+            nextInstance = getNextRunningInstance(actualInstance);
+        }
+
+        self._domains.set(domain, nextInstance);
+
+        return nextInstance;
+
+
+        ////////////
+
+        function getNextRunningInstance(instance) {
+            if (self._aliveInstances.length <= 0) {
+                return;
+            }
+
+            let idx;
+            if (instance) {
+                idx = self._aliveInstances.indexOf(instance);
+                if (idx >= 0) {
+                    ++idx;
+                    if (idx >= self._aliveInstances.length) {
+                        idx = 0;
+                    }
+                }
+                else {
                     idx = 0;
                 }
             }
             else {
                 idx = 0;
             }
-        }
-        else {
-            idx = 0;
-        }
 
-        if (idx >= self._aliveInstances.length) {
+            if (idx >= self._aliveInstances.length) {
+                return;
+            }
+
+            return self._aliveInstances[idx];
+        }
+    }
+
+
+    /*
+    getFirstInstance(forceName) {
+        if (this._aliveInstances.length <= 0) {
             return;
         }
 
-        return self._aliveInstances[idx];
+        let nextInstance;
+        if (forceName) {
+            nextInstance = this._aliveInstancesMap.get(forceName);
+        }
+
+        if (!nextInstance) {
+            nextInstance = this._aliveInstances[0];
+        }
+
+        return nextInstance;
     }
-};
-
-ProxiesManager.prototype.getFirstInstance = function getFirstInstanceFn(forceName) {
-    var self = this;
-
-    if (self._aliveInstances.length <= 0) {
-        return;
-    }
-
-    var nextInstance;
-    if (forceName) {
-        nextInstance = self._aliveInstancesMap[forceName];
-    }
-
-    if (!nextInstance) {
-        nextInstance = self._aliveInstances[0];
-    }
-
-    return nextInstance;
-};
+    */
 
 
-ProxiesManager.prototype.getInstancesStats = function getInstancesStatsFn() {
-    winston.debug('[ProxiesManager] getInstancesStats');
+    requestReceived() {
+        if (this._config.scaling.required <= 0) {
+            // Shutdown
+            return;
+        }
 
-    return _.map(this._managedInstances, function(instance) {
-        return instance.getStats();
-    });
-};
+        if (this._config.scaling.required !== this._config.scaling.max) {
+            this._config.scaling.required = this._config.scaling.max;
+            this.emit('scaling:updated', this._config.scaling);
+        }
 
+        if (this._scaleDownTimeout) {
+            clearTimeout(this._scaleDownTimeout);
+        }
 
-ProxiesManager.prototype.requestReceived = function requestReceivedFn() {
-    var self = this;
-
-    if (self._config.scaling.required <= 0) {
-        // Shutdown
-        return;
+        this._scaleDownTimeout = setTimeout(() => {
+            this._config.scaling.required = this._config.scaling.min;
+            this.emit('scaling:updated', this._config.scaling);
+        }, this._config.scaling.downscaleDelay);
     }
 
-    if (self._config.scaling.required !== self._config.scaling.max) {
-        self._config.scaling.required = self._config.scaling.max;
-        self.emit('scaling:updated', self._config.scaling);
+
+    removeInstance(name) {
+        const instance = this._managedInstances.get(name);
+        if (!instance) {
+            return;
+        }
+
+        return instance.remove();
     }
-
-    if (self._scaleDownTimeout) {
-        clearTimeout(self._scaleDownTimeout);
-    }
-
-    self._scaleDownTimeout = setTimeout(function () {
-        self._config.scaling.required = self._config.scaling.min;
-        self.emit('scaling:updated', self._config.scaling);
-    }, self._config.scaling.downscaleDelay);
-};
-
-
-ProxiesManager.prototype.deleteInstance = function deleteInstanceFn(name) {
-    var instance = this._managedInstances[name];
-    if (!instance) {
-        return;
-    }
-
-    return instance.delete();
 };

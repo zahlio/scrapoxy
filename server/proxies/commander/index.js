@@ -1,132 +1,129 @@
 'use strict';
 
-var Promise = require('bluebird'),
+const Promise = require('bluebird'),
     Auth = require('./auth'),
-    bodyParser = require('body-parser'),
-    compression = require('compression'),
-    cors = require('cors'),
-    errorHandler = require('errorhandler'),
-    express = require('express'),
+    bodyParser = require('koa-bodyparser'),
+    compress = require('koa-compress'),
+    cors = require('kcors'),
+    errorHandler = require('koa-error'),
     http = require('http'),
-    methodOverride = require('method-override'),
-    morgan = require('morgan'),
+    Koa = require('koa'),
+    logger = require('koa-logger'),
     path = require('path'),
+    Router = require('koa-router'),
+    serve = require('koa-static'),
     socketIO = require('socket.io'),
     winston = require('winston');
 
 
-module.exports = Commander;
+module.exports = class Commander {
+    constructor(config, manager, stats) {
+        this._config = config;
 
 
-////////////
+        // Configure KOA framework
+        const app = new Koa();
+        app.name = 'Scrapoxy';
 
-function Commander(config, manager, stats) {
-    this._config = config;
+        if (winston.level === 'debug') {
+            app.use(logger());
+        }
 
-    // Auth
-    var auth = new Auth(this._config.commander.password);
+        app.use(errorHandler());
+        app.use(cors());
+        app.use(compress());
+        app.use(bodyParser());
 
-    // Init Express
-    var app = express();
+        // Serve frontend
+        app.use(serve(path.join(__dirname, 'public')));
 
-    // Init Express modules
-    if (winston.level === 'debug') {
-        app.use(morgan('combined'));
-    }
+        // Auth
+        const auth = new Auth(this._config.commander.password);
 
-    app.use(cors());
-    app.use(compression());
-    app.use(bodyParser.urlencoded({extended: false}));
-    app.use(bodyParser.json({type: 'application/json',}));
-    app.use(methodOverride());
-    app.use(errorHandler());
+        function *koaAuth(next) {
+            yield auth.koa(this, next);
+        }
 
-    // Init Express routes
-    function expressAuth(req, res, next) {
-        return auth.express(req, res, next);
-    }
-
-    app.use('/api/config', expressAuth, require('./api/config')(this._config, manager));
-    app.use('/api/instances', expressAuth, require('./api/instances')(manager));
-    app.use('/api/scaling', expressAuth, require('./api/scaling')(this._config, manager));
-    app.use('/api/stats', expressAuth, require('./api/stats')(stats));
-    app.use(express.static(path.join(__dirname, 'public')));
-
-    // Socket I.O
-    this._httpServer = http.Server(app);
-    var io = socketIO(this._httpServer);
-    io.use(function(socket, next) {
-        return auth.socketio(socket, next);
-    });
-
-    registerEvents(manager);
+        // Define routes
+        const router = new Router();
+        router.use('/api/config', koaAuth, require('./api/config')(this._config, manager));
+        router.use('/api/instances', koaAuth, require('./api/instances')(manager));
+        router.use('/api/scaling', koaAuth, require('./api/scaling')(this._config, manager));
+        router.use('/api/stats', koaAuth, require('./api/stats')(stats));
+        app.use(router.routes());
 
 
-    ////////////
+        // Socket I.O
+        this._httpServer = http.Server(app.callback());
+        const io = socketIO(this._httpServer);
+        io.use((socket, next) => auth.socketio(socket, next));
 
-    function registerEvents(manager) {
-        manager.on('status:updated', function (stats) {
-            var payload = JSON.stringify({
+        manager.on('status:updated', (evStats) => {
+            const payload = JSON.stringify({
                 event: 'status:updated',
-                payload: stats,
+                payload: evStats,
             });
 
             io.emit('event', payload);
         });
 
-        manager.on('alive:updated', function (stats) {
-            var payload = JSON.stringify({
+        manager.on('alive:updated', (evStats) => {
+            const payload = JSON.stringify({
                 event: 'alive:updated',
-                payload: stats,
+                payload: evStats,
             });
 
             io.emit('event', payload);
         });
 
-        manager.on('config:updated', function (config) {
-            var payload = JSON.stringify({
+        manager.on('config:updated', (evConfig) => {
+            const payload = JSON.stringify({
                 event: 'config:updated',
-                payload: config,
+                payload: evConfig,
             });
 
             io.emit('event', payload);
         });
 
-        manager.on('scaling:updated', function (scaling) {
-            var payload = JSON.stringify({
+        manager.on('scaling:updated', (evScaling) => {
+            const payload = JSON.stringify({
                 event: 'scaling:updated',
-                payload: scaling,
+                payload: evScaling,
             });
 
             io.emit('event', payload);
         });
 
-        stats.on('stats', function (stats) {
-            var payload = JSON.stringify({
+        stats.on('stats', (evStats) => {
+            const payload = JSON.stringify({
                 event: 'stats',
-                payload: stats,
+                payload: evStats,
             });
 
             io.emit('event', payload);
         });
     }
-}
 
-Commander.prototype.listen = function listenFn() {
-    var self = this;
 
-    return new Promise(function (resolve, reject) {
-        // Start server
-        self._server = self._httpServer.listen(self._config.commander.port, function (err) {
-            if (err) return reject(new Error('[Commander] Cannot listen at port ' + self._config.commander.port + ': ' + err.toString()));
+    listen() {
+        return new Promise((resolve, reject) => {
+            // Start server
+            this._server = this._httpServer.listen(this._config.commander.port, (err) => {
+                if (err) {
+                    return reject(
+                        new Error(`[Commander] Cannot listen at port ${this._config.commander.port}:${err.toString()}`)
+                    );
+                }
 
-            winston.info('GUI is available at http://localhost:%d', self._config.commander.port);
+                winston.info('GUI is available at http://localhost:%d', this._config.commander.port);
 
-            resolve();
+                resolve();
+            });
         });
-    })
-};
+    }
 
-Commander.prototype.shutdown = function shutdownFn() {
-    this._server.close();
+
+    shutdown() {
+        this._server.close();
+    }
 };

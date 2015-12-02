@@ -1,30 +1,32 @@
-var ovh = require('ovh');
+'use strict';
 
-var config = require('../../server/my-config.json');
+const ovh = require('ovh');
 
-var client = ovh({
+const config = require('../../server/my-config.json');
+
+const client = ovh({
     endpoint: config.ovh.endpoint,
     appKey: config.ovh.appKey,
     appSecret: config.ovh.appSecret,
     consumerKey: config.ovh.consumerKey,
 });
 
-var options = {
+const options = {
     serviceName: config.ovh.serviceId
 };
 
-client.request('GET', '/cloud/project/{serviceName}/instance', options, function (err, instances) {
+client.request('GET', '/cloud/project/{serviceName}/instance', options, (err, instances) => {
     if (err) return console.error(err);
 
     console.log(instances);
 
-    instances.forEach(function(instance) {
-        var options = {
+    instances.forEach((instance) => {
+        const options = {
             serviceName: config.ovh.serviceId,
             instanceId: instance.id,
         };
 
-        client.request('DELETE', '/cloud/project/{serviceName}/instance/{instanceId}', options, function (err, result) {
+        client.request('DELETE', '/cloud/project/{serviceName}/instance/{instanceId}', options, (err) => {
             if (err) return console.error(err);
 
             console.log('removed ' + instance.id);

@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-    checkScalingIntegrity: checkScalingIntegrity,
-    omitDeep: omitDeep,
+    checkScalingIntegrity,
+    omitDeep,
 };
 
 
@@ -33,14 +33,11 @@ function omitDeep(obj, keys) {
     }
 
     if (Array.isArray(obj)) {
-        return obj.map(function (d) {
-            return omitDeep(d, keys);
-        });
+        return obj.map((d) => omitDeep(d, keys));
     }
 
-    var target = {};
-
-    Object.keys(obj).forEach(function (key) {
+    const target = {};
+    Object.keys(obj).forEach((key) => {
         if (keys.indexOf(key) < 0) {
             target[key] = omitDeep(obj[key], keys);
         }
