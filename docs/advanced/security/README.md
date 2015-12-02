@@ -22,7 +22,7 @@ Open *my-config.json* and add *auth* section in *proxy* section (see [Configurat
    "proxy": {
       "auth": {
          "username": "myuser",
-         "password: "mypassword"
+         "password": "mypassword"
       }
    }
 } 
