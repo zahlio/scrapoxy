@@ -1,129 +1,53 @@
 'use strict';
 
-var http = require('http'),
+const Promise = require('bluebird'),
+    child_process = require('child_process'),
     winston = require('winston');
 
 
-var counter = {};
-var num = 0;
-
-var server = http.createServer(function(req, res) {
-    switch (req.method) {
-        case 'GET': {
-            return processGET(req, res);
-        }
-
-        case 'POST': {
-            return processPOST(req, res);
-        }
-
-        case 'PUT': {
-            return processPUT(req, res);
-        }
-
-        default: {
-            return processUnknown(req, res);
-        }
+module.exports = class TestServer {
+    constructor() {
+        this._child = void 0;
     }
 
+    start() {
+        winston.debug('[TestServer] start');
 
-    ////////////
+        return new Promise((resolve) => {
+            const child = child_process.exec('node ./e2e/test-server/server/index.js 13337');
+            child.stdout.on(
+                'data',
+                (data) => winston.debug('[TestServer] (stdout) %s', data)
+            );
 
-    function processGET(req, res) {
-        winston.debug('[TestServer:%d/GET] %s %s', num++, req.method, req.url);
+            child.stderr.on(
+                'data',
+                (data) => winston.debug('[TestServer] (stderr) %s', data)
+            );
 
-        req.headers['remote-address'] = req.connection.remoteAddress;
+            child.on(
+                'close',
+                () => winston.debug('[TestServer] Close')
+            );
 
-        var json = JSON.stringify(req.headers);
+            this._child = child;
 
-        res.writeHead(200, {
-            'Content-Type': 'application/json',
+            resolve(child);
         });
-        res.end(json);
     }
 
-    function processPOST(req, res) {
-        winston.debug('[TestServer:%d/POST] %s %s', num++, req.method, req.url);
+    stop() {
+        winston.debug('[TestServer] stop');
 
-        var name = req.headers['x-cache-name'] || req.connection.remoteAddress;
-
-        var count = counter[name] || 0;
-        ++count;
-
-        counter[name] = count;
-
-        if (count <= 2) {
-            res.writeHead(200, {
-                'Content-Type': 'text/plain',
-            });
-        }
-        else {
-            res.writeHead(503, {
-                'Content-Type': 'text/plain',
-            });
-        }
-
-        res.end('' + count);
-    }
-
-    function processPUT(req, res) {
-        winston.debug('[TestServer:%d/PUT] %s %s', num++, req.method, req.url);
-
-        var name = req.headers['x-cache-name'] || req.connection.remoteAddress;
-
-        var count = counter[name] || 0;
-        ++count;
-
-        counter[name] = count;
-
-        var max = 7500;
-        var discard;
-        if (count < max) {
-            if (Math.random() * (count / max) > 0.7) {
-                discard = true;
+        return new Promise((resolve) => {
+            if (!this._child || this._child.killed) {
+                resolve();
             }
-            else {
-                discard = false;
-            }
-        }
-        else {
-            discard = true;
-        }
 
-        if (discard) {
-            res.writeHead(503);
-        }
-        else {
-            res.writeHead(200);
-        }
+            this._child.on('close', () => resolve());
 
-        res.end();
-    }
-
-    function processUnknown(req, res) {
-        winston.debug('[TestServer:%d/Unknown] %s %s', num++, req.method, req.url);
-
-        res.writeHead(500, {
-            'Content-Type': 'text/plain',
+            this._child.kill();
+            this._child = void 0;
         });
-
-        res.end('Unknown method');
     }
-});
-
-
-server.on('clientError', function(err) {
-    console.log('[clientError] ', err);
-});
-
-server.listen(13337, function(err) {
-    if (err) {
-        winston.error('[TestServer] ', err);
-        process.exit(1);
-    }
-
-    winston.debug('[TestServer] server started');
-});
-
-
-module.exports = server;
+};

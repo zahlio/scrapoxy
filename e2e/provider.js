@@ -1,13 +1,12 @@
 'use strict';
 
+const ProviderLocal = require('./providers/local');
+//const ProviderAWSEC2 = require('../server/providers/awsec2');
 
-var ProviderLocal = require('../server/provider/local');
-//var ProviderAWSEC2 = require('../server/provider/awsec2');
+//const config = require('./config');
 
-//var config = require('./config');
-
-var provider = new ProviderLocal('./server/provider/local/test-proxy/index.js');
-//var provider = new ProviderAWSEC2(config.awsec2, config.instance.port);
+const provider = new ProviderLocal();
+//const provider = new ProviderAWSEC2(config.awsec2, config.instance.port);
 
 
 module.exports = provider;

@@ -1,51 +1,47 @@
-var _ = require('lodash'),
-    Promise = require('bluebird'),
+'use strict';
+
+const Promise = require('bluebird'),
     request = require('request');
 
-module.exports = TestProxy;
+
+module.exports = class TestProxy {
+    constructor(proxyUrl) {
+        this._proxyUrl = proxyUrl;
+
+        this._count = new Map();
+    }
 
 
-////////////
+    request() {
+        const opts = {
+            url: 'http://api.ipify.org',
+            proxy: this._proxyUrl,
+        };
 
-function TestProxy(proxyUrl) {
-    this._proxyUrl = proxyUrl;
+        return new Promise((resolve, reject) => {
+            request(opts, (err, response, body) => {
+                if (err) {
+                    return reject(err);
+                }
 
-    this._count = {};
-}
+                if (response.statusCode !== 200) {
+                    return reject(`${response.statusCode}: ${body}`);
+                }
 
+                this._count.set(body, (this._count.get(body) || 0) + 1);
 
-TestProxy.prototype.request = function requestFn(callback) {
-    var self = this;
-
-    var opts = {
-        url: 'http://api.ipify.org',
-        proxy: self._proxyUrl,
-    };
-
-    return new Promise(function(resolve, reject) {
-        request(opts, function (err, response, body) {
-            if (err) {
-                return reject(err);
-            }
-
-            if (response.statusCode !== 200) {
-                return reject(response.statusCode + ': ' + body);
-            }
-
-            var countIP = self._count[body] || 0;
-            self._count[body] = countIP + 1;
-
-            resolve(null);
+                resolve();
+            });
         });
-    });
-};
+    }
 
 
-TestProxy.prototype.getCount = function getCountFn() {
-    return this._count;
-};
+    get count() {
+        return this._count;
+    }
 
 
-TestProxy.prototype.size = function sizeFn() {
-    return _.keys(this._count).length;
+    get size() {
+        return this._count.size;
+    }
 };

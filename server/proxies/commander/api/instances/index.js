@@ -1,53 +1,42 @@
 'use strict';
 
-var express = require('express');
+const Router = require('koa-router');
 
 
-module.exports = createRouter;
-
-
-////////////
-
-function createRouter(manager) {
-    var router = express.Router();
+module.exports = (manager) => {
+    const router = new Router();
 
     router.get('/', getInstances);
-    router.post('/stop', deleteInstance);
+    router.post('/stop', removeInstance);
 
-    return router;
+    return router.routes();
 
 
     ////////////
 
-    function getInstances(req, res) {
-        var stats = manager.getInstancesStats();
-
-        res.status(200).send(stats);
+    function *getInstances() {
+        this.status = 200;
+        this.body = manager.stats;
     }
 
-    function deleteInstance(req, res) {
-        var name = req.body['name'];
+    function *removeInstance() {
+        const name = this.request.body['name'];
         if (!name || name.length <= 0) {
-            return res.status(500).send('Name not found');
+            throw new Error('Name not found');
         }
 
-        var promise = manager.deleteInstance(name);
+        const promise = manager.removeInstance(name);
         if (!promise) {
-            return res.status(404).send('Proxy ' + name + ' not found');
+            this.status = 404;
+            this.body = `Proxy ${name} not found`;
+            return;
         }
 
-        promise
-            .then(function() {
-                var payload = {
-                    alive: manager.getAliveInstances().length,
-                };
+        yield promise;
 
-                res.status(200).send(payload);
-            })
-            .catch(function(err) {
-                res.status(500).send(err.toString());
-            });
+        this.status = 200;
+        this.body = {
+            alive: manager.aliveInstances.length,
+        };
     }
-
-
-}
+};

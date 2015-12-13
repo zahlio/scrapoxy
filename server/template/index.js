@@ -1,16 +1,16 @@
 'use strict';
 
-var fs = require('fs');
+const fs = require('fs');
 
 
 module.exports = {
-    write: write,
+    write,
 };
 
 
 ////////////
 
-var template = {
+const template = {
     commander: {
         password: 'CHANGE_THIS_PASSWORD',
     },
@@ -54,10 +54,11 @@ var template = {
     },
 };
 
-function write(target, done) {
-    var data = JSON.stringify(template, null, 4);
 
-    fs.writeFile(target, data, function(err) {
+function write(target, done) {
+    const data = JSON.stringify(template, void 0, 4);
+
+    fs.writeFile(target, data, (err) => {
         if (err) {
             return done(err);
         }

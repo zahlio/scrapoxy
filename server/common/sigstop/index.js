@@ -3,14 +3,14 @@
 module.exports = sigstop;
 
 
-var sig_cb;
+let sig_cb;
 
 
 ////////////
 
 function sigstop(callback) {
     if (!sig_cb) {
-        _registerClosingSignals();
+        registerClosingSignals();
     }
 
     sig_cb = callback;
@@ -18,8 +18,8 @@ function sigstop(callback) {
 
     ////////////
 
-    function _registerClosingSignals() {
-        var signals = [
+    function registerClosingSignals() {
+        const signals = [
             'SIGABRT',
             'SIGALRM',
             'SIGBUS',
@@ -36,11 +36,11 @@ function sigstop(callback) {
             'SIGSYS',
             'SIGTRAP',
             'SIGVTALRM',
-            'SIGXFSZ'
+            'SIGXFSZ',
         ];
 
-        signals.forEach(function(signal) {
-            process.on(signal, function() {
+        signals.forEach((signal) => {
+            process.on(signal, () => {
                 if (sig_cb) {
                     sig_cb(signal);
                 }

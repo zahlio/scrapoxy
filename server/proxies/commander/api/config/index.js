@@ -1,56 +1,45 @@
 'use strict';
 
-var _ = require('lodash'),
-    express = require('express'),
+const _ = require('lodash'),
+    Router = require('koa-router'),
     tools = require('../tools');
 
 
-module.exports = createRouter;
-
-
-////////////
-
-function createRouter(config, manager) {
-    var router = express.Router();
+module.exports = (config, manager) => {
+    const router = new Router();
 
     router.get('/', getConfig);
     router.patch('/', updateConfig);
 
-    return router;
+    return router.routes();
 
 
     ////////////
 
-    function getConfig(req, res) {
-        var viewConfig = tools.omitDeep(config, ['password', 'test']);
-
-        return res.status(200).send(viewConfig);
+    function *getConfig() {
+        this.status = 200;
+        this.body = tools.omitDeep(config, ['password', 'test']);
     }
 
-    function updateConfig(req, res) {
-        var payload = req.body;
-
-        payload = tools.omitDeep(payload, ['password', 'test']);
+    function *updateConfig() {
+        const payload = tools.omitDeep(this.request.body, ['password', 'test']);
 
         if (payload.instance && payload.instance.scaling) {
             tools.checkScalingIntegrity(payload.instance.scaling);
         }
 
-        var oldConfig = _.cloneDeep(config);
+        const oldConfig = _.cloneDeep(config);
 
-        config = _.merge(config, payload);
+        _.merge(config, payload);
 
         if (_.isEqual(config, oldConfig)) {
-            return res.sendStatus(204);
+            this.status = 204;
         }
         else {
             manager.emit('config:updated', config);
 
-            var viewConfig = tools.omitDeep(config, ['password', 'test']);
-
-            return res.status(200).send(viewConfig);
+            this.status = 200;
+            this.body = tools.omitDeep(config, ['password', 'test']);
         }
     }
-
-
-}
+};

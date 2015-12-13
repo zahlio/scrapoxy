@@ -1,41 +1,41 @@
 'use strict';
 
-module.exports = Auth;
-
-
-////////////
-
-function Auth(password) {
-    this._hash = new Buffer(password).toString('base64');
-}
-
-
-Auth.prototype.express = function expressFn(req, res, next) {
-    var token = req.headers['authorization'];
-    if (!token || token.length <= 0) {
-        return res.status(403).send('no authorization token found');
+module.exports = class Auth {
+    constructor(password) {
+        this._hash = new Buffer(password).toString('base64');
     }
 
-    if (token !== this._hash) {
-        return res.status(403).send('wrong token');
+
+    *koa(ctx, next) {
+        const token = ctx.request.header['authorization'];
+        if (!token || token.length <= 0) {
+            ctx.status = 403;
+            ctx.body = 'no authorization token found';
+            return;
+        }
+
+        if (token !== this._hash) {
+            ctx.status = 403;
+            ctx.body = 'wrong token';
+            return;
+        }
+
+        yield next;
     }
 
-    next();
-};
 
+    socketio(socket, next) {
+        if (!socket.handshake.query || !socket.handshake.query.token ||
+            socket.handshake.query.token.length <= 0) {
+            return next(new Error('no token found'));
+        }
 
-Auth.prototype.socketio = function socketioFn(socket, next) {
-    if (!socket.handshake.query
-        || !socket.handshake.query.token
-        || socket.handshake.query.token.length <= 0) {
-        return next(new Error('no token found'));
+        const token = socket.handshake.query.token;
+
+        if (token !== this._hash) {
+            return next(new Error('wrong token'));
+        }
+
+        next();
     }
-
-    var token = socket.handshake.query.token;
-
-    if (token !== this._hash) {
-        return next(new Error('wrong token'));
-    }
-
-    next();
 };

@@ -1,81 +1,84 @@
 'use strict';
 
-var Promise = require('bluebird'),
-    Commander = require('./commander'),
+const Commander = require('./commander'),
     Manager = require('./manager'),
     Master = require('./master'),
     Stats = require('./stats'),
     winston = require('winston');
 
 
-module.exports = Main;
+module.exports = class Proxies {
+    constructor(config, provider) {
+        this._config = config;
+        this._provider = provider;
+
+        // Show provider name
+        winston.info('The selected provider is %s', this._provider.name);
+
+        // Stats
+        this._stats = new Stats(this._config.stats);
+
+        // Init Manager
+        this._manager = new Manager(
+            this._config.instance,
+            this._stats,
+            this._provider
+        );
+
+        // Init Master
+        this._master = new Master(
+            this._config.proxy,
+            this._manager,
+            this._stats
+        );
+
+        // Init Commander
+        this._commander = new Commander(
+            this._config,
+            this._manager,
+            this._stats
+        );
+    }
 
 
-////////////
-
-function Main(config, provider) {
-    this._config = config;
-    this._provider = provider;
-
-    // Show provider name
-    winston.info('The selected provider is %s', this._provider.name);
-
-    // Stats
-    this._stats = new Stats(this._config.stats);
-
-    // Init Manager
-    this._manager = new Manager(this._config.instance, this._stats, this._provider);
-
-    // Init Master
-    this._master = new Master(this._config.proxy, this._manager, this._stats);
-
-    // Init Commander
-    this._commander = new Commander(this._config, this._manager, this._stats);
-}
+    get manager() {
+        return this._manager;
+    }
 
 
-Main.prototype.getManager = function getManagerFn() {
-    return this._manager;
-};
+    listen() {
+        winston.debug('[Main] listen');
+
+        // Start Commander
+        return this._commander
+            .listen()
+            .then(() => {
+                // Start Manager
+                this._manager.start();
+
+                // Start Master
+                return this._master.listen();
+            });
+    }
 
 
-Main.prototype.listen = function listenFn() {
-    var self = this;
+    listenAndWait() {
+        winston.debug('[Main] listenAndWait');
 
-    winston.debug('[Main] listen');
-
-    // Start Commander
-    return self._commander.listen()
-        .then(function () {
-            // Start Manager
-            self._manager.start();
-
-            // Start Master
-            return self._master.listen();
-        });
-};
+        return this
+            .listen()
+            .then(() => this._manager.waitForAliveInstances(this._config.instance.scaling.min));
+    }
 
 
-Main.prototype.listenAndWait = function listenAndWaitFn() {
-    var self = this;
+    shutdown() {
+        winston.debug('[Main] shutdown');
 
-    winston.debug('[Main] listenAndWait');
+        this._master.shutdown();
+        this._commander.shutdown();
 
-    return self.listen()
-        .then(function () {
-            return self._manager.waitForAliveInstances(self._config.instance.scaling.min);
-        });
-};
-
-
-Main.prototype.shutdown = function shutdownFn() {
-    winston.debug('[Main] shutdown');
-
-    this._master.shutdown();
-    this._commander.shutdown();
-
-    return this._manager.stop()
-        .then(function() {
-            winston.info('All instances are stopped.');
-        });
+        return this._manager
+            .stop()
+            .then(() => winston.info('All instances are stopped.'));
+    }
 };

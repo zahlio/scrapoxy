@@ -1,81 +1,78 @@
 'use strict';
 
-var Promise = require('bluebird'),
+const Promise = require('bluebird'),
+    expect = require('chai').expect,
     pinger = require('../server/common/pinger'),
     Proxies = require('../server/proxies'),
-    simplerequest = require('./simplerequest'),
-    should = require('should'),
-    winston = require('winston');
+    simplerequest = require('./common/simplerequest'),
+    TestServer = require('./test-server');
 
-var config = require('./config'),
-    app = require('./test-server'),
+const config = require('./config'),
     provider = require('./provider');
 
 // Proxy config
-var proxy = {
+const proxy = {
     hostname: '127.0.0.1',
     port: config.proxy.port,
     //username: config.proxy.auth.username,
     //password: config.proxy.auth.password,
 };
 
-describe('upscale / downscale proxies', function() {
+describe('upscale / downscale proxies', function desc() {
     this.timeout(120 * 1000);
 
-    var proxies;
+    const server = new TestServer();
+    let proxies;
 
-    before(function() {
+    before(() => {
+        server.start();
+
         proxies = new Proxies(config, provider);
 
         return proxies.listenAndWait();
     });
 
-    after(function() {
-        return proxies.shutdown();
+    after(() => {
+        proxies.shutdown();
+
+        server.stop();
     });
 
-    it('should have ' + config.instance.scaling.min + ' proxies', function() {
-        var instances = proxies.getManager().getInstances();
+    it(`should have ${config.instance.scaling.min} proxies`, () => {
+        const instances = proxies.manager.instances;
 
-        instances.should.have.length(config.instance.scaling.min);
+        expect(instances).to.have.length(config.instance.scaling.min);
     });
 
-    it('should accept 1 request', function() {
-        return simplerequest.getWithProxy(config.test.mirror, proxy)
-            .then(function (response) {
-                response.statusCode.should.equal(200);
-            });
-    });
+    it('should accept 1 request',
+        () => simplerequest
+            .getWithProxy(config.test.mirror, proxy)
+            .then((response) => expect(response.statusCode).to.equal(200))
+    );
 
-    it('should have ' + config.instance.scaling.max + ' proxies', function() {
-        return Promise.delay(5 * 1000)
-            .then(function() {
-                return proxies.getManager().getInstances();
-            })
-            .map(function (instance) {
-                return pinger.waitPing(
-                    instance.getModel().getAddress(),
-                    config.instance.checkDelay,
-                    10 * 1000);
-            })
-            .then(function(items) {
-                items.should.have.length(config.instance.scaling.max);
-            });
-    });
+    it(`should have ${config.instance.scaling.max} proxies`,
+        () => Promise
+            .delay(5 * 1000)
+            .then(() => proxies.manager.instances)
+            .map((instance) => pinger.waitPing(
+                instance.model.address,
+                config.instance.checkDelay,
+                10 * 1000))
+            .then(
+            (items) => expect(items).to.have.length(config.instance.scaling.max)
+        )
+    );
 
-    it('should have ' + config.instance.scaling.min + ' proxies', function() {
-        return Promise.delay(30 * 1000)
-            .then(function() {
-                return proxies.getManager().getInstances();
-            })
-            .map(function (instance) {
-                return pinger.waitPing(
-                    instance.getModel().getAddress(),
-                    config.instance.checkDelay,
-                    10 * 1000);
-            })
-            .then(function(items) {
-                items.should.have.length(config.instance.scaling.min);
-            });
-    });
+    it(`should have ${config.instance.scaling.min} proxies`,
+        () => Promise
+            .delay(30 * 1000)
+            .then(() => proxies.manager.instances)
+            .map((instance) => pinger.waitPing(
+                instance.model.address,
+                config.instance.checkDelay,
+                10 * 1000))
+            .then(
+            (items) => expect(items).to.have.length(config.instance.scaling.min)
+        )
+    );
 });

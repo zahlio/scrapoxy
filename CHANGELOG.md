@@ -3,16 +3,34 @@
 
 # Changelog
 
+## 2.2.0
+
+### Breaking changes
+
+- **node**: node minimum version is now 4.2.1, to support JS class
+
+
+### Features
+
+- **all**: migrate core and gui to ES6, with all best practices
+- **api**: replace express by koa
+
+
+### Bug fixes
+
+- **test**: correct core e2e test
+
+
 ## 2.1.2
 
-## Bug fixes
+### Bug fixes
 
 - **gui**: correct token encoding for GUI
 
 
 ## 2.1.1
 
-## Bug fixes
+### Bug fixes
 
 - **main**: add message when all instances are stopped (at end)
 - **doc**: correct misc stuff in doc
@@ -20,7 +38,7 @@
 
 ## 2.1.0
 
-## Features
+### Features
 
 - **ovh**: add OVH provider with documentation
 - **security**: add basic auth to Scrapoxy (RFC 2617)
@@ -41,7 +59,7 @@
 - **ec2**: force to terminate/recreate instance instead of stop/restart
 
 
-## Bug fixes
+### Bug fixes
 
 - **gui**: emit event when scaling is changed by engine (before, event was triggered by GUI)  
 - **stability**: correct a lot of behavior to prevent instance cycling
@@ -50,7 +68,7 @@
 
 ## 2.0.1
 
-## Features
+### Features
 
 - **test**: specify the count of requests with the test command 
 - **test**: count the requests by IP in the test command
@@ -67,7 +85,7 @@
 - **commander**: API routes are prefixed with '/api'
 
 
-## Features
+### Features
 
 - **gui**: add GUI to control Scrapoxy
 - **gui**: add statistics to the GUI (count of requests / minute, average delay of requests / minute)
