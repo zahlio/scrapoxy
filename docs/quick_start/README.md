@@ -10,7 +10,9 @@ See the [AW2 / EC2 - Get started](../standard/providers/awsec2/README.md#get-sta
 
 ## Step 1: Install Node.js
 
-See the [Node Installation Manual](https://github.com/nodejs/node-v0.x-archive/wiki/installing-Node.js-via-package-manager).
+See the [Node Installation Manual](https://github.com/nodesource/distributions).
+
+The minimum required version is 4.2.1.
 
 
 ## Step 2: Install Scrapoxy from NPM

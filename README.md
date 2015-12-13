@@ -68,9 +68,14 @@ You can complete with tutorials:
 - [Create a scraper with Scrapy and Scrapoxy](docs/tutorials/scrapy/README.md)
 
 
+# Prerequisite
+
+* Node.js minimum version: 4.2.1 
+
+
 # Contribute
 
-You can open an issue on this repository for any feedback (bug, question, request, pull request, etc.).
+You can open [an issue](https://github.com/fabienvauchelles/scrapoxy/issues) on this repository for any feedback (bug, question, request, pull request, etc.).
 
 
 # Licence
