@@ -2,7 +2,7 @@
 
 const ovh = require('ovh');
 
-const config = require('../../server/my-config.json');
+const config = require('../../server/conf.json');
 
 const client = ovh({
     endpoint: config.ovh.endpoint,

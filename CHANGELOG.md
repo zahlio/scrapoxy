@@ -3,6 +3,13 @@
 
 # Changelog
 
+## 2.2.1
+
+### Misc
+
+**config**: rename my-config.json to conf.json 
+
+
 ## 2.2.0
 
 ### Breaking changes

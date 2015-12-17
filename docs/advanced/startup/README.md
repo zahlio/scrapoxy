@@ -35,7 +35,7 @@ Create a PM2 configuration file *scrapoxy.json5* for Scrapoxy:
     {
       name      : "scrapoxy",
       script    : "/usr/bin/scrapoxy",
-      args      : ["start", "<ABSOLUTE PATH TO CONFIG>/my-config.json", "-d"],
+      args      : ["start", "<ABSOLUTE PATH TO CONFIG>/conf.json", "-d"],
     },
   ],
 }

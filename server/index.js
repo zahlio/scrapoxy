@@ -31,12 +31,12 @@ program
     .parse(process.argv);
 
 program
-    .command('start [my-config.json]')
+    .command('start [conf.json]')
     .description('Start proxy with a configuration')
     .action((configFilename) => startProxy(configFilename));
 
 program
-    .command('init [my-config.json]')
+    .command('init [conf.json]')
     .description('Create configuration file with a template')
     .action((configFilename) => initConfig(configFilename));
 

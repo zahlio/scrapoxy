@@ -43,19 +43,19 @@ See [Create a security group](../standard/providers/awsec2/create_security_group
 ## Step 5: Generate configuration
 
 ```
-scrapoxy init my-config.json
+scrapoxy init conf.json
 ```
 
 
 ## Step 6: Edit configuration 
 
-Edit *my-config.json* and replace *accessKeyId*, *secretAccessKey*, *region* by your credentials and parameters.
+Edit *conf.json* and replace *accessKeyId*, *secretAccessKey*, *region* by your credentials and parameters.
 
 
 ## Step 6: Start Scrapoxy
 
 ```
-scrapoxy start my-config.json -d
+scrapoxy start conf.json -d
 ```
 
 

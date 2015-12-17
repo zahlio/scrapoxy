@@ -22,7 +22,7 @@
 To create a new configuration, use:
 
 ```
-scrapoxy init my-config.json
+scrapoxy init conf.json
 ```
 
 ## Options: commander

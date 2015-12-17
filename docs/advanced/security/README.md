@@ -15,7 +15,7 @@ Scrapoxy supports standard HTTP Basic auth (RFC2617).
 
 ### Step 1: Add username and password in configuration
 
-Open *my-config.json* and add *auth* section in *proxy* section (see [Configuration](../../standard/config/README.md#options-proxy--auth)):
+Open *conf.json* and add *auth* section in *proxy* section (see [Configuration](../../standard/config/README.md#options-proxy--auth)):
 
 ```
 {

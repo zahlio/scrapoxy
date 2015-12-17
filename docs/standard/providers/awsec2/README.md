@@ -43,7 +43,7 @@ If you cannot find your region, you can [Copy an AMI from a region to another](c
 
 ### Step 5: Update configuration
 
-Open *my-config.json*:
+Open *conf.json*:
 
 ```
 {

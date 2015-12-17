@@ -43,7 +43,7 @@ Remember your **image name** (forward-proxy).
 
 ### Step 5: Update configuration
 
-Open *my-config.json*:
+Open *conf.json*:
 
 ```
 {
