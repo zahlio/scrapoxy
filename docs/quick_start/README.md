@@ -72,3 +72,9 @@ Scrapoxy is reachable at *http://localhost:8888*
 ```
 scrapoxy test http://localhost:8888
 ```
+
+Or with cURL:
+
+```
+curl --proxy http://127.0.0.1:8888 http://api.ipify.org
+```
