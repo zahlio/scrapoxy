@@ -2,11 +2,11 @@
  * Get all alive instances
  */
 
-var request = require('request');
+const request = require('request');
 
-var password = 'YOUR_COMMANDER_PASSWORD';
+const password = 'YOUR_COMMANDER_PASSWORD';
 
-var opts = {
+const opts = {
     method: 'GET',
     url: 'http://localhost:8889/api/instances',
     headers: {
@@ -14,12 +14,12 @@ var opts = {
     },
 };
 
-request(opts, function (err, res, body) {
+request(opts, (err, res, body) => {
     if (err) return console.log('Error: ', err);
 
     console.log('Status: %d\n\n', res.statusCode);
 
-    var bodyParsed = JSON.parse(body);
+    const bodyParsed = JSON.parse(body);
 
     console.log(bodyParsed);
 });

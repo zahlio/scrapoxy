@@ -2,11 +2,11 @@
  * Update the scaling
  */
 
-var request = require('request');
+const request = require('request');
 
-var password = 'YOUR_COMMANDER_PASSWORD';
+const password = 'YOUR_COMMANDER_PASSWORD';
 
-var opts = {
+const opts = {
     method: 'PATCH',
     url: 'http://localhost:8889/api/scaling',
     json: {
@@ -19,7 +19,7 @@ var opts = {
     },
 };
 
-request(opts, function (err, res, body) {
+request(opts, (err, res, body) => {
     if (err) return console.log('Error: ', err);
 
     console.log('Status: %d\n\n', res.statusCode);
