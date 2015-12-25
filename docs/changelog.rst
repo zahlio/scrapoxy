@@ -10,6 +10,7 @@ Misc
 
 - **config**: rename :code:`my-config.json` to :code:`conf.json`
 - **doc**: migrate documentation to `ReadTheDocs`_
+- **doc**: link to the new website `Scrapoxy.io`_
 
 
 2.2.0
@@ -174,3 +175,4 @@ Features
 .. _OVH: https://www.ovh.com
 .. _`ReadTheDocs`: http://scrapoxy.readthedocs.org
 .. _RFC2617: https://www.ietf.org/rfc/rfc2617.txt
+.. _`Scrapoxy.io`: http://scrapoxy.io
