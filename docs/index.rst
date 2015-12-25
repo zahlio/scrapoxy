@@ -14,7 +14,7 @@ Scrapoxy **hides** your scraper behind a cloud.
 
 It starts a pool of proxies to send your requests.
 
-Now, you can crawl without thinking about hiding your IP address or avoiding blacklisting!
+Now, you can crawl without thinking about blacklisting!
 
 It is written in Javascript (ES6) with `Node.js`_ & AngularJS_ and it is **open source**!
 
