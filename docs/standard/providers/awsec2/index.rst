@@ -32,7 +32,7 @@ Step 4: Choose an AMI
 
 Public AMI are available for theses regions:
 
-- eu-west-1: i-2d7b465a
+- eu-west-1: ami-1aa0ea6d 
 
 
 If you cannot find your region, you can :doc:`Copy an AMI from a region to another <copy_ami_to_region/index>`.
@@ -51,7 +51,7 @@ Open :code:`conf.json`::
         "region": "eu-west-1",
         "instance": {
           "InstanceType": "t1.micro",
-          "ImageId": "ami-2d7b465a",
+          "ImageId": "ami-1aa0ea6d",
           "SecurityGroups": [ "forward-proxy" ],
         }
       }
