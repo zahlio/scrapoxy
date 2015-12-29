@@ -33,6 +33,10 @@ module.exports = {
         ovhcloud: {
             name: 'Proxy',
         },
+
+        digitalocean: {
+            name: 'Proxy',
+        },
     },
 
     stats: {
