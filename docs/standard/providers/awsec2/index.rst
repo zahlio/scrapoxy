@@ -74,15 +74,16 @@ For credentials, there is 2 choices:
 1. Add credentials in the configuration file;
 2. Or Use your own credentials (from profile, see the `AWS documentation`_).
 
-=============== ============= ==================================================
-Option          Default value Description
-=============== ============= ==================================================
-accessKeyId     none          Credentials for AWS (optional)
-secretAccessKey none          Credentials for AWS (optional)
-region          none          AWS region (example: eu-west-1)
-tag             Proxy         Name of the AWS / EC2 instance
-instance        none          see :ref:`awsec2 / instance <awsec2-instance>`
-=============== ============= ==================================================
+=================== ============= ===================================================================================================================================
+Option              Default value Description
+=================== ============= ===================================================================================================================================
+accessKeyId         none          Credentials for AWS (optional)
+secretAccessKey     none          Credentials for AWS (optional)
+region              none          AWS region (example: eu-west-1)
+tag                 Proxy         Name of the AWS / EC2 instance
+instance            none          see :ref:`awsec2 / instance <awsec2-instance>`
+maxRunningInstances 10            It is a security limit. Scrapoxy cannot create new instances if the current count and the count of new instances exceeds this limit
+=================== ============= ===================================================================================================================================
 
 
 .. _awsec2-instance:

@@ -33,7 +33,7 @@ What Scrapoxy does ?
 --------------------
 
 - Create your own proxies
-- Use multiple cloud providers
+- Use multiple cloud providers (AWS, DigitalOcean, OVH)
 - Rotate IP addresses
 - Impersonate known browsers
 - Exclude blacklisted instances
@@ -83,6 +83,7 @@ And complete with :ref:`tutorials-docs`.
 
    standard/config/index
    standard/providers/awsec2/index
+   standard/providers/digitalocean/index
    standard/providers/ovhcloud/index
    standard/gui/index
 

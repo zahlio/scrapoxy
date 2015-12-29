@@ -56,6 +56,7 @@ Step 6: Install the proxy
 
 Connect to the instance and install proxy::
 
+    sudo apt-get install curl
     curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -
     sudo apt-get install --yes nodejs
     curl --silent --location https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/tools/install/proxy.js | sudo tee /root/proxy.js > /dev/null

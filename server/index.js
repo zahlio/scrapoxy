@@ -5,6 +5,7 @@
 const _ = require('lodash'),
     Promise = require('bluebird'),
     ProviderAWSEC2 = require('./providers/awsec2'),
+    ProviderDigitalOcean = require('./providers/digitalocean'),
     ProviderOVHCloud = require('./providers/ovhcloud'),
     fs = require('fs'),
     moment = require('moment'),
@@ -26,7 +27,7 @@ winston.add(winston.transports.Console, {timestamp: true});
 
 
 program
-    .version('2.2.1')
+    .version('2.3.0')
     .option('-d, --debug', 'Debug mode (increase verbosity)', debugMode)
     .parse(process.argv);
 
@@ -131,14 +132,19 @@ function startProxy(configFilename) {
 
     function getProvider(cfg) {
         switch (cfg.providers.type) {
-            case 'ovhcloud':
-            {
-                return new ProviderOVHCloud(cfg.providers.ovhcloud, cfg.instance.port);
-            }
-
             case 'awsec2':
             {
                 return new ProviderAWSEC2(cfg.providers.awsec2, cfg.instance.port);
+            }
+
+            case 'digitalocean':
+            {
+                return new ProviderDigitalOcean(cfg.providers.digitalocean, cfg.instance.port);
+            }
+
+            case 'ovhcloud':
+            {
+                return new ProviderOVHCloud(cfg.providers.ovhcloud, cfg.instance.port);
             }
 
             default:

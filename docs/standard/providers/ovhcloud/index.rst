@@ -72,20 +72,21 @@ Configure Scrapoxy
 Options: ovhcloud
 -----------------
 
-============ ============= =================================================
-Option       Default value Description
-============ ============= =================================================
-endpoint     none          OVH subdivision (ovh-eu or ovh-ca)
-appKey       none          Credentials for OVH
-appSecret    none          Credentials for OVH
-consumerKey  none          Credentials for OVH
-serviceId    none          Project ID
-region       none          OVH region (example: GRA1)
-sshKeyName   none          Name of the SSH key
-flavorName   none          Type of instance
-name         Proxy         Name of the instance
-snapshotName none          Name of the backup image (for the proxy instance)
-============ ============= =================================================
+=================== ============= ===================================================================================================================================
+Option              Default value Description
+=================== ============= ===================================================================================================================================
+endpoint            none          OVH subdivision (ovh-eu or ovh-ca)
+appKey              none          Credentials for OVH
+appSecret           none          Credentials for OVH
+consumerKey         none          Credentials for OVH
+serviceId           none          Project ID
+region              none          OVH region (example: GRA1)
+sshKeyName          none          Name of the SSH key
+flavorName          none          Type of instance
+name                Proxy         Name of the instance
+snapshotName        none          Name of the backup image (for the proxy instance)
+maxRunningInstances 10            It is a security limit. Scrapoxy cannot create new instances if the current count and the count of new instances exceeds this limit
+=================== ============= ===================================================================================================================================
 
 
 Tutorials

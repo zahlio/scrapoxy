@@ -2,6 +2,16 @@
 Changelog
 =========
 
+2.3.0
+=====
+
+Features
+--------
+
+- **digitalocean**: add support for DigitalOcean provider
+
+
+
 2.2.1
 =====
 

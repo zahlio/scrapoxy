@@ -25,19 +25,18 @@ password none          Password to access to the commander
 Options: instance
 =================
 
-===================== ============= ===================================================================================================================================
-Option                Default value Description
-===================== ============= ===================================================================================================================================
-port                  none          TCP port of your instance (example: 3128)
-username              none          Credentials if your proxy instance needs them (optional)
-password              none          Credentials if your proxy instance needs them (optional)
-maxRunningInstances   none          It is a security limit. Scrapoxy cannot create new instances if the current count and the count of new instances exceeds this limit
-scaling               none          see :ref:`instance / scaling <instance-scaling>`
-checkDelay            10000         (in ms) Scrapoxy requests the status of instances to the provider, every X ms
-checkAliveDelay       20000         (in ms) Scrapoxy pings instances every X ms
-stopIfCrashedDelay    120000        (in ms) Scrapoxy restarts an instance if it has been dead for X ms
-autorestart           none          see :ref:`instance / autorestart <instance-autorestart>`
-===================== ============= ===================================================================================================================================
+================== ============= =============================================================================
+Option             Default value Description
+================== ============= =============================================================================
+port               none          TCP port of your instance (example: 3128)
+username           none          Credentials if your proxy instance needs them (optional)
+password           none          Credentials if your proxy instance needs them (optional)
+scaling            none          see :ref:`instance / scaling <instance-scaling>`
+checkDelay         10000         (in ms) Scrapoxy requests the status of instances to the provider, every X ms
+checkAliveDelay    20000         (in ms) Scrapoxy pings instances every X ms
+stopIfCrashedDelay 120000        (in ms) Scrapoxy restarts an instance if it has been dead for X ms
+autorestart        none          see :ref:`instance / autorestart <instance-autorestart>`
+================== ============= =============================================================================
 
 
 .. _instance-autorestart:
@@ -85,13 +84,14 @@ path   none          If specified, writes all logs in a dated file
 Options: providers
 ==================
 
-======== ============= ===================================================================================
-Option   Default value Description
-======== ============= ===================================================================================
-type     8888          Name of the used provider (awsec2 or ovhcloud)
-awsec2   none          see `AWS EC2 - Configuration <../providers/awsec2/index.html#configure-scrapoxy-awsec2>`_
-ovhcloud none          see `OVH Cloud - Configuration <../providers/ovhcloud/index.html#configure-scrapoxy-ovhcloud>`_
-======== ============= ===================================================================================
+============ ============= ==========================================================================================================
+Option       Default value Description
+============ ============= ==========================================================================================================
+type         8888          Name of the used provider (awsec2, digitalocean or ovhcloud)
+awsec2       none          see `AWS EC2 - Configuration <../providers/awsec2/index.html#configure-scrapoxy-awsec2>`_
+ovhcloud     none          see `OVH Cloud - Configuration <../providers/ovhcloud/index.html#configure-scrapoxy-ovhcloud>`_
+digitalocean none          see `DigitalOcean - Configuration <../providers/digitalocean/index.html#configure-scrapoxy-digitalocean>`_
+============ ============= ==========================================================================================================
 
 
 Options: proxy
