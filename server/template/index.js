@@ -36,7 +36,6 @@ const template = {
                 ImageId: 'ami-1aa0ea6d', // Forward proxy node
                 SecurityGroups: ['forward-proxy'],
             },
-            maxRunningInstances: 10,
         },
 
         ovhcloud: {
@@ -49,7 +48,6 @@ const template = {
             sshKeyName: 'YOUR SSH KEY (could be: mykey)',
             flavorName: 'vps-ssd-1',
             snapshotName: 'YOUR SNAPSHOT NAME (could be: forward-proxy)',
-            maxRunningInstances: 10,
         },
 
         digitalocean: {
@@ -58,7 +56,6 @@ const template = {
             size: '512mb',
             sshKeyName: 'YOUR SSH KEY (could be: mykey)',
             imageName: 'YOUR SNAPSHOT NAME (could be: forward-proxy)',
-            maxRunningInstances: 10,
         },
     },
 };
