@@ -18,9 +18,9 @@ module.exports = class ProviderOVHCloud {
 
         this.name = 'ovhcloud';
 
-        this._flavorId = void 0;
-        this._snapshotId = void 0;
-        this._sshKeyId = void 0;
+        this._flavorPromise = void 0;
+        this._snapshotPromise = void 0;
+        this._sshKeyPromise = void 0;
 
         const opts = _.pick(this._config, ['endpoint', 'appKey', 'appSecret', 'consumerKey']);
         this._client = ovh(opts);
@@ -131,6 +131,7 @@ module.exports = class ProviderOVHCloud {
                     default:
                     {
                         winston.error('[ProviderOVHCloud] Unknown status: ', status);
+
                         return InstanceModel.ERROR;
                     }
                 }
@@ -159,11 +160,11 @@ module.exports = class ProviderOVHCloud {
                 }
 
                 return init()
-                    .then(() => {
+                    .spread((flavor, snapshot, sshKey) => {
                         const promises = [];
 
                         for (let i = 0; i < count; ++i) {
-                            promises.push(createInstance());
+                            promises.push(createInstance(flavor.id, snapshot.id, sshKey.id));
                         }
 
                         return Promise.all(promises);
@@ -174,33 +175,26 @@ module.exports = class ProviderOVHCloud {
         ////////////
 
         function init() {
-            const promises = [];
-
             // Get flavor id
-            if (!self._flavorId) {
-                const promise = getFlavorByName(self._config.flavorName)
-                    .then((flavor) => self._flavorId = flavor.id);
-
-                promises.push(promise);
+            if (!self._flavorPromise) {
+                self._flavorPromise = getFlavorByName(self._config.flavorName);
             }
 
             // Get snapshot id
-            if (!self._snapshotId) {
-                const promise = getSnapshotByName(self._config.snapshotName)
-                    .then((snapshot) => self._snapshotId = snapshot.id);
-
-                promises.push(promise);
+            if (!self._snapshotPromise) {
+                self._snapshotPromise = getSnapshotByName(self._config.snapshotName);
             }
 
             // Get ssh key id
-            if (!self._sshKeyId) {
-                const promise = getSSHkeyByName(self._config.sshKeyName)
-                    .then((sshKey) => self._sshKeyId = sshKey.id);
-
-                promises.push(promise);
+            if (!self._sshKeyPromise) {
+                self._sshKeyPromise = getSSHkeyByName(self._config.sshKeyName);
             }
 
-            return Promise.all(promises);
+            return Promise.all([
+                self._flavorPromise,
+                self._snapshotPromise,
+                self._sshKeyPromise,
+            ]);
 
 
             ////////////
@@ -272,15 +266,15 @@ module.exports = class ProviderOVHCloud {
             }
         }
 
-        function createInstance() {
+        function createInstance(flavorId, snapshotId, sshKeyId) {
             return new Promise((resolve, reject) => {
                 const options = {
                     serviceName: self._config.serviceId,
                     region: self._config.region,
-                    flavorId: self._flavorId,
-                    imageId: self._snapshotId,
+                    flavorId,
+                    imageId: snapshotId,
                     name: self._config.name,
-                    sshKeyId: self._sshKeyId,
+                    sshKeyId,
                 };
 
                 self._client.request('POST', '/cloud/project/{serviceName}/instance', options, (err, results) => {
