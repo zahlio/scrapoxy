@@ -14,7 +14,7 @@ See :doc:`Get DigitalOcean credentials <get_credentials/index>`.
 Remember your *token*.
 
 
-Step 3: Create a SSH key for the project
+Step 2: Create a SSH key for the project
 ----------------------------------------
 
 See :doc:`Create a SSH key <create_sshkey/index>`.
