@@ -8,12 +8,11 @@ const _ = require('lodash'),
 
 
 module.exports = class Manager extends EventEmitter {
-    constructor(config, stats, provider) {
+    constructor(config, stats) {
         super();
 
         this._config = config;
         this._stats = stats;
-        this._provider = provider;
 
         this._managedInstances = new Map();
         this._aliveInstances = [];

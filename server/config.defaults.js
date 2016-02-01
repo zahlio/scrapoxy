@@ -1,15 +1,11 @@
 'use strict';
 
 module.exports = {
-    proxy: {
+    master: {
         port: 8888,
     },
 
-    commander: {
-        port: 8889,
-    },
-
-    instance: {
+    manager: {
         checkDelay: 10 * 1000, // 10sec
         checkAliveDelay: 20 * 1000, // 20sec
         stopIfCrashedDelay: 5 * 60 * 1000, // 5min,
@@ -25,27 +21,14 @@ module.exports = {
         },
     },
 
-    providers: {
-        awsec2: {
-            tag: 'Proxy',
-            maxRunningInstances: 10,
+    commander: {
+        port: 8889,
+
+        stats: {
+            retention: 24 * 60 * 60 * 1000, // 24h
+
+            samplingDelay: 1000,
         },
-
-        ovhcloud: {
-            name: 'Proxy',
-            maxRunningInstances: 10,
-        },
-
-        digitalocean: {
-            name: 'Proxy',
-            maxRunningInstances: 10,
-        },
-    },
-
-    stats: {
-        retention: 24 * 60 * 60 * 1000, // 24h
-
-        samplingDelay: 1000,
     },
 
     test: {

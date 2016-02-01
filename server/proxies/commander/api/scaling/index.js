@@ -18,7 +18,7 @@ module.exports = (config, manager) => {
 
     function *getScaling() {
         this.status = 200;
-        this.body = config.instance.scaling;
+        this.body = config.manager.scaling;
     }
 
     function *updateScaling() {
@@ -26,7 +26,7 @@ module.exports = (config, manager) => {
 
         tools.checkScalingIntegrity(payload);
 
-        const scaling = config.instance.scaling,
+        const scaling = config.manager.scaling,
             oldScaling = _.cloneDeep(scaling);
 
         _.merge(scaling, payload);

@@ -8,26 +8,21 @@ const Commander = require('./commander'),
 
 
 module.exports = class Proxies {
-    constructor(config, provider) {
+    constructor(config) {
         this._config = config;
-        this._provider = provider;
-
-        // Show provider name
-        winston.info('The selected provider is %s', this._provider.name);
 
         // Stats
-        this._stats = new Stats(this._config.stats);
+        this._stats = new Stats(this._config.commander.stats);
 
         // Init Manager
         this._manager = new Manager(
-            this._config.instance,
-            this._stats,
-            this._provider
+            this._config.manager,
+            this._stats
         );
 
         // Init Master
         this._master = new Master(
-            this._config.proxy,
+            this._config.master,
             this._manager,
             this._stats
         );
