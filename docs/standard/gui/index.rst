@@ -77,13 +77,13 @@ Scrapoxy relays requests to instances which are **started** and **alived**
 Type of provider
 ~~~~~~~~~~~~~~~~
 
-+----------------+-----------+
-| |awsec2|       | AWS / EC2 |
-+----------------+-----------+
-| |ovhcloud|     | OVH Cloud |
-+----------------+-----------+
-| |digitalocean| | OVH Cloud |
-+----------------+-----------+
++----------------+--------------+
+| |awsec2|       | AWS / EC2    |
++----------------+--------------+
+| |ovhcloud|     | OVH Cloud    |
++----------------+--------------+
+| |digitalocean| | DigitalOcean |
++----------------+--------------+
 
 .. |awsec2| image:: gui_instance_awsec2.png
    :width: 25px
