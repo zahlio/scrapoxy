@@ -84,11 +84,27 @@ Example::
     Accept: text/html
 
 
+Scrapers accept a GET (or POST) method instead of CONNECT for proxy.
+
+With Scrapy_ (Python_), add '/?noconnect' as a suffix or the proxy URL::
+
+    PROXY='http://localhost:8888/?noconnect
+
+With Request_ (`Node.js`_), add 'tunnel:false' to the request options::
+
+    request({
+        method: 'GET',
+        url: 'https://api.ipify.org/',
+        tunnel: false,
+        proxy: 'http://localhost:8888',
+    }, (err, response, body) => {...});
+
+
 What is the proxy that returned the response ?
 ----------------------------------------------
- 
+
 Scrapoxy adds to the response an HTTP header **x-cache-proxyname**.
- 
+
 This header contains the name of the proxy.
 
 
@@ -102,5 +118,9 @@ The scraper adds this header to the next request.
 
 
 .. _`AWS / EC2`: https://aws.amazon.com/ec2
+.. _`Node.js`: https://nodejs.org
+.. _Python: https://www.python.org
+.. _Request: https://www.npmjs.com/package/request
+.. _Scrapy: http://scrapy.org
 .. _Squid: http://www.squid-cache.org
 .. _Tinyproxy: https://banu.com/tinyproxy/
