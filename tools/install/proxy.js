@@ -14,19 +14,29 @@ var server = http.createServer();
 
 // Accept client
 server.on('connect', function(req, socket, head) {
+
+    // Decrypt target
     parseTarget(req.url, function(err, target) {
         if (err) {
-            console.error(err);
+            console.error('Error (parsing): ', err);
             return socket.end();
         }
 
+        // Connect to target
         console.log('connect to %s, port %d', target.hostname, target.port);
         var proxy_socket = net.Socket();
         proxy_socket.connect(target.port, target.hostname);
 
+        proxy_socket.on('error', function(err) {
+            console.error('Error (proxy_socket): ', err);
+            socket.end();
+        });
+
+        // Send hello
         socket.write('HTTP/1.1 200 Connection established\r\n\r\n');
         proxy_socket.write(head);
 
+        // Pipe data
         socket.pipe(proxy_socket).pipe(socket);
     });
 });
