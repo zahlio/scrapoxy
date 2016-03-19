@@ -86,11 +86,11 @@ Example::
 
 Scrapers accept a GET (or POST) method instead of CONNECT for proxy.
 
-With Scrapy_ (Python_), add '/?noconnect' as a suffix or the proxy URL::
+With Scrapy_ (Python_), add */?noconnect* to the proxy URL::
 
     PROXY='http://localhost:8888/?noconnect
 
-With Request_ (`Node.js`_), add 'tunnel:false' to the request options::
+With Request_ (`Node.js`_), add *tunnel:false* to options::
 
     request({
         method: 'GET',
