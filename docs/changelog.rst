@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.3.2
+=====
+
+Bug fixes
+---------
+
+- **docs**: fallback to markdown for README (because npmjs doesn't like retext)
+
+
 2.3.1
 =====
 
