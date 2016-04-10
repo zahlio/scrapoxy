@@ -106,7 +106,7 @@ And complete with :ref:`tutorials-docs`.
    :maxdepth: 1
    :caption: Tutorials
 
-   tutorials/scrapy/index
+   tutorials/python-scrapy/index
 
 
 Prerequisite

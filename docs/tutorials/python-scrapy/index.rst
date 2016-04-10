@@ -18,6 +18,12 @@ However, the site is **protected** against scraping ! We must use Scrapoxy_ to b
 Step 1: Install Scrapy
 ======================
 
+Install Python 2.7
+------------------
+
+Scrapy works with Python 2.7
+
+
 Install dependencies
 --------------------
 
@@ -57,7 +63,7 @@ Bootstrap the skeleton of the project::
 Add a new spider
 ----------------
 
-Add this content to *myscraper/spiders/scraper.py*::
+Add this content to :code:`myscraper/spiders/scraper.py`::
 
     # -*- coding: utf-8 -*-
 
@@ -107,9 +113,9 @@ Run this command::
     scrapy crawl scraper -o profiles.csv
 
 
-Scrapy scraps the site and extract profiles to *profiles.csv*.
+Scrapy scraps the site and extract profiles to :code:`profiles.csv`.
 
-However, `Scraping Challenge`_ is protected! *profiles.csv* is empty...
+However, `Scraping Challenge`_ is protected! :code:`profiles.csv` is empty...
 
 We will **integrate** Scrapoxy_ to bypass the protection.
 
@@ -136,7 +142,7 @@ Set the **maximum** of instances to 6, and start Scrapoxy_ (see `Change scaling 
 Edit settings of the Scraper
 ----------------------------
 
-Add this content to *myscraper/settings.py*::
+Add this content to :code:`myscraper/settings.py`::
 
     CONCURRENT_REQUESTS_PER_DOMAIN = 1
     RETRY_TIMES = 0
@@ -165,7 +171,7 @@ What are these middlewares ?
 * **ScaleMiddleware** asks Scrapoxy_ to maximize the number of instances at the beginning, and to stop them at the end.
 
 
-.. INFO::
+.. NOTE::
    ScaleMiddleware stops the scraper like WaitMiddleware. After 2 minutes, all instances are ready and the scraper continues to scrap.
 
 
@@ -178,7 +184,7 @@ Run this command::
     scrapy crawl scraper -o profiles.csv
 
 
-Now, all profiles are saved to *profiles.csv*!
+Now, all profiles are saved to :code:`profiles.csv`!
 
 
 .. _Scrapy: http://scrapy.org
