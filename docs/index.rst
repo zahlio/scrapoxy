@@ -107,6 +107,7 @@ And complete with :ref:`tutorials-docs`.
    :caption: Tutorials
 
    tutorials/python-scrapy/index
+   tutorials/nodejs-request/index
 
 
 Prerequisite
