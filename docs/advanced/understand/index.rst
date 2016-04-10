@@ -69,7 +69,7 @@ It fixes the count of instances to maximum (**instance.scaling.max**).
 Requests
 ========
 
-Do Scrapoxy can proxy HTTPS requests ?
+Can Scrapoxy relay HTTPS requests ?
 --------------------------------------
 
 Yes. However, Scrapoxy **cannot use the CONNECT** mechanism.
