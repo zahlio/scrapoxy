@@ -57,7 +57,7 @@ module.exports = class ProviderDigitalOcean {
 
         function summarizeInfo(droplets) {
             return _.map(droplets, (droplet) => ({
-                id: droplet.id,
+                id: droplet.id.toString(),
                 status: droplet.status,
                 ip: droplet.networks.v4[0].ip_address,
                 name: droplet.name,
