@@ -2,6 +2,21 @@
 Changelog
 =========
 
+2.3.1
+=====
+
+Features
+--------
+
+- **docs**: add tutorials for Scrapy_ and `Node.js`_
+
+
+Bug fixes
+---------
+
+- **digitalocean**: convert Droplet id to string
+
+
 2.3.0
 =====
 
@@ -9,7 +24,6 @@ Features
 --------
 
 - **digitalocean**: add support for DigitalOcean provider
-
 
 
 2.2.1
@@ -92,7 +106,7 @@ Features
 Bug fixes
 ---------
 
-- **gui**: emit event when scaling is changed by engine (before, event was triggered by GUI)  
+- **gui**: emit event when scaling is changed by engine (before, event was triggered by GUI)
 - **stability**: correct a lot of behavior to prevent instance cycling
 - **ec2**: use status name instead of status code
 
@@ -103,7 +117,7 @@ Bug fixes
 Features
 --------
 
-- **test**: specify the count of requests with the test command 
+- **test**: specify the count of requests with the test command
 - **test**: count the requests by IP in the test command
 - **doc**: add GUI documentation
 - **doc**: add API documentation
@@ -186,3 +200,5 @@ Features
 .. _`ReadTheDocs`: http://scrapoxy.readthedocs.org
 .. _RFC2617: https://www.ietf.org/rfc/rfc2617.txt
 .. _`Scrapoxy.io`: http://scrapoxy.io
+.. _Scrapy: http://scrapy.org
+.. _`Node.js`: https://nodejs.org
