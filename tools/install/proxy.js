@@ -27,6 +27,11 @@ server.on('connect', function(req, socket, head) {
         var proxy_socket = net.Socket();
         proxy_socket.connect(target.port, target.hostname);
 
+        socket.on('error', function(err) {
+            console.error('Error (socket): ', err);
+            proxy_socket.end();
+        });
+
         proxy_socket.on('error', function(err) {
             console.error('Error (proxy_socket): ', err);
             socket.end();
