@@ -32,8 +32,8 @@ gulp.task('test', () => {
     winston.level = 'debug';
 
     gulp.src([
-        //path.join(paths.server, '/**/*.spec.js'),
-        path.join(paths.e2e, '/**/*.spec.js'),
+        path.join(paths.server, '/**/*.spec.js'),
+        //path.join(paths.e2e, '/**/*.spec.js'),
     ])
         .pipe($.mocha({
             reporter: 'spec',

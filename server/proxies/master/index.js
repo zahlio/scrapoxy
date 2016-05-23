@@ -5,6 +5,7 @@ const _ = require('lodash'),
     domain = require('./domain'),
     http = require('http'),
     ProxyAgent = require('./proxy-agent'),
+    sanitize = require('./sanitize'),
     url = require('url'),
     winston = require('winston');
 
@@ -122,9 +123,11 @@ module.exports = class Master {
                     instance.incrRequest();
                 });
 
-                instance.updateResponseHeaders(proxy_res.headers);
+                const cleanHeaders = sanitize.headers(proxy_res.headers);
 
-                res.writeHead(proxy_res.statusCode, proxy_res.headers);
+                instance.updateResponseHeaders(cleanHeaders);
+
+                res.writeHead(proxy_res.statusCode, cleanHeaders);
 
                 proxy_res.pipe(res);
             });

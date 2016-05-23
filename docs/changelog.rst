@@ -2,6 +2,16 @@
 Changelog
 =========
 
+2.3.3
+=====
+
+Bug fixes
+---------
+
+- **master**: sanitize bad request headers
+- **proxy**: catch all socket errors in the proxy instance
+
+
 2.3.2
 =====
 
