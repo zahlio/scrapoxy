@@ -13,7 +13,9 @@ describe('ProviderLocal', function desc() {
 
     let provider;
     before(
-        () => provider = new ProviderLocal()
+        () => {
+            provider = new ProviderLocal();
+        }
     );
 
 

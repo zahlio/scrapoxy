@@ -18,7 +18,9 @@ function sequential(from, to, func, delay, idx) {
         const item = from[idx];
 
         return func(item)
-            .then((res) => to[idx] = res)
+            .then((res) => {
+                to[idx] = res;
+            })
             .delay(delay)
             .then(() => sequential(from, to, func, delay, idx + 1));
     }
