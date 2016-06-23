@@ -4,6 +4,7 @@ const _ = require('lodash'),
     Promise = require('bluebird'),
     EventEmitter = require('events').EventEmitter,
     Instance = require('./instance'),
+    ScalingError = require('../../common/error/scaling'),
     winston = require('winston');
 
 
@@ -70,7 +71,13 @@ module.exports = class Manager extends EventEmitter {
             self._provider.models
                 .then(updateInstances)
                 .then(adjustInstances)
-                .catch((err) => winston.error('[Manager] error: ', err));
+                .catch((err) => {
+                    if (err instanceof ScalingError) {
+                        self.emit('scaling:error', err);
+                    }
+
+                    winston.error('[Manager] error: ', err);
+                });
 
 
             ////////////

@@ -4,6 +4,7 @@ const _ = require('lodash'),
     Promise = require('bluebird'),
     API = require('./api'),
     InstanceModel = require('../../proxies/manager/instance.model'),
+    ScalingError = require('../../common/error/scaling'),
     winston = require('winston');
 
 
@@ -136,13 +137,18 @@ module.exports = class ProviderDigitalOcean {
                 winston.debug('[ProviderDigitalOcean] createInstances: actualCount=%d', actualCount);
 
                 if (this._config.maxRunningInstances && actualCount + count > this._config.maxRunningInstances) {
-                    throw new Error(
-                        `[ProviderDigitalOcean] createInstances: Cannot start instances (limit reach): ${actualCount} + ${count} > ${this._config.maxRunningInstances}`
-                    );
+                    throw new ScalingError(count, true);
                 }
 
                 return init()
                     .spread((image, sshKey) => createInstances(count, image.id, sshKey.id));
+            })
+            .catch((err) => {
+                if (err.id === 'forbidden' && err.message.indexOf('droplet limit') >= 0) {
+                    throw new ScalingError(count, false);
+                }
+
+                throw err;
             });
 
 

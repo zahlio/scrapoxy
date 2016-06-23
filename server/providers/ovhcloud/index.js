@@ -4,6 +4,7 @@ const _ = require('lodash'),
     Promise = require('bluebird'),
     InstanceModel = require('../../proxies/manager/instance.model'),
     ovh = require('ovh'),
+    ScalingError = require('../../common/error/scaling'),
     winston = require('winston');
 
 
@@ -164,9 +165,7 @@ module.exports = class ProviderOVHCloud {
                 winston.debug('[ProviderOVHCloud] createInstances: actualCount=%d', actualCount);
 
                 if (self._config.maxRunningInstances && actualCount + count > self._config.maxRunningInstances) {
-                    throw new Error(
-                        `[ProviderOVHCloud] createInstances: Cannot start instances (limit reach): ${actualCount} + ${count} > ${self._config.maxRunningInstances}`
-                    );
+                    throw new ScalingError(count, true);
                 }
 
                 return init()
@@ -289,6 +288,10 @@ module.exports = class ProviderOVHCloud {
 
                 self._client.request('POST', '/cloud/project/{serviceName}/instance', options, (err, results) => {
                     if (err) {
+                        if (err === 409 && results.indexOf('more instances' >= 0)) {
+                            return reject(new ScalingError(count, false));
+                        }
+
                         return reject(`${err}: ${results}`);
                     }
 

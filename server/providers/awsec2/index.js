@@ -4,6 +4,7 @@ const _ = require('lodash'),
     Promise = require('bluebird'),
     AWS = require('aws-sdk'),
     InstanceModel = require('../../proxies/manager/instance.model'),
+    ScalingError = require('../../common/error/scaling'),
     winston = require('winston');
 
 
@@ -193,9 +194,7 @@ module.exports = class ProviderAWSEC2 {
                 winston.debug('[ProviderAWSEC2] createInstances: actualCount=%d', actualCount);
 
                 if (this._config.maxRunningInstances && actualCount + count > this._config.maxRunningInstances) {
-                    return reject(new Error(
-                        `[ProviderAWSEC2] createInstances: Cannot start instances (limit reach): ${actualCount} + ${count} > ${this._config.maxRunningInstances}`
-                    ));
+                    return reject(new ScalingError(count, true));
                 }
 
                 const runParams = _.merge({}, this._config.instance, {
@@ -209,6 +208,10 @@ module.exports = class ProviderAWSEC2 {
 
                 this._ec2.runInstances(runParams, (errParams, dataRun) => {
                     if (errParams) {
+                        if (errParams.code === 'InstanceLimitExceeded') {
+                            return reject(new ScalingError(count, false));
+                        }
+
                         return reject(errParams);
                     }
 

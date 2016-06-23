@@ -94,6 +94,15 @@ module.exports = class Commander {
             io.emit('event', payload);
         });
 
+        manager.on('scaling:error', (evScaling) => {
+            const payload = JSON.stringify({
+                event: 'scaling:error',
+                payload: evScaling.toString(),
+            });
+
+            io.emit('event', payload);
+        });
+
         stats.on('stats', (evStats) => {
             const payload = JSON.stringify({
                 event: 'stats',
