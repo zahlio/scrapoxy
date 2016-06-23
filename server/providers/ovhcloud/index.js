@@ -39,6 +39,10 @@ module.exports = class ProviderOVHCloud {
         return 'DELETING';
     }
 
+    static get ST_DELETED() {
+        return 'DELETED';
+    }
+
     static get ST_ERROR() {
         return 'ERROR';
     }
@@ -79,7 +83,9 @@ module.exports = class ProviderOVHCloud {
 
         function excludeTerminated(instancesDesc) {
             return _.filter(instancesDesc,
-                (instanceDesc) => instanceDesc.status !== ProviderOVHCloud.ST_DELETING
+                (instanceDesc) =>
+                instanceDesc.status !== ProviderOVHCloud.ST_DELETING &&
+                instanceDesc.status !== ProviderOVHCloud.ST_DELETED
             );
         }
 
@@ -148,7 +154,11 @@ module.exports = class ProviderOVHCloud {
         return self._describeInstances()
             .then((instances) => {
                 const actualCount = _(instances)
-                    .filter((instance) => instance.status !== ProviderOVHCloud.ST_DELETING)
+                    .filter(
+                        (instance) =>
+                        instance.status !== ProviderOVHCloud.ST_DELETING &&
+                        instance.status !== ProviderOVHCloud.ST_DELETED
+                    )
                     .size();
 
                 winston.debug('[ProviderOVHCloud] createInstances: actualCount=%d', actualCount);
