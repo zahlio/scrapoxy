@@ -326,6 +326,32 @@
 	                });
 	            });
 	        }
+	    }, {
+	        key: 'scaleMin',
+	        value: function scaleMin() {
+	            var _this3 = this;
+
+	            var scaling = _.cloneDeep(this.scaling);
+	            scaling.required = scaling.min;
+
+	            this.ScalingCacheService.updateScaling(scaling).catch(function (err) {
+	                _this3.$log.error(err);
+	                _this3.ToastService.error('Cannot update scaling: ' + err);
+	            });
+	        }
+	    }, {
+	        key: 'scaleMax',
+	        value: function scaleMax() {
+	            var _this4 = this;
+
+	            var scaling = _.cloneDeep(this.scaling);
+	            scaling.required = scaling.max;
+
+	            this.ScalingCacheService.updateScaling(scaling).catch(function (err) {
+	                _this4.$log.error(err);
+	                _this4.ToastService.error('Cannot update scaling: ' + err);
+	            });
+	        }
 	    }]);
 
 	    return Controller;
@@ -428,9 +454,9 @@
 	            var _this = this;
 
 	            this.InstancesCacheService.deleteInstance(this.container.content.name).then(function () {
-	                return _this.ToastService.success('Remove ' + _this.container.content.name + ' asked.');
-	            }).catch(function () {
-	                return _this.ToastService.error('Cannot ask to remove ' + _this.container.content.name);
+	                _this.ToastService.success('Remove ' + _this.container.content.name + ' asked.');
+	            }).catch(function (err) {
+	                _this.ToastService.error(err.data);
 	            });
 	        }
 	    }]);
@@ -602,6 +628,14 @@
 	        data: new _timeWindow2.default(self.scale, 60, false, false)
 	    };
 
+	    self.stop_order_count = {
+	        columns: {
+	            label1: 'Now',
+	            label2: 'Cumulated'
+	        },
+	        data: new _timeWindow2.default(self.scale, 60, true, true)
+	    };
+
 	    // Live stats
 	    var unwatch = $rootScope.$on('stats', function (ev, d) {
 	        return addData(d);
@@ -614,6 +648,7 @@
 	        StatsService.getAll(scale).then(function (data) {
 	            self.requests.data.clear(scale);
 	            self.flow.data.clear(scale);
+	            self.stop_order_count.data.clear(scale);
 
 	            data.forEach(addData);
 	        });
@@ -634,6 +669,16 @@
 	                label1: b2kb(data.flow.bytes_received),
 	                label2: b2kb(data.flow.bytes_sent)
 	            });
+	        }
+
+	        if (self.stop_order_count.data) {
+	            self.stop_order_count.data.add({
+	                ts: data.ts,
+	                label1: data.stop_order_count.now,
+	                label2: data.stop_order_count.total
+	            });
+
+	            data.global.stop_order_count = data.stop_order_count.total;
 	        }
 
 	        data.global.kbytes_received = b2kb(data.global.bytes_received);
@@ -1952,8 +1997,8 @@
 /******/ ]);
 angular.module('myApp').run(['$templateCache', function($templateCache) {$templateCache.put('app/home/home.html','<div class="home"><navbar></navbar><div ui-view=""></div></div>');
 $templateCache.put('app/login/login.html','<div class="login"><div class="container"><div class="row"><div class="col-md-6 col-md-offset-4"><div class="login-logo"><img src="assets/images/logo400.png"></div><div class="panel panel-default"><div class="panel-heading"><h3 class="panel-title">Please sign in</h3></div><div class="panel-body"><form name="myForm" role="form" no-validate="" ng-submit="vm.login()"><fieldset><div class="form-group" ng-class="{\'has-error\': myForm.password.$invalid && myForm.password.$dirty}"><input class="form-control" placeholder="Password" name="password" type="password" ng-model="vm.password" required=""> <span class="help-block" ng-messages="myForm.password.$error" ng-show="myForm.password.$invalid && myForm.password.$dirty"><span ng-message="required">Password is empty</span></span></div><input class="btn btn-lg btn-success btn-block" type="submit" value="Login" ng-disabled="myForm.$invalid"></fieldset></form></div></div></div></div></div></div>');
-$templateCache.put('app/home/instances/instances.html','<section class="instances"><div class="container-fluid"><div class="row"><div class="col-xs-12"><div class="panel panel-default"><div class="panel-heading"><div class="panel-title">Instances<div class="instances-scaling pull-right">Min: <span ng-bind="vm.scaling.min"></span> / Required: <span ng-bind="vm.scaling.required"></span> / Max: <span ng-bind="vm.scaling.max"></span> <button class="btn btn-default btn-xs" type="button" ng-click="vm.openScalingModal()">Scaling</button></div></div></div><div class="panel-body"><div class="row"><div class="col-sm-2" ng-repeat="instance in vm.instances track by instance.content.name" ng-show="vm.instances.length > 0"><instance container="instance"></instance></div><div class="col-sm-12 list-empty" ng-show="vm.instances.length <= 0"><i class="icon icon-empty"></i> <span>No instance found</span></div></div></div></div></div></div></div></section>');
+$templateCache.put('app/home/instances/instances.html','<section class="instances"><div class="container-fluid"><div class="row"><div class="col-xs-12"><div class="panel panel-default"><div class="panel-heading"><div class="panel-title">Instances<div class="instances-scaling pull-right">Min: <span ng-bind="vm.scaling.min"></span> / Required: <span ng-bind="vm.scaling.required"></span> / Max: <span ng-bind="vm.scaling.max"></span><div class="btn-group" role="group"><button class="btn btn-default btn-xs" type="button" ng-click="vm.scaleMax()"><i class="icon icon-starting"></i></button> <button class="btn btn-default btn-xs" type="button" ng-click="vm.openScalingModal()">Scaling</button> <button class="btn btn-default btn-xs" type="button" ng-click="vm.scaleMin()"><i class="icon icon-stopping"></i></button></div></div></div></div><div class="panel-body"><div class="row"><div class="col-sm-2" ng-repeat="instance in vm.instances track by instance.content.name" ng-show="vm.instances.length > 0"><instance container="instance"></instance></div><div class="col-sm-12 list-empty" ng-show="vm.instances.length <= 0"><i class="icon icon-empty"></i> <span>No instance found</span></div></div></div></div></div></div></div></section>');
 $templateCache.put('app/home/navbar/navbar.html','<nav class="navbar navbar-default navbar-fixed-top"><div class="container-fluid"><div class="navbar-header"><button type="button" class="navbar-toggle" ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed"><span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button><div class="navbar-brand"><img src="assets/images/logo35h.png"></div></div><div class="navbar-collapse" ng-class="{collapse: navCollapsed}"><ul class="nav navbar-nav"><li ui-sref-active="active"><a ui-sref="home.instances">Instances</a></li><li ui-sref-active="active"><a ui-sref="home.stats">Stats</a></li></ul><ul class="nav navbar-nav navbar-right"><li><a ng-click="vm.logout()"><i class="icon icon-sign-out"></i> Logout</a></li></ul></div></div></nav>');
-$templateCache.put('app/home/stats/stats.html','<section class="stats"><div class="container-fluid"><div class="row"><div class="col-xs-12"><div class="panel panel-default stats-global"><div class="panel-heading"><div class="panel-title">Global stats<div class="btn-group pull-right" role="group"><button type="button" class="btn btn-default btn-xs" ng-class="{\'active\': vm.scale === 60000}" ng-click="vm.scale = 60000">1m</button> <button type="button" class="btn btn-default btn-xs" ng-class="{\'active\': vm.scale === 3600000}" ng-click="vm.scale = 3600000">1h</button> <button type="button" class="btn btn-default btn-xs" ng-class="{\'active\': vm.scale === 86400000}" ng-click="vm.scale = 86400000">1d</button></div></div></div><div class="panel-body"><div class="row"><div class="stats-global-item col-sm-6">Count of requests: <span ng-bind="vm.global.rq_count"></span></div><div class="stats-global-item col-sm-6">Received: <span ng-bind="vm.global.kbytes_received"></span>kb / Sent: <span ng-bind="vm.global.kbytes_sent"></span>kb</div></div><div class="row"><div class="stats-global-item col-sm-6">Stop orders: <span ng-bind="vm.global.stop_order_count"></span></div><div class="stats-global-item col-sm-6">Requests before stop (min/avg/max): <span ng-if="vm.global.rq_before_stop"><span ng-bind="vm.global.rq_before_stop.min"></span> / <span ng-bind="vm.global.rq_before_stop.avg"></span> / <span ng-bind="vm.global.rq_before_stop.max"></span></span> <span ng-if="!vm.global.rq_before_stop">none</span></div></div></div></div></div><div class="col-xs-12"><div class="panel panel-default"><div class="panel-heading"><div class="panel-title">Requests</div></div><div class="panel-body"><timechart columns="vm.requests.columns" data="vm.requests.data"></timechart></div></div></div><div class="col-xs-12"><div class="panel panel-default"><div class="panel-heading"><div class="panel-title">Flow</div></div><div class="panel-body"><timechart columns="vm.flow.columns" data="vm.flow.data"></timechart></div></div></div></div></div></section>');
+$templateCache.put('app/home/stats/stats.html','<section class="stats"><div class="container-fluid"><div class="row"><div class="col-xs-12"><div class="panel panel-default stats-global"><div class="panel-heading"><div class="panel-title">Global stats<div class="btn-group pull-right" role="group"><button type="button" class="btn btn-default btn-xs" ng-class="{\'active\': vm.scale === 60000}" ng-click="vm.scale = 60000">1m</button> <button type="button" class="btn btn-default btn-xs" ng-class="{\'active\': vm.scale === 300000}" ng-click="vm.scale = 300000">5m</button> <button type="button" class="btn btn-default btn-xs" ng-class="{\'active\': vm.scale === 600000}" ng-click="vm.scale = 600000">10m</button> <button type="button" class="btn btn-default btn-xs" ng-class="{\'active\': vm.scale === 3600000}" ng-click="vm.scale = 3600000">1h</button> <button type="button" class="btn btn-default btn-xs" ng-class="{\'active\': vm.scale === 18000000}" ng-click="vm.scale = 18000000">5h</button> <button type="button" class="btn btn-default btn-xs" ng-class="{\'active\': vm.scale === 86400000}" ng-click="vm.scale = 86400000">1d</button></div></div></div><div class="panel-body"><div class="row"><div class="stats-global-item col-sm-6">Count of Requests: <span ng-bind="vm.global.rq_count"></span></div><div class="stats-global-item col-sm-6">Received: <span ng-bind="vm.global.kbytes_received"></span>kb / Sent: <span ng-bind="vm.global.kbytes_sent"></span>kb</div></div><div class="row"><div class="stats-global-item col-sm-6">Count of Stop orders: <span ng-bind="vm.global.stop_order_count"></span></div><div class="stats-global-item col-sm-6">Requests before stop (min/avg/max): <span ng-if="vm.global.rq_before_stop"><span ng-bind="vm.global.rq_before_stop.min"></span> / <span ng-bind="vm.global.rq_before_stop.avg"></span> / <span ng-bind="vm.global.rq_before_stop.max"></span></span> <span ng-if="!vm.global.rq_before_stop">none</span></div></div></div></div></div><div class="col-xs-12"><div class="panel panel-default"><div class="panel-heading"><div class="panel-title">Count of Requests</div></div><div class="panel-body"><timechart columns="vm.requests.columns" data="vm.requests.data"></timechart></div></div></div><div class="col-xs-12"><div class="panel panel-default"><div class="panel-heading"><div class="panel-title">Flow</div></div><div class="panel-body"><timechart columns="vm.flow.columns" data="vm.flow.data"></timechart></div></div></div><div class="col-xs-12"><div class="panel panel-default"><div class="panel-heading"><div class="panel-title">Count of Stop orders</div></div><div class="panel-body"><timechart columns="vm.stop_order_count.columns" data="vm.stop_order_count.data"></timechart></div></div></div></div></div></section>');
 $templateCache.put('app/home/instances/instance/instance.html','<div class="instance"><div class="instance-info"><div class="instance-name" ng-bind="vm.container.content.name | limitTo:13"></div><div class="instance-address" ng-bind="vm.container.content.address | address"></div><div class="instance-icons"><div class="instance-type"><i class="icon" ng-class="vm.IconsService.getProviderType(vm.container.content.type)"></i></div><div class="instance-status"><i class="icon" ng-class="vm.IconsService.getStatus(vm.container.content.status)"></i></div><div class="instance-alive"><i class="icon" ng-class="vm.IconsService.isAlive(vm.container.content.alive)"></i></div></div></div><div class="instance-button" ng-click="vm.kill()"><i class="icon icon-stopped"></i></div></div>');
 $templateCache.put('app/home/instances/scaling/scaling.html','<div class="modal-container scaling"><div class="modal-header"><h3 class="modal-title">Update scaling</h3></div><div class="modal-body"><form class="form-inline" name="scalingForm"><div class="form-group" ng-class="{\'has-error\': scalingForm.scalingMin.$invalid}"><label for="scalingMin">Min:</label> <input type="number" class="form-control" id="scalingMin" name="scalingMin" ng-model="vm.scaling.min" required=""></div><div class="form-group" ng-class="{\'has-error\': scalingForm.scalingRequired.$invalid}"><label for="scalingRequired">Required:</label> <input type="number" class="form-control" id="scalingRequired" name="scalingRequired" ng-model="vm.scaling.required" scaling-validator="" scmin="vm.scaling.min" scmax="vm.scaling.max" required=""></div><div class="form-group" ng-class="{\'has-error\': scalingForm.scalingMax.$invalid}"><label for="scalingMax">Max:</label> <input type="number" class="form-control" id="scalingMax" name="scalingMax" ng-model="vm.scaling.max" required=""></div><div class="help-block has-error" ng-messages="scalingForm.$error" ng-show="scalingForm.$invalid"><div ng-message="required">All fields are required</div><div ng-message="scmin">Required must be less or equal than Min</div><div ng-message="scmax">Required must be greater or equal than Max</div></div></form></div><div class="modal-footer"><button class="btn btn-primary" type="button" ng-click="vm.ok()" ng-disabled="scalingForm.$invalid">Update</button> <button class="btn btn-warning" type="button" ng-click="vm.cancel()">Cancel</button></div></div>');}]);
