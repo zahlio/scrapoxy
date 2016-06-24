@@ -2,6 +2,32 @@
 Changelog
 =========
 
+
+2.3.4
+=====
+
+Features
+--------
+
+- **stats**: monitor stop count history
+- **stats**: add 3 more scales: 5m, 10m and 1h
+- **logs**: normalize logs and add more informations
+- **scaling**: pop a message when maximum number of instances is reached in a provider
+- **scaling**: add quick scaling buttons
+- **docs**: explain why Scrapoxy doesn't accept CONNECT mode
+- **docs**: explain how User Agent is overwritten
+
+
+`
+Bug fixes
+---------
+
+- **dependencies**: upgrade dependencies
+- **ovh**: monitor **DELETED** status
+- **docs**: add example to test scrapoxy with credentials
+- **commander**: manage twice instance remove
+
+
 2.3.3
 =====
 
