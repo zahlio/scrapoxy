@@ -1,7 +1,6 @@
 'use strict';
 
-const _ = require('lodash'),
-    EventEmitter = require('events').EventEmitter,
+const EventEmitter = require('events').EventEmitter,
     TimeCounter = require('./time-counter'),
     TimeWindow = require('./time-window');
 
@@ -23,7 +22,8 @@ module.exports = class Stats extends EventEmitter {
 
         // Counter
         self._counter = {
-            stop_order_count: 0,
+            stop_order_count_now: 0,
+            stop_order_count_total: 0,
             rq_count: 0,
             bytes_sent: 0,
             bytes_received: 0,
@@ -49,7 +49,15 @@ module.exports = class Stats extends EventEmitter {
                     bytes_sent: self._buffer.flow.bytes_sent,
                     bytes_received: self._buffer.flow.bytes_received,
                 },
-                global: _.cloneDeep(self._counter),
+                stop_order_count: {
+                    now: self._counter.stop_order_count_now,
+                    total: self._counter.stop_order_count_total,
+                },
+                global: {
+                    rq_count: self._counter.rq_count,
+                    bytes_sent: self._counter.bytes_sent,
+                    bytes_received: self._counter.bytes_received,
+                },
             };
 
             if (self._rqCount) {
@@ -61,6 +69,7 @@ module.exports = class Stats extends EventEmitter {
             }
 
             self._buffer = createEmptyBuffer();
+            self._counter.stop_order_count_now = 0;
 
             self.emit('stats', stats);
         }
@@ -94,8 +103,9 @@ module.exports = class Stats extends EventEmitter {
     }
 
 
-    addRqCount(count) {
-        ++this._counter.stop_order_count;
+    countRequests(count) {
+        ++this._counter.stop_order_count_total;
+        ++this._counter.stop_order_count_now;
 
         if (!count) {
             // Don't add immediate blacklisting

@@ -107,7 +107,7 @@ module.exports = class Instance extends EventEmitter {
         // Count stopped instances
         self.on('alive:updated', (alive) => {
             if (!alive) {
-                self._stats.addRqCount(self._rqCount);
+                self._stats.countRequests(self._rqCount);
                 self._rqCount = 0;
             }
         });
