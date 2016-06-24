@@ -117,10 +117,19 @@ When the scraper receives a response, this header is extracted.
 The scraper adds this header to the next request.
 
 
+Does Scrapoxy override User Agent ?
+-----------------------------------
+
+Yes. When an instance starts (or restarts), it gets a random User Agent (from the `User Agent list`_).
+
+When the instance receives a request, it **overrides** the User Agent.
+
+
 .. _`AWS / EC2`: https://aws.amazon.com/ec2
 .. _`Node.js`: https://nodejs.org
 .. _Python: https://www.python.org
 .. _Request: https://www.npmjs.com/package/request
 .. _Scrapy: http://scrapy.org
 .. _Squid: http://www.squid-cache.org
-.. _Tinyproxy: https://banu.com/tinyproxy/
+.. _Tinyproxy: https://banu.com/tinyproxy
+.. _`User Agent list`: https://github.com/fabienvauchelles/scrapoxy/blob/master/server/proxies/manager/useragent/index.js
