@@ -18,7 +18,6 @@ Features
 - **docs**: explain how User Agent is overwritten
 
 
-`
 Bug fixes
 ---------
 
