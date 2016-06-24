@@ -53,7 +53,15 @@ module.exports = class DigitalOceanAPI {
             path: `/droplets/${id}`,
         };
 
-        return this._makeRequest(options);
+        return this._makeRequest(options)
+            .catch((err) => {
+                if (err.message) {
+                    throw err.message;
+                }
+                else {
+                    throw err;
+                }
+            });
     }
 
 
