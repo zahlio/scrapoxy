@@ -64,20 +64,20 @@ if (!program.args.length) {
 
 function initConfig(configFilename) {
     if (!configFilename || configFilename.length <= 0) {
-        return winston.error('Error: Config file not specified');
+        return winston.error('[Template] Error: Config file not specified');
     }
 
     fs.exists(configFilename, (exists) => {
         if (exists) {
-            return winston.error('Error: config file already exists');
+            return winston.error('[Template] Error: Config file already exists');
         }
 
         template.write(configFilename, (err) => {
             if (err) {
-                return winston.error('[Template] Cannot write template to %s', configFilename);
+                return winston.error('[Template] Error: Cannot write template to', configFilename);
             }
 
-            winston.info('Template written in %s', configFilename);
+            winston.info('[Template] Template written in', configFilename);
         });
     });
 }
@@ -85,7 +85,7 @@ function initConfig(configFilename) {
 
 function startProxy(configFilename) {
     if (!configFilename || configFilename.length <= 0) {
-        return winston.error('Error: Config file not specified');
+        return winston.error('[Start] Error: Config file not specified');
     }
 
     configFilename = path.resolve(process.cwd(), configFilename);
@@ -96,7 +96,7 @@ function startProxy(configFilename) {
         config = _.merge({}, configDefaults, require(configFilename));
     }
     catch (err) {
-        return winston.error('Error: Cannot load config (%s)', err.toString());
+        return winston.error('[Start] Error: Cannot load config:', err);
     }
 
     // Write logs (if specified)
@@ -111,7 +111,7 @@ function startProxy(configFilename) {
     // Initialize
     const provider = getProvider(config);
     if (!provider) {
-        return winston.error('Error: Provider is not specify or supported');
+        return winston.error('[Start] Error: Provider is not specify or supported');
     }
 
     const main = new Proxies(config, provider);
@@ -158,7 +158,7 @@ function startProxy(configFilename) {
 
 function testProxy(proxyUrl, count) {
     if (!proxyUrl || proxyUrl.length <= 0) {
-        return winston.error('Error: URL not specified');
+        return winston.error('[Test] Error: URL not specified');
     }
 
     // Default: 10 / Max: 1000
@@ -174,19 +174,21 @@ function testProxy(proxyUrl, count) {
     Promise
         .all(promises)
         .then(() => {
-            winston.info('%d IPs found:', proxy.size);
+            winston.info('[Test] %d IPs found:', proxy.size);
 
             proxy.count.forEach(
-                (value, key) => winston.info('%s (%d times)', key, value)
+                (value, key) => winston.info('[Test] %s (%d times)', key, value)
             );
         })
-        .catch((err) => winston.error('Error:', err));
+        .catch((err) => {
+            winston.error('[Test] Error: Cannot get IP address:', err);
+        });
 }
 
 
 function ovhConsumerKey(endpoint, appKey, appSecret) {
     if (!appKey || appKey.length <= 0 || !appSecret || appSecret.length <= 0) {
-        return winston.error('Error: appKey or appSecret not specified');
+        return winston.error('[OVH] Error: appKey or appSecret not specified');
     }
 
     const client = ovh({
@@ -204,11 +206,11 @@ function ovhConsumerKey(endpoint, appKey, appSecret) {
         ],
     }, (err, credential) => {
         if (err) {
-            return winston.error('Cannot get consumerKey: ', err);
+            return winston.error('[OVH] Error: Cannot get consumerKey:', err);
         }
 
-        winston.info('Your consumerKey is: %s', credential.consumerKey);
-        winston.info('Please validate your token here: %s', credential.validationUrl);
+        winston.info('[OVH] Your consumerKey is:', credential.consumerKey);
+        winston.info('[OVH] Please validate your token here:', credential.validationUrl);
     });
 }
 

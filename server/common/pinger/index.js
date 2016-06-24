@@ -19,7 +19,7 @@ function ping(options) {
         throw new Error('[ping] should have hostname and port');
     }
 
-    winston.debug('[pinger] ping: hostname=%s / port=%d', options.hostname, options.port);
+    winston.debug('[Pinger] ping: hostname=%s / port=%d', options.hostname, options.port);
 
     // Set default timeout to 5s
     options.timeout = options.timeout || 5000;
@@ -45,7 +45,7 @@ function ping(options) {
             // Connexion error: timeout
             s.destroy();
 
-            reject(Error('Request timeout'));
+            reject(new Error('Request timeout'));
         });
     });
 }
@@ -58,7 +58,7 @@ function pingRetry(options, retry, retryDelay) {
 
     retry = retry || 0;
 
-    winston.debug('[pinger] pingRetry: hostname=%s / port=%d / retry=%d / retryDelay=%d', options.hostname, options.port, retry, retryDelay);
+    winston.debug('[Pinger] pingRetry: hostname=%s / port=%d / retry=%d / retryDelay=%d', options.hostname, options.port, retry, retryDelay);
 
     return ping(options)
         .catch((err) => {
@@ -74,10 +74,10 @@ function pingRetry(options, retry, retryDelay) {
 
 function waitPing(options, retryDelay, timeout) {
     if (!options || !options.hostname || !options.port || !retryDelay) {
-        throw new Error('[waitPing] should have hostname, port and retryDelay');
+        throw new Error('[Pinger] waitPing: should have hostname, port and retryDelay');
     }
 
-    winston.debug('[pinger] waitPing: hostname=%s / port=%d / timeout=%d / retryDelay=%d', options.hostname, options.port, timeout, retryDelay);
+    winston.debug('[Pinger] waitPing: hostname=%s / port=%d / timeout=%d / retryDelay=%d', options.hostname, options.port, timeout, retryDelay);
 
     const start = new Date().getTime();
 
@@ -87,7 +87,7 @@ function waitPing(options, retryDelay, timeout) {
     ////////////
 
     function pingImpl() {
-        winston.debug('[pinger] waitPing: try %s:%d', options.hostname, options.port);
+        winston.debug('[Pinger] waitPing: try %s:%d', options.hostname, options.port);
 
         return ping(options)
             .catch((err) => {

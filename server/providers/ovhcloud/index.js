@@ -137,7 +137,7 @@ module.exports = class ProviderOVHCloud {
                     }
                     default:
                     {
-                        winston.error('[ProviderOVHCloud] Unknown status: ', status);
+                        winston.error('[ProviderOVHCloud] Error: Found unknown status:', status);
 
                         return InstanceModel.ERROR;
                     }

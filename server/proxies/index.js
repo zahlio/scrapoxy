@@ -13,7 +13,7 @@ module.exports = class Proxies {
         this._provider = provider;
 
         // Show provider name
-        winston.info('The selected provider is %s', this._provider.name);
+        winston.info('[Main] The selected provider is', this._provider.name);
 
         // Stats
         this._stats = new Stats(this._config.stats);
@@ -79,6 +79,6 @@ module.exports = class Proxies {
 
         return this._manager
             .stop()
-            .then(() => winston.info('All instances are stopped.'));
+            .then(() => winston.info('[Main] All instances are stopped.'));
     }
 };

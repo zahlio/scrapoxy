@@ -163,7 +163,7 @@ module.exports = class ProviderAWSEC2 {
                     }
                     default:
                     {
-                        winston.error('[ProviderAWSEC2] Unknown status: ', status);
+                        winston.error('[ProviderAWSEC2] Error: Found unknown status:', status);
 
                         return InstanceModel.ERROR;
                     }

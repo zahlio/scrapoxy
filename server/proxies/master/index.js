@@ -49,18 +49,9 @@ module.exports = class Master {
                         'Proxy-Authenticate': 'Basic realm="Scrapoxy"',
                         'Content-Type': 'text/plain',
                     });
-                    return res.end('Wrong proxy credentials');
+                    return res.end('[Master] Error: Wrong proxy credentials');
                 }
             }
-
-            // Log errors
-            req.on('error',
-                (err) => winston.error('[Master] request (error client) %s %s => %s', req.method, req.url, err.toString())
-            );
-
-            res.on('error',
-                (err) => winston.error('[Master] request (error client) %s %s => %s', req.method, req.url, err.toString())
-            );
 
             // Trigger scaling if necessary
             self._manager.requestReceived();
@@ -76,8 +67,21 @@ module.exports = class Master {
             if (!instance) {
                 res.writeHead(407);
 
-                return res.end('No running instance found');
+                return res.end('[Master] Error: No running instance found');
             }
+
+            // Log errors
+            req.on('error',
+                (err) => {
+                    winston.error('[Master] Error: request error from client (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
+                }
+            );
+
+            res.on('error',
+                (err) => {
+                    winston.error('[Master] Error: response error from client (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
+                }
+            );
 
             // Update headers
             instance.updateRequestHeaders(req.headers);
@@ -93,10 +97,10 @@ module.exports = class Master {
             const proxy_req = http.request(proxyOpts);
 
             proxy_req.on('error', (err) => {
-                winston.error('[Master] request (error proxy) %s %s => %s', req.method, req.url, err.toString());
+                winston.error('[Master] Error: request error from target (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
 
                 res.writeHead(500);
-                res.end(`Error in proxy request: ${err.toString()}`);
+                res.end(`[Master] Error: request error from target (${req.method} ${req.url} on instance ${instance.toString()}): ${err.toString()}`);
             });
 
             // Start timer
@@ -104,10 +108,10 @@ module.exports = class Master {
 
             proxy_req.on('response', (proxy_res) => {
                 proxy_res.on('error', (err) => {
-                    winston.error('[Master] response (error proxy) %s %s => %s', req.method, req.url, err.toString());
+                    winston.error('[Master] Error: response error from target (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
 
                     res.writeHead(500);
-                    res.end(`Error in proxy response: ${err.toString()}`);
+                    res.end(`[Master] Error: response error from target (${req.method} ${req.url} on instance ${instance.toString()}): ${err.toString()}`);
                 });
 
                 proxy_res.on('end', () => {

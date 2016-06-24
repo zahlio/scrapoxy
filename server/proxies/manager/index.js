@@ -76,7 +76,7 @@ module.exports = class Manager extends EventEmitter {
                         self.emit('scaling:error', err);
                     }
 
-                    winston.error('[Manager] error: ', err);
+                    winston.error('[Manager] Error: Cannot update or adjust instances:', err);
                 });
 
 
@@ -100,7 +100,7 @@ module.exports = class Manager extends EventEmitter {
                     }
                     else {
                         // Add
-                        winston.debug('[Manager] checkInstances: add: ', model.toString());
+                        winston.debug('[Manager] checkInstances: add:', model.toString());
 
                         instance = new Instance(self, self._stats, self._provider, self._config);
                         self._managedInstances.set(name, instance);
@@ -115,7 +115,7 @@ module.exports = class Manager extends EventEmitter {
                 existingNames.forEach((name) => {
                     const instance = self._managedInstances.get(name);
 
-                    winston.debug('[Manager] checkInstances: remove: ', instance.model.toString());
+                    winston.debug('[Manager] checkInstances: remove:', instance.model.toString());
 
                     self._managedInstances.delete(name);
 

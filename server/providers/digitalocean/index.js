@@ -114,7 +114,7 @@ module.exports = class ProviderDigitalOcean {
                     }
                     default:
                     {
-                        winston.error('[ProviderDigitalOcean] Unknown status: ', status);
+                        winston.error('[ProviderDigitalOcean] Error: Found unknown status:', status);
 
                         return InstanceModel.ERROR;
                     }

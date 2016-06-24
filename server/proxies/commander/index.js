@@ -124,7 +124,7 @@ module.exports = class Commander {
                     );
                 }
 
-                winston.info('GUI is available at http://localhost:%d', this._config.commander.port);
+                winston.info('[Commander] GUI is available at http://localhost:%d', this._config.commander.port);
 
                 resolve();
             });
