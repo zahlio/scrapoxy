@@ -37,6 +37,26 @@ The URL is: http://myuser:mypassword@localhost:8888
 (replace *myuser* and *mypassword* with your credentials).
 
 
+Step 3: Test credentials
+------------------------
+
+Open a new terminal and test Scrapoxy without credentials:
+
+::
+
+    scrapoxy test http://localhost:8888
+
+It doesn't work.
+
+Now, test Scrapoxy with your credentials:
+
+::
+
+    scrapoxy test http://myuser:mypassword@localhost:8888
+
+(replace *myuser* and *mypassword* with your credentials).
+
+
 Secure Scrapoxy with a firewall on Ubuntu
 =========================================
 
