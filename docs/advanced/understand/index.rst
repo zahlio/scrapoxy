@@ -100,6 +100,12 @@ With Request_ (`Node.js`_), add *tunnel:false* to options::
     }, (err, response, body) => {...});
 
 
+Do Scrapoxy can proxy CONNECT requests ?
+----------------------------------------
+
+No. CONNECT requests are like encrypted requests. And Scrapoxy needs to decode all requests to modify HTTP headers.
+
+
 What is the proxy that returned the response ?
 ----------------------------------------------
 
