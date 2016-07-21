@@ -20,6 +20,8 @@ module.exports = class Manager extends EventEmitter {
         this._aliveInstances = [];
         this._aliveInstancesMap = new Map();
 
+        this._checkInstancePromise = void 0;
+
         this._domains = new Map();
 
         this._config.scaling.required = this._config.scaling.required || this._config.scaling.min;
@@ -68,16 +70,21 @@ module.exports = class Manager extends EventEmitter {
         function checkInstances() {
             winston.debug('[Manager] checkInstances');
 
-            self._provider.models
-                .then(updateInstances)
-                .then(adjustInstances)
-                .catch((err) => {
-                    if (err instanceof ScalingError) {
-                        self.emit('scaling:error', err);
-                    }
+            if (!self._checkInstancePromise) {
+                self._checkInstancePromise = self._provider.models
+                    .then(updateInstances)
+                    .then(adjustInstances)
+                    .catch((err) => {
+                        if (err instanceof ScalingError) {
+                            self.emit('scaling:error', err);
+                        }
 
-                    winston.error('[Manager] Error: Cannot update or adjust instances:', err);
-                });
+                        winston.error('[Manager] Error: Cannot update or adjust instances:', err);
+                    })
+                    .finally(() => {
+                        self._checkInstancePromise = void 0;
+                    });
+            }
 
 
             ////////////
