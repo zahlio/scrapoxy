@@ -6,6 +6,7 @@ const _ = require('lodash'),
     Promise = require('bluebird'),
     ProviderAWSEC2 = require('./providers/awsec2'),
     ProviderDigitalOcean = require('./providers/digitalocean'),
+    ProviderLinode = require('./providers/linode'),
     ProviderOVHCloud = require('./providers/ovhcloud'),
     fs = require('fs'),
     moment = require('moment'),
@@ -140,6 +141,11 @@ function startProxy(configFilename) {
             case 'digitalocean':
             {
                 return new ProviderDigitalOcean(cfg.providers.digitalocean, cfg.instance.port);
+            }
+
+            case 'linode':
+            {
+                return new ProviderLinode(cfg.providers.linode, cfg.instance.port);
             }
 
             case 'ovhcloud':
