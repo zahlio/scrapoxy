@@ -134,6 +134,10 @@ module.exports = class LinodeAPI {
                     return reject(err);
                 }
 
+                if (res.statusCode !== 200) {
+                    return reject(body);
+                }
+
                 const parsed = JSON.parse(body);
                 if (parsed.ERRORARRAY.length > 0) {
                     return reject(parsed.ERRORARRAY);
