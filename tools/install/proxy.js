@@ -1,22 +1,22 @@
 'use strict';
 
-var http = require('http'),
+const http = require('http'),
     net = require('net');
 
 
-var config = {
+const config = {
     port: process.env.port || 3128,
 };
 
 
 // Create server
-var server = http.createServer();
+const server = http.createServer();
 
 // Accept client
-server.on('connect', function(req, socket, head) {
+server.on('connect', (req, socket, head) => {
 
     // Decrypt target
-    parseTarget(req.url, function(err, target) {
+    parseTarget(req.url, (err, target) => {
         if (err) {
             console.error('Error (parsing): ', err);
             return socket.end();
@@ -24,15 +24,15 @@ server.on('connect', function(req, socket, head) {
 
         // Connect to target
         console.log('connect to %s, port %d', target.hostname, target.port);
-        var proxy_socket = net.Socket();
+        const proxy_socket = net.Socket();
         proxy_socket.connect(target.port, target.hostname);
 
-        socket.on('error', function(err) {
+        socket.on('error', (err) => {
             console.error('Error (socket): ', err);
             proxy_socket.end();
         });
 
-        proxy_socket.on('error', function(err) {
+        proxy_socket.on('error', (err) => {
             console.error('Error (proxy_socket): ', err);
             socket.end();
         });
@@ -46,8 +46,10 @@ server.on('connect', function(req, socket, head) {
     });
 });
 
-server.listen(config.port, function(err) {
-    if (err) console.error('cannot start proxy');
+server.listen(config.port, (err) => {
+    if (err) {
+        return console.error('cannot start proxy');
+    }
 
     console.log('proxy listening at port %d', config.port);
 });
@@ -58,20 +60,17 @@ server.listen(config.port, function(err) {
 function parseTarget(url, callback) {
     if (!url) return callback('No URL found');
 
-    var part = url.split(':');
+    const part = url.split(':');
     if (part.length !== 2) {
-        return callback('Cannot parse target: ' + url);
+        return callback(`Cannot parse target: ${url}`);
     }
 
-    var hostname = part[0],
+    const hostname = part[0],
         port = parseInt(part[1]);
 
     if (!hostname || !port) {
-        return callback('Cannot parse target (2): ' + url);
+        return callback(`Cannot parse target (2): ${url}`);
     }
 
-    callback(null, {
-        hostname: hostname,
-        port: port,
-    });
+    callback(null, {hostname, port});
 }
