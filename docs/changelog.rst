@@ -3,6 +3,16 @@ Changelog
 =========
 
 
+2.3.5
+=====
+
+Features
+--------
+
+- **instance**: change `Node.js`_ version to 6.x
+- **ping**: use an HTTP ping instead a TCP ping
+
+
 2.3.4
 =====
 
