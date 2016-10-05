@@ -41,6 +41,7 @@ module.exports = class ProxyAgent extends http.Agent {
                 return callback(false, socket);
             }
 
+            // TODO: Should be moved to configuration ?
             process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // Allow wrong certificates
 
             const cts = tls.connect({
