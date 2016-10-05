@@ -10,7 +10,9 @@ Features
 --------
 
 - **instance**: change `Node.js`_ version to 6.x
-- **ping**: use an HTTP ping instead a TCP ping
+- **ping**: use an HTTP ping instead a TCP ping.
+
+**Please rebuild instance image.**
 
 
 2.3.4
