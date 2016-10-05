@@ -1,7 +1,7 @@
 'use strict';
 
 const Promise = require('bluebird'),
-    net = require('net'),
+    request = require('request'),
     winston = require('winston');
 
 
@@ -21,31 +21,23 @@ function ping(options) {
 
     winston.debug('[Pinger] ping: hostname=%s / port=%d', options.hostname, options.port);
 
-    // Set default timeout to 5s
-    options.timeout = options.timeout || 5000;
+    const opts = {
+        method: 'GET',
+        url: `http://${options.hostname}:${options.port}/ping`,
+        timeout: options.timeout || 5000 // Set default timeout to 5s
+    };
 
     return new Promise((resolve, reject) => {
-        const s = new net.Socket();
+        request(opts, (err, res, body) => {
+            if (err) {
+                return reject(err);
+            }
 
-        s.connect(options.port, options.hostname, () => {
-            // Connected !
-            s.destroy();
+            if (res.statusCode !== 200) {
+                return reject(body);
+            }
 
-            resolve();
-        });
-
-        s.on('error', (err) => {
-            // Connexion error
-            s.destroy();
-
-            reject(err);
-        });
-
-        s.setTimeout(options.timeout, () => {
-            // Connexion error: timeout
-            s.destroy();
-
-            reject(new Error('Request timeout'));
+            return resolve(body);
         });
     });
 }

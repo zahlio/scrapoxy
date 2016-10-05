@@ -12,7 +12,7 @@ const config = {
 // Create server
 const server = http.createServer();
 
-// Accept client
+// Accept client via CONNECT method
 server.on('connect', (req, socket, head) => {
 
     // Decrypt target
@@ -44,6 +44,20 @@ server.on('connect', (req, socket, head) => {
         // Pipe data
         socket.pipe(proxy_socket).pipe(socket);
     });
+});
+
+// Response to PING on GET /ping
+server.on('request', (req, res) => {
+    if (req.method === 'GET' && req.url === '/ping') {
+        setTimeout(() => {
+            res.statusCode = 200;
+            res.end();
+        }, 1000);
+    }
+    else {
+        res.statusCode = 404;
+        res.end();
+    }
 });
 
 server.listen(config.port, (err) => {
