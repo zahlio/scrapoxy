@@ -3,7 +3,7 @@ Tutorial: AWS / EC2 - Copy an AMI from a region to another
 ==========================================================
 
 
-AMI (and security groups) are restricted to a region. 
+AMI (and security groups) are restricted to a region.
 
 A AMI in eu-west-1 is not available in eu-central-1.
 
@@ -33,7 +33,7 @@ Step 4: Find the public AMI
 ===========================
  
 1. Click on *AMIs*
-2. Search *ami-1aa0ea6d*
+2. Search *ami-c74d0db4*
 
 .. image:: step_1.jpg
 

@@ -41,7 +41,7 @@ module.exports = _.merge({}, configDefaults, {
             region: 'eu-west-1',
             instance: {
                 InstanceType: 't1.micro',
-                ImageId: 'ami-2d7b465a',
+                ImageId: 'ami-c74d0db4',
                 SecurityGroups: [
                     'forward-proxy',
                 ],

@@ -33,7 +33,7 @@ const template = {
             region: 'YOUR REGION (could be: eu-west-1)',
             instance: {
                 InstanceType: 't1.micro',
-                ImageId: 'ami-1aa0ea6d', // Forward proxy node
+                ImageId: 'ami-c74d0db4', // Forward proxy node
                 SecurityGroups: ['forward-proxy'],
             },
         },
