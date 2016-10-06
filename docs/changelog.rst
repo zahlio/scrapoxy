@@ -3,6 +3,15 @@ Changelog
 =========
 
 
+2.3.6
+=====
+
+Bug fixes
+---------
+
+- **template**: replace old AWS AMI by **ami-c74d0db4**
+
+
 2.3.5
 =====
 
