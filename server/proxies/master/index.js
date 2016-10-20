@@ -37,11 +37,129 @@ module.exports = class Master {
         self._server = http.createServer();
 
         self._server.on('request', request);
+		
+		self._server.on('connect', connect);
+		
+		// Accept client via CONNECT method
+		function connect(req, socket, head){
+			// Check auth
+            if (self._token) {
+                if (!req.headers['proxy-authorization'] || req.headers['proxy-authorization'] !== self._token) {
+					winston.error('[Master] Error: Wrong proxy credentials for CONNECT method');
+					socket.write('HTTP/1.1 407 Wrong proxy credentials for CONNECT method\r\n\r\n');
+                    return socket.end();
+                }
+            }
+			
+			// Decrypt target
+			parseTarget(req.url, (err, target) => {
+				if (err) {
+					winston.error('Error (parsing): ', err);
+					return socket.end();
+				}
+				
+				
+				// Trigger scaling if necessary
+				self._manager.requestReceived();
+	
+				// Get domain
+				const uri = domain.convertHostnamePathToUri(target.hostname, target.url);
+				const basedomain = domain.getBaseDomainForUri(uri);
+	
+				// Find instance
+				const forceName = req.headers['x-cache-proxyname'],
+					instance = self._manager.getNextRunningInstanceForDomain(basedomain, forceName);
+	
+				if (!instance) {
+					winston.error('[Master] Error: No running instance found');
+					socket.write('HTTP/1.1 500 Error: No running instance found\r\n\r\n');
+                    return socket.end();
+				}
+				
+				
+				// Build Connect request for Instance
+				const proxyOpts = {
+					host: instance.proxyParameters.hostname,
+					port: instance.proxyParameters.port,
+					method: 'CONNECT',
+					headers: req.headers, //Useless...
+                	path: req.url
+				};
+				
+				 // Update headers
+           		instance.updateRequestHeaders(proxyOpts.headers);
 
+				
+				var proxy_connect_request = http.request(proxyOpts);
+				
+				// Start timer
+            	const start = process.hrtime();
+				
+				proxy_connect_request.on('connect', function (routing_req, routing_socket, routing_head) {
+					socket.on('error', (err) => {
+						winston.error('Error (socket): ', err);
+						routing_socket.end();
+					});
+			
+					routing_socket.on('error', (err) => {
+						winston.error('Error (routing_socket): ', err);
+						socket.write('HTTP/1.1 500 Error (routing_socket): Target closed connection\r\n\r\n');
+						socket.end();
+					});
+					socket.write('HTTP/1.1 200 Connection established\r\n\r\n');
+					routing_socket.pipe(socket);
+					socket.pipe(routing_socket);
+				});
+				
+				socket.on('end', function () {
+						// Stop timer and record duration when Tunnel connexion is closed
+						const duration = process.hrtime(start);
+						self._stats.requestEnd(
+							duration,
+							socket._bytesDispatched,
+							socket.bytesRead
+						);
+						instance.incrRequest();
+				});
+				
+				// Log errors
+				proxy_connect_request.on('error',
+					(err) => {
+						winston.error('[Master] Error: request error from client (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
+						socket.write('HTTP/1.1 500 Error: request error from client\r\n\r\n');
+					}
+				);
+			
+				// End Connect Request
+				proxy_connect_request.end();
+				
+				
+			});
+			
+			function parseTarget(url, callback) {
+				if (!url) return callback('No URL found');
+			
+				const part = url.split(':');
+				if (part.length !== 2) {
+					return callback(`Cannot parse target: ${url}`);
+				}
+			
+				const hostname = part[0],
+					port = parseInt(part[1]);
+			
+				if (!hostname || !port) {
+					return callback(`Cannot parse target (2): ${url}`);
+				}
+			
+				callback(null, {hostname, port});
+			}
+			
+		}
 
         ////////////
 
-        function request(req, res) {
+        function request(req, res) { 
+
             // Check auth
             if (self._token) {
                 if (!req.headers['proxy-authorization'] || req.headers['proxy-authorization'] !== self._token) {
@@ -95,6 +213,7 @@ module.exports = class Master {
             });
 
             const proxy_req = http.request(proxyOpts);
+			
 
             proxy_req.on('error', (err) => {
                 winston.error('[Master] Error: request error from target (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
