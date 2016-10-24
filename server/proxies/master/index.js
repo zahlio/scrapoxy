@@ -46,7 +46,7 @@ module.exports = class Master {
             if (self._token) {
                 if (!req.headers['proxy-authorization'] || req.headers['proxy-authorization'] !== self._token) {
 					winston.error('[Master] Error: Wrong proxy credentials for CONNECT method');
-					socket.write('HTTP/1.1 407 Wrong proxy credentials for CONNECT method\r\n\r\n');
+					socket.write('HTTP/1.1 407\r\nConnection: close\r\nProxy-Authenticate: Basic realm="scrapoxy"\r\n\r\n');
                     return socket.end();
                 }
             }
