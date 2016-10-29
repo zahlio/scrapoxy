@@ -15,12 +15,46 @@ module.exports = class ProxyAgent extends http.Agent {
     }
 
 
-    createConnection(opts, callback) {
+    addRequest(req, options) {
+        // Legacy API: addRequest(req, host, port, path)
+        if (typeof options === 'string') {
+            options = {
+                host: options,
+                port: arguments[2],
+                path: arguments[3],
+            };
+        }
+
+        const name = this.getName(options);
+        if (!this.sockets[name]) {
+            this.sockets[name] = [];
+        }
+
+        if (this.sockets[name].length < this.maxSockets) {
+            this._createSocket(req, options, (err, s) => {
+                if (err) {
+                    return req.emit('error', err);
+                }
+
+                req.onSocket(s);
+            });
+        }
+        else {
+            if (!this.requests[name]) {
+                this.requests[name] = [];
+            }
+
+            this.requests[name].push(req);
+        }
+    }
+
+
+    _createConnection(opts, callback) {
         const proxyOpts = {
             host: opts.proxy.hostname,
             port: opts.proxy.port,
-            path: `${opts.hostname}:${opts.port}`,
             method: 'CONNECT',
+            path: `${opts.hostname}:${opts.port}`,
             agent: this._agent,
             headers: {},
         };
@@ -41,9 +75,6 @@ module.exports = class ProxyAgent extends http.Agent {
                 return callback(false, socket);
             }
 
-            // TODO: Should be moved to configuration ?
-            process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // Allow wrong certificates
-
             const cts = tls.connect({
                 host: opts.hostname,
                 socket,
@@ -56,41 +87,7 @@ module.exports = class ProxyAgent extends http.Agent {
     }
 
 
-    addRequest(req, options) {
-        // Legacy API: addRequest(req, host, port, path)
-        if (typeof options === 'string') {
-            options = {
-                host: options,
-                port: arguments[2],
-                path: arguments[3],
-            };
-        }
-
-        const name = this.getName(options);
-        if (!this.sockets[name]) {
-            this.sockets[name] = [];
-        }
-
-        if (this.sockets[name].length < this.maxSockets) {
-            this.createSocket(req, options, (err, s) => {
-                if (err) {
-                    return req.emit('error', err);
-                }
-
-                req.onSocket(s);
-            });
-        }
-        else {
-            if (!this.requests[name]) {
-                this.requests[name] = [];
-            }
-
-            this.requests[name].push(req);
-        }
-    }
-
-
-    createSocket(req, options, callback) {
+    _createSocket(req, options, callback) {
         options = util._extend({}, options);
         options = util._extend(options, this.options);
 
@@ -106,7 +103,7 @@ module.exports = class ProxyAgent extends http.Agent {
 
         options.encoding = void 0;
 
-        this.createConnection(options, (err, s) => {
+        this._createConnection(options, (err, s) => {
             const self = this;
 
             if (err) {
@@ -132,11 +129,11 @@ module.exports = class ProxyAgent extends http.Agent {
             }
 
             function onClose() {
-                self.removeSocket(s, options);
+                self._removeSocket(s, options);
             }
 
             function onRemove() {
-                self.removeSocket(s, options);
+                self._removeSocket(s, options);
 
                 s.removeListener('close', onClose);
                 s.removeListener('free', onFree);
@@ -146,7 +143,7 @@ module.exports = class ProxyAgent extends http.Agent {
     }
 
 
-    removeSocket(socket, options) {
+    _removeSocket(socket, options) {
         const name = this.getName(options);
         const sets = [this.sockets];
 
@@ -171,7 +168,7 @@ module.exports = class ProxyAgent extends http.Agent {
         if (this.requests[name] && this.requests[name].length) {
             const req = this.requests[name][0];
 
-            this.createSocket(req, options, (err, s) => {
+            this._createSocket(req, options, (err, s) => {
                 if (err) {
                     return req.emit('error', err);
                 }
