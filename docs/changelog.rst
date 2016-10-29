@@ -2,6 +2,14 @@
 Changelog
 =========
 
+2.3.7
+=====
+
+Features
+--------
+
+- **connect**: Scrapoxy accepts now full HTTPS CONNECT method. It is useful for browser like PhantomJS_. Thanks to Anis Gandoura!!!
+
 
 2.3.6
 =====
@@ -267,3 +275,4 @@ Features
 .. _`Scrapoxy.io`: http://scrapoxy.io
 .. _Scrapy: http://scrapy.org
 .. _`Node.js`: https://nodejs.org
+.. _PhantomJS: http://phantomjs.org
