@@ -24,7 +24,7 @@ function ping(options) {
     const opts = {
         method: 'GET',
         url: `http://${options.hostname}:${options.port}/ping`,
-        timeout: options.timeout || 5000 // Set default timeout to 5s
+        timeout: options.timeout || 5000, // Set default timeout to 5s
     };
 
     return new Promise((resolve, reject) => {
