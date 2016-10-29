@@ -116,7 +116,7 @@ module.exports = class Instance extends EventEmitter {
         self.on('alive:updated', (alive) => {
             // Crash timer
             if (alive) {
-                winston.debug('[Instance/%s] Instance is alive. Crash timer stops', self._model.name);
+                winston.debug('[Instance/%s] Instance is alive. Remove crash timer', self._model.name);
                 if (self._checkStopIfCrashedTimeout) {
                     clearTimeout(self._checkStopIfCrashedTimeout);
                     self._checkStopIfCrashedTimeout = void 0;
