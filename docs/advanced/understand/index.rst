@@ -70,9 +70,14 @@ Requests
 ========
 
 Can Scrapoxy relay HTTPS requests ?
---------------------------------------
+-----------------------------------
 
-Yes. However, Scrapoxy **cannot use the CONNECT** mechanism.
+Yes. There is 2 modes:
+
+
+**Mode A: HTTPS over HTTP (or *no tunnel* mode)**
+
+This mode is for **scraper only**. It allows Scrapoxy to override HTTP headers (like User-Agent).
 
 The scraper must send a HTTP request with an HTTPS URL in the *Location* header.
 
@@ -100,10 +105,11 @@ With Request_ (`Node.js`_), add *tunnel:false* to options::
     }, (err, response, body) => {...});
 
 
-Do Scrapoxy can proxy CONNECT requests ?
-----------------------------------------
+**Mode B: HTTPS CONNECT (or *tunnel* mode)**
 
-No. CONNECT requests are like encrypted requests. And Scrapoxy needs to decode all requests to modify HTTP headers.
+This mode is for **browser only** like PhantomJS_. It doesn't allow Scrapoxy to override HTTP headers (like User-Agent). You must manually set the User-Agent.
+
+The best solution is to use only 1 User-Agent (it would be strange to have multiple User-Agents coming from 1 IP, isn't it?).
 
 
 What is the proxy that returned the response ?
@@ -133,6 +139,7 @@ When the instance receives a request, it **overrides** the User Agent.
 
 .. _`AWS / EC2`: https://aws.amazon.com/ec2
 .. _`Node.js`: https://nodejs.org
+.. _PhantomJS: http://phantomjs.org
 .. _Python: https://www.python.org
 .. _Request: https://www.npmjs.com/package/request
 .. _Scrapy: http://scrapy.org
