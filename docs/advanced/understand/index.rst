@@ -66,6 +66,8 @@ This mode is for **browser only** like PhantomJS_. It doesn't allow Scrapoxy to 
 The best solution is to use only 1 User-Agent (it would be strange to have multiple User-Agents coming from 1 IP, isn't it?).
 
 
+.. _instance-name:
+
 What is the proxy that returned the response ?
 ----------------------------------------------
 
@@ -103,7 +105,7 @@ It can be a 503 HTTP response, a captcha, a longer response, etc.
 Anti-blacklisting is **a job for the scraper**:
 
 1. The scraper must detect a blacklisted response;
-2. The scraper extracts the name of the instance from the HTTP response header (see `here <../api/index.html#what-is-the-proxy-that-returned-the-response>`_);
+2. The scraper extracts the name of the instance from the HTTP response header (see `here <instance-name>`_);
 3. The scraper asks to Scrapoxy to remove the instance with the API (see `here <../api/index.html#stop-an-instance>`_).
 
 When the blacklisted response is detected, Scrapoxy will replace the instance with a valid one (new IP address).
