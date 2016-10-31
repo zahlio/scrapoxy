@@ -20,52 +20,6 @@ When Scrapoxy starts, the **manager** starts a new instance (if necessary), on t
 When the scraper sends a HTTP request, the manager starts all others proxies.
 
 
-Instances management
-====================
-
-How does the monitoring mechanism ?
------------------------------------
-
-1. the manager asks the cloud how many instances are alive. It is the **initial state**;
-2. the manager creates a **target state**, with the new count of instance;
-3. the manager generates the commands to reach **target state** from the **initial state**;
-4. the manager sends the commands to the cloud.
-
-.. warning::
-    These steps are very important because you cannot guess which is the initial state.
-    Because an instance may be dead!
-
-Scrapoxy can restart an instance if:
-
-- the instance is **dead** (stop status or no ping);
-- the **living limit** is reached: Scrapoxy regulary restarts the instance to change the IP address.
-
-
-Do you need to create a VM image ?
-----------------------------------
-
-By default, we provide you an AMI proxy instance on `AWS / EC2`_. This is a CONNECT proxy opened on TCP port 3128.
-
-But you can use every software which accept the CONNECT method (Squid_, Tinyproxy_, etc.).
-
-
-Can you leave Scrapoxy started ?
---------------------------------
-
-Yes. Scrapoxy has 2 modes: an **awake mode** and an **asleep mode**.
-
-.. image:: asleep-awake.png
-
-When Scrapoxy receives no request after a while, he falls asleep.
-It sets the count of instances to minimum (**instance.scaling.min**).
-
-When Scrapoxy receives a request, it wakes up.
-It fixes the count of instances to maximum (**instance.scaling.max**).
-
-.. note::
-    Scrapoxy needs at least 1 instance to receive the awake request.
-
-
 Requests
 ========
 
@@ -135,6 +89,70 @@ Does Scrapoxy override User Agent ?
 Yes. When an instance starts (or restarts), it gets a random User Agent (from the `User Agent list`_).
 
 When the instance receives a request, it **overrides** the User Agent.
+
+
+Blacklisting
+============
+
+How can you manage blacklisted response ?
+-----------------------------------------
+
+Remember, Scrapoxy cannot detect blacklisted response because it is too specific to a scraping usecase.
+It can be a 503 HTTP response, a captcha, a longer response, etc.
+
+Anti-blacklisting is **a job for the scraper**:
+
+1. The scraper must detect a blacklisted response
+2. The scraper extracts the name of the instance from the HTTP response header (see `here <../api/index.html#what-is-the-proxy-that-returned-the-response`_)
+3. The scraper asks to Scrapoxy to remove the instance with the API (see `here <../api/index.html#stop-an-instance`_)
+
+When the blacklisted response is detected, Scrapoxy will replace the instance with a valid one (new IP address).
+
+
+Instances management
+====================
+
+How does the monitoring mechanism ?
+-----------------------------------
+
+1. the manager asks the cloud how many instances are alive. It is the **initial state**;
+2. the manager creates a **target state**, with the new count of instance;
+3. the manager generates the commands to reach **target state** from the **initial state**;
+4. the manager sends the commands to the cloud.
+
+.. warning::
+These steps are very important because you cannot guess which is the initial state.
+    Because an instance may be dead!
+
+Scrapoxy can restart an instance if:
+
+- the instance is **dead** (stop status or no ping);
+- the **living limit** is reached: Scrapoxy regulary restarts the instance to change the IP address.
+
+
+Do you need to create a VM image ?
+----------------------------------
+
+By default, we provide you an AMI proxy instance on `AWS / EC2`_. This is a CONNECT proxy opened on TCP port 3128.
+
+But you can use every software which accept the CONNECT method (Squid_, Tinyproxy_, etc.).
+
+
+Can you leave Scrapoxy started ?
+--------------------------------
+
+Yes. Scrapoxy has 2 modes: an **awake mode** and an **asleep mode**.
+
+.. image:: asleep-awake.png
+
+When Scrapoxy receives no request after a while, he falls asleep.
+It sets the count of instances to minimum (**instance.scaling.min**).
+
+When Scrapoxy receives a request, it wakes up.
+It fixes the count of instances to maximum (**instance.scaling.max**).
+
+.. note::
+Scrapoxy needs at least 1 instance to receive the awake request.
 
 
 .. _`AWS / EC2`: https://aws.amazon.com/ec2
