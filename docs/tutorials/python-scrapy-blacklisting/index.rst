@@ -9,7 +9,7 @@ Goal
 A scraper is downloading pages of a website.
 
 However, the website has a rate limit by IP.
-When the scraper downloads 10 pages, the website returns only empty page with a HTTP 429 status.
+When the scraper downloads 10 pages, the website returns only an empty page with a HTTP 429 status.
 
 Does the scraper must wait when the limit is reached ? **No**!
 
