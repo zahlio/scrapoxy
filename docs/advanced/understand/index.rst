@@ -102,9 +102,9 @@ It can be a 503 HTTP response, a captcha, a longer response, etc.
 
 Anti-blacklisting is **a job for the scraper**:
 
-1. The scraper must detect a blacklisted response
-2. The scraper extracts the name of the instance from the HTTP response header (see `here <../api/index.html#what-is-the-proxy-that-returned-the-response`_)
-3. The scraper asks to Scrapoxy to remove the instance with the API (see `here <../api/index.html#stop-an-instance`_)
+1. The scraper must detect a blacklisted response;
+2. The scraper extracts the name of the instance from the HTTP response header (see `here <../api/index.html#what-is-the-proxy-that-returned-the-response>`_);
+3. The scraper asks to Scrapoxy to remove the instance with the API (see `here <../api/index.html#stop-an-instance>`_).
 
 When the blacklisted response is detected, Scrapoxy will replace the instance with a valid one (new IP address).
 
