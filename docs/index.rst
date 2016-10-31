@@ -108,6 +108,7 @@ And complete with :ref:`tutorials-docs`.
 
    tutorials/python-scrapy/index
    tutorials/nodejs-request/index
+   tutorials/python-scrapy-blacklisting/index
 
 
 Prerequisite
