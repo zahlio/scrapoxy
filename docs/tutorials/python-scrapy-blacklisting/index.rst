@@ -9,7 +9,7 @@ Goal
 A scraper is downloading pages of a website.
 
 However, the website has a rate limit by IP.
-When the scraper downloads 10 pages, the website sends only empty page with a HTTP 429 status.
+When the scraper downloads 10 pages, the website returns only empty page with a HTTP 429 status.
 
 Does the scraper must wait when the limit is reached ? **No**!
 
@@ -19,11 +19,11 @@ The scraper has to ask Scrapoxy to replace the instance.
 Step 1: Create a Scraper
 ========================
 
-See :doc: `../python-scrapy/index` to create the scraper.
+See :doc:`../python-scrapy/index` to create the scraper.
 
 
-Step 2: Detect blacklisted response with a Scrapy middleware
-============================================================
+Step 2: Detect blacklisted response with a middleware
+=====================================================
 
 Create a middleware in Scrapy
 -----------------------------
@@ -91,8 +91,8 @@ Why the scraper must sleep when the instance is restarted ?
 
 When a instance is restarted, the scraper must sleep a little.
 
-Let's take an example: if Scrapoxy has 2 instances and you stop 1,
-the remaining instance will relay 2x more requests and will be blacklisted.
+Let's take an example: if Scrapoxy has 2 instances and you stop one,
+the remaining instance will relay 2x more requests, and will be blacklisted.
 
 
 Edit settings of Scrapoxy
