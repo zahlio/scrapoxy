@@ -110,7 +110,7 @@ Anti-blacklisting is **a job for the scraper**:
 
 When the blacklisted response is detected, Scrapoxy will replace the instance with a valid one (new IP address).
 
-There is a tutorial: :doc:`../../tutorials@/python-scrapy-blacklisting/index`.
+There is a tutorial: :doc:`../../tutorials/python-scrapy-blacklisting/index`.
 
 
 Instances management
