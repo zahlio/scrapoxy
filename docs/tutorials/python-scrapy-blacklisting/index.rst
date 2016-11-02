@@ -104,6 +104,17 @@ Add this content to :code:`myscraper/settings.py`::
     API_SCRAPOXY = 'http://127.0.0.1:8889/api'
     API_SCRAPOXY_PASSWORD = 'CHANGE_THIS_PASSWORD'
 
+    # SCRAPOXY
+    PROXY = 'http://127.0.0.1:8888/?noconnect'
+
+    DOWNLOADER_MIDDLEWARES = {
+        'scrapoxy.downloadmiddlewares.proxy.ProxyMiddleware': 100,
+        'scrapoxy.downloadmiddlewares.wait.WaitMiddleware': 101,
+        'scrapoxy.downloadmiddlewares.scale.ScaleMiddleware': 102,
+        'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
+        'myscraper.middlewares.BlacklistDownloaderMiddleware': 950,
+    }
+
 
 .. WARNING::
     Don't forget to change the password!
