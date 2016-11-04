@@ -54,6 +54,7 @@ Add this content to :code:`myscraper/middlewares.py`::
         @classmethod
         def from_crawler(cls, crawler):
             """Call constructor with crawler parameters
+            """
             return cls(crawler)
 
 
