@@ -27,13 +27,18 @@ Edit settings of Scrapoxy
 
 Add this content to :code:`myscraper/settings.py`::
 
+    CONCURRENT_REQUESTS_PER_DOMAIN = 1
+    RETRY_TIMES = 0
+
+    # PROXY
+    PROXY = 'http://127.0.0.1:8888/?noconnect'
+
     # SCRAPOXY
     API_SCRAPOXY = 'http://127.0.0.1:8889/api'
     API_SCRAPOXY_PASSWORD = 'CHANGE_THIS_PASSWORD'
-    BLACKLIST_HTTP_STATUS_CODES = [ 429 ]
 
-    # SCRAPOXY
-    PROXY = 'http://127.0.0.1:8888/?noconnect'
+    # BLACKLISTING
+    BLACKLIST_HTTP_STATUS_CODES = [ 429 ]
 
     DOWNLOADER_MIDDLEWARES = {
         'scrapoxy.downloadmiddlewares.proxy.ProxyMiddleware': 100,

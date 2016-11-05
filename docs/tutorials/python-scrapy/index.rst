@@ -147,8 +147,12 @@ Add this content to :code:`myscraper/settings.py`::
     CONCURRENT_REQUESTS_PER_DOMAIN = 1
     RETRY_TIMES = 0
 
-    # SCRAPOXY
+    # PROXY
     PROXY = 'http://127.0.0.1:8888/?noconnect'
+
+    # SCRAPOXY
+    API_SCRAPOXY = 'http://127.0.0.1:8889/api'
+    API_SCRAPOXY_PASSWORD = 'CHANGE_THIS_PASSWORD'
 
     DOWNLOADER_MIDDLEWARES = {
         'scrapoxy.downloadmiddlewares.proxy.ProxyMiddleware': 100,
@@ -167,6 +171,9 @@ What are these middlewares ?
 
 .. NOTE::
    ScaleMiddleware stops the scraper like WaitMiddleware. After 2 minutes, all instances are ready and the scraper continues to scrap.
+
+.. WARNING::
+    Don't forget to change the password!
 
 
 Run the spider
