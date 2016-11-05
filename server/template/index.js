@@ -20,7 +20,7 @@ const template = {
 
         scaling: {
             min: 1,
-            max: 3,
+            max: 2,
         },
     },
 
