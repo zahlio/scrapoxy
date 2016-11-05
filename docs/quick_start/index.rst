@@ -53,10 +53,12 @@ Step 5: Generate configuration
     scrapoxy init conf.json
 
 
-Step 6: Edit configuration 
+Step 6: Edit configuration
 ==========================
 
-Edit :code:`conf.json` and replace *accessKeyId*, *secretAccessKey*, *region* by your credentials and parameters.
+1. Edit :code:`conf.json`
+2. In the *commander* section, replace *password* by a password of your choice
+3. In the *providers/awsec2* section, replace *accessKeyId*, *secretAccessKey*, *region* by your AWS credentials and parameters.
 
 
 Step 7: Start Scrapoxy
@@ -67,13 +69,22 @@ Step 7: Start Scrapoxy
     scrapoxy start conf.json -d
 
 
-Step 8: Connect Scrapoxy to your scraper
+Step 8: Open Scrapoxy GUI
+=========================
+
+Scrapoxy GUI is reachable at http://localhost:8889
+
+.. INFO::
+    Use the password added in the *commander* section.
+
+
+Step 9: Connect Scrapoxy to your scraper
 ========================================
 
 Scrapoxy is reachable at http://localhost:8888
 
 
-Step 9: Test Scrapoxy
+Step 10: Test Scrapoxy
 =====================
 
 1. Wait 3 minutes
