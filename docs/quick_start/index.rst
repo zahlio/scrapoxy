@@ -30,7 +30,7 @@ Run the container:
     sudo docker run -e COMMANDER_PASSWORD='CHANGE_THIS_PASSWORD' \
         -e PROVIDERS_AWSEC2_ACCESSKEYID='YOUR ACCESS KEY ID' \
         -e PROVIDERS_AWSEC2_SECRETACCESSKEY='YOUR SECRET ACCESS KEY' \
-        -it -p 8888 -p 8889 fabienvauchelles/scrapoxy
+        -it -p 8888:8888 -p 8889:8889 fabienvauchelles/scrapoxy
 
 .. WARN::
     Replace *PROVIDERS_AWSEC2_ACCESSKEYID* and *PROVIDERS_AWSEC2_SECRETACCESSKEY* by your AWS credentials and parameters.
