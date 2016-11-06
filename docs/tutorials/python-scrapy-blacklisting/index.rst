@@ -38,7 +38,7 @@ Add this content to :code:`myscraper/settings.py`::
     API_SCRAPOXY_PASSWORD = 'CHANGE_THIS_PASSWORD'
 
     # BLACKLISTING
-    BLACKLIST_HTTP_STATUS_CODES = [ 429 ]
+    BLACKLIST_HTTP_STATUS_CODES = [ 503 ]
 
     DOWNLOADER_MIDDLEWARES = {
         'scrapoxy.downloadmiddlewares.proxy.ProxyMiddleware': 100,
