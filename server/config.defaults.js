@@ -12,18 +12,18 @@ module.exports = {
     },
 
     instance: {
-        checkDelay: 10 * 1000, // 10sec
-        checkAliveDelay: 20 * 1000, // 20sec
-        stopIfCrashedDelay: 5 * 60 * 1000, // 5min,
+        checkDelay: 10000, // 10sec
+        checkAliveDelay: 20000, // 20sec
+        stopIfCrashedDelay: 300000, // 5min,
         addProxyNameInRequest: false,
 
         autorestart: {
-            minDelay: 1 * 60 * 60 * 1000, // 1h
-            maxDelay: 12 * 60 * 60 * 1000, // 12h
+            minDelay: 3600000, // 1h
+            maxDelay: 43200000, // 12h
         },
 
         scaling: {
-            downscaleDelay: 10 * 60 * 1000, // 10min
+            downscaleDelay: 600000, // 10min
         },
     },
 
@@ -45,7 +45,7 @@ module.exports = {
     },
 
     stats: {
-        retention: 24 * 60 * 60 * 1000, // 24h
+        retention: 86400000, // 24h
 
         samplingDelay: 1000,
     },
