@@ -2,6 +2,21 @@
 Changelog
 =========
 
+2.3.8
+=====
+
+Features
+--------
+
+- **docker**: Create the Docker image fabienvauchelles/scrapoxy
+
+
+Bug fixes
+---------
+
+- **template**: limit max instances to 2
+
+
 2.3.7
 =====
 
