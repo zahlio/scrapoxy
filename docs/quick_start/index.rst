@@ -8,24 +8,25 @@ This tutorials works on `AWS / EC2`_, with region **eu-west-1**.
 See the :doc:`AWS / EC2 - Get started <../standard/providers/awsec2/index>` if you want to change region.
 
 
-Get AWS credentials
-===================
+Step 1: Get AWS credentials
+===========================
 
 See :doc:`Get AWS credentials <../standard/providers/awsec2/get_credentials/index>`.
 
 
-Create a security group
-=======================
+Step 2: Create a security group
+===============================
 
 See :doc:`Create a security group <../standard/providers/awsec2/create_security_group/index>`.
 
 
-Mode A: Run Scrapoxy with Docker
-================================
+Step 3A: Run Scrapoxy with Docker
+=================================
 
 Run the container:
 
 ::
+
     sudo docker run -e COMMANDER_PASSWORD='CHANGE_THIS_PASSWORD' \
         -e PROVIDERS_AWSEC2_ACCESSKEYID='YOUR ACCESS KEY ID' \
         -e PROVIDERS_AWSEC2_SECRETACCESSKEY='YOUR SECRET ACCESS KEY' \
@@ -35,19 +36,19 @@ Run the container:
     Replace *PROVIDERS_AWSEC2_ACCESSKEYID* and *PROVIDERS_AWSEC2_SECRETACCESSKEY* by your AWS credentials and parameters.
 
 
-Mode B: Run Scrapoxy without Docker
-===================================
+Step 3B: Run Scrapoxy without Docker
+====================================
 
-Step 1: Install Node.js
------------------------
+Install Node.js
+---------------
 
 See the `Node Installation Manual`_.
 
 The minimum required version is 4.2.1.
 
 
-Step 2: Install Scrapoxy from NPM
----------------------------------
+Install Scrapoxy from NPM
+-------------------------
 
 Install make:
 
@@ -63,32 +64,32 @@ And Scrapoxy:
     sudo npm install -g scrapoxy
 
 
-Step 3: Generate configuration
-------------------------------
+Generate configuration
+----------------------
 
 ::
 
     scrapoxy init conf.json
 
 
-Step 4: Edit configuration
---------------------------
+Edit configuration
+------------------
 
 1. Edit :code:`conf.json`
 2. In the *commander* section, replace *password* by a password of your choice
 3. In the *providers/awsec2* section, replace *accessKeyId*, *secretAccessKey* and *region* by your AWS credentials and parameters.
 
 
-Step 5: Start Scrapoxy
-----------------------
+Start Scrapoxy
+--------------
 
 ::
 
     scrapoxy start conf.json -d
 
 
-Open Scrapoxy GUI
-=================
+Step 4: Open Scrapoxy GUI
+=========================
 
 Scrapoxy GUI is reachable at http://localhost:8889
 
@@ -96,14 +97,14 @@ Scrapoxy GUI is reachable at http://localhost:8889
     Use the password added in the *commander* section.
 
 
-Connect Scrapoxy to your scraper
-================================
+Step 5: Connect Scrapoxy to your scraper
+========================================
 
 Scrapoxy is reachable at http://localhost:8888
 
 
-Test Scrapoxy
-=============
+Step 6: Test Scrapoxy
+=====================
 
 1. Wait 3 minutes
 2. Test Scrapoxy in a new terminal with::
