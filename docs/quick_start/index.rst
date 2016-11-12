@@ -5,7 +5,7 @@ Quick Start
 
 This tutorials works on `AWS / EC2`_, with region **eu-west-1**.
 
-See the :doc:`AWS / EC2 - Get started <../standard/providers/awsec2/index>` if you want to change region.
+See the :doc:`AWS / EC2 - Get started <../standard/providers/awsec2/copy_ami_to_region/index>` if you want to change region.
 
 
 Step 1: Get AWS credentials
