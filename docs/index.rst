@@ -53,7 +53,18 @@ When the scraper detects blacklisting, it asks Scrapoxy to remove the proxy from
 What is the best scraper framework to use with Scrapoxy ?
 ---------------------------------------------------------
 
-You could use `Scrapy framework`_ (Python_).
+You could use the open source `Scrapy framework`_ (Python_).
+
+
+Does Scrapoxy have a SaaS mode or a support plan ?
+--------------------------------------------------
+
+Scrapoxy is an open source tool. Source code is highly maintained.
+You are very welcome to `open an issue`_ for features or bugs.
+
+If you are looking for a commercial product in SaaS mode or with a support plan,
+we recommend you to check the `ScrapingHub`_ products
+(`ScrapingHub`_ is the company which maintains the `Scrapy framework`_).
 
 
 Documentation
@@ -120,7 +131,7 @@ Prerequisite
 Contribute
 ==========
 
-You can open `an issue`_ on this repository for any feedback (bug, question, request, pull request, etc.).
+You can `open an issue`_ on this repository for any feedback (bug, question, request, pull request, etc.).
 
 
 License
@@ -132,7 +143,8 @@ See the :doc:`License <license>`.
 
 
 .. _AngularJS: https://angularjs.org/
-.. _`an issue`: https://github.com/fabienvauchelles/scrapoxy/issues
+.. _`open an issue`: https://github.com/fabienvauchelles/scrapoxy/issues
 .. _`Node.js`: https://nodejs.org
 .. _Python: https://www.python.org
+.. _`ScrapingHub`: https://scrapinghub.com/
 .. _`Scrapy framework`: http://scrapy.org
