@@ -32,7 +32,7 @@ Run the container:
         -e PROVIDERS_AWSEC2_SECRETACCESSKEY='YOUR SECRET ACCESS KEY' \
         -it -p 8888:8888 -p 8889:8889 fabienvauchelles/scrapoxy
 
-.. WARN::
+.. WARNING::
     Replace *PROVIDERS_AWSEC2_ACCESSKEYID* and *PROVIDERS_AWSEC2_SECRETACCESSKEY* by your AWS credentials and parameters.
 
 
