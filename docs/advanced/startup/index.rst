@@ -39,9 +39,10 @@ Create a PM2 configuration file :code:`scrapoxy.json5` for Scrapoxy:
   {
     apps : [
       {
-        name      : "scrapoxy",
-        script    : "/usr/bin/scrapoxy",
-        args      : ["start", "<ABSOLUTE PATH TO CONFIG>/conf.json", "-d"],
+        name         : "scrapoxy",
+        script       : "/usr/bin/scrapoxy",
+        args         : ["start", "<ABSOLUTE PATH TO CONFIG>/conf.json", "-d"],
+        kill_timeout : 30000,
       },
     ],
   }
@@ -71,9 +72,6 @@ If you need to stop Scrapoxy in PM2:
 .. code-block:: js
 
   pm2 stop scrapoxy.json5
-
-.. warning::
-  PM2 doesn't kill properly instances. You must delete manually.
 
 
 .. _`PM2 documentation`: http://pm2.keymetrics.io/docs/usage/startup/
