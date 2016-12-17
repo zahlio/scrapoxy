@@ -158,6 +158,7 @@ module.exports = class Manager extends EventEmitter {
                     const models = _(Array.from(self._managedInstances.values()))
                         .takeRight(count)
                         .map((instance) => instance.model) // get function
+                        .filter((model) => !model.locked) // only unlocked instance can be removed
                         .value();
 
                     return self._provider.removeInstances(models);

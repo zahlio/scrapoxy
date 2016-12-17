@@ -1,10 +1,11 @@
 'use strict';
 
 module.exports = class InstanceModel {
-    constructor(name, type, status, address, providerOpts) {
+    constructor(name, type, status, locked, address, providerOpts) {
         this.name = name;
         this.type = type;
         this.status = status;
+        this.locked = locked;
         this.address = address;
 
         this.providerOpts = providerOpts;

@@ -60,6 +60,7 @@ module.exports = class ProviderDigitalOcean {
             return _.map(droplets, (droplet) => ({
                 id: droplet.id.toString(),
                 status: droplet.status,
+                locked: droplet.locked,
                 ip: _.get(droplet, 'networks.v4[0].ip_address'),
                 name: droplet.name,
                 region: droplet.region.slug,
@@ -89,6 +90,7 @@ module.exports = class ProviderDigitalOcean {
                 droplet.id,
                 self.name,
                 convertStatus(droplet.status),
+                droplet.locked,
                 buildAddress(droplet.ip),
                 droplet
             ));
