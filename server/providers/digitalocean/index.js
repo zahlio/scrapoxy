@@ -49,12 +49,12 @@ module.exports = class ProviderDigitalOcean {
         return self._api.getAllDroplets()
             .then(summarizeInfo)
             .then(excludeArchive)
+            .then(excludeRegion)
             .then(excludeOutscope)
             .then(convertToModel);
 
 
         ////////////
-
 
         function summarizeInfo(droplets) {
             return _.map(droplets, (droplet) => ({
@@ -62,11 +62,20 @@ module.exports = class ProviderDigitalOcean {
                 status: droplet.status,
                 ip: _.get(droplet, 'networks.v4[0].ip_address'),
                 name: droplet.name,
+                region: droplet.region.slug,
             }));
         }
 
         function excludeArchive(droplets) {
-            return _.filter(droplets, (droplet) => droplet.status !== ProviderDigitalOcean.ST_ARCHIVE);
+            return _.filter(droplets,
+                (droplet) => droplet.status !== ProviderDigitalOcean.ST_ARCHIVE
+            );
+        }
+
+        function excludeRegion(droplets) {
+            return _.filter(droplets,
+                (droplet) => droplet.region === self._config.region
+            );
         }
 
         function excludeOutscope(droplets) {
