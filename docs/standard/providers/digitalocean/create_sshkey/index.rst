@@ -12,7 +12,7 @@ Go to `DigitalOcean console`_.
 Step 2: Go to settings
 ======================
 
-1. Click on the *wheel* icon
+1. Click on the top right icon
 2. Click on *Settings*
 
 .. image:: step_1.jpg
@@ -30,9 +30,9 @@ Step 3: Add a new key
 Step 4: Create a new key
 ========================
 
-1. Enter *mykey* for the name
-2. Paste your SSH key
-3. Click on *Create SSH Key*
+1. Paste your SSH key
+2. Enter *mykey* for the name
+3. Click on *Add SSH Key*
 
 .. image:: step_3.jpg
 

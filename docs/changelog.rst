@@ -2,6 +2,16 @@
 Changelog
 =========
 
+
+X.X.X
+=====
+
+Features
+--------
+
+- **digitalocean**: Update Digital Ocean documentation
+
+
 2.3.8
 =====
 

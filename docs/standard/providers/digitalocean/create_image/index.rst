@@ -20,12 +20,12 @@ Click on *Create Droplet*
 Step 3: Change the configuration of droplet
 ===========================================
 
-Choose an image *Ubuntu 15.10 x64*:
+Choose an image *Ubuntu 16.04.1 x64*:
 
 .. image:: step_2a.jpg
 
 
-Choose the first size:
+Choose the smallest size:
 
 .. image:: step_2b.jpg
 
@@ -35,7 +35,7 @@ Choose a datacenter (e.g.: London):
 .. image:: step_2c.jpg
 
 
-Add the SSH key named *mykey*:
+Use the SSH key named *mykey*:
 
 .. image:: step_2d.jpg
 
@@ -66,7 +66,6 @@ Step 6: Install the proxy
 
 Install proxy with::
 
-    sudo apt-get install curl
     curl --silent --location https://deb.nodesource.com/setup_6.x | sudo bash -
     sudo apt-get install --yes nodejs
     curl --silent --location https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/tools/install/proxy.js | sudo tee /root/proxy.js > /dev/null
@@ -96,7 +95,7 @@ Step 7: Create a backup
 1. Click on *Images*
 2. Select your droplet
 3. Enter *forward-proxy* in *Image Name*
-4. Click on *Create*
+4. Click on *Take Snapshot*
 
 .. image:: step_6.jpg
 
