@@ -156,7 +156,7 @@ module.exports = class Manager extends EventEmitter {
                     winston.debug('[Manager] adjustInstances: remove %d instances', count);
 
                     const models = _(Array.from(self._managedInstances.values()))
-                        .takeRight(count)
+                        .sample(count)
                         .map((instance) => instance.model) // get function
                         .filter((model) => !model.locked) // only unlocked instance can be removed
                         .value();
