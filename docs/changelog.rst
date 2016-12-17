@@ -3,7 +3,7 @@ Changelog
 =========
 
 
-X.X.X
+2.3.9
 =====
 
 Features
@@ -11,6 +11,8 @@ Features
 
 - **digitalocean**: update Digital Ocean documentation
 - **digitalocean**: view only instances from selected region
+- **instances**: remove random instances instead of the last ones
+- **pm2**: add kill_timeout option for PM2 (thanks to cp2587)
 
 
 Bug fixes
