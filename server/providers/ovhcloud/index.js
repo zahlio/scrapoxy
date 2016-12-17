@@ -102,6 +102,7 @@ module.exports = class ProviderOVHCloud {
                     instanceDesc.id,
                     self.name,
                     convertStatus(instanceDesc.status),
+                    false,
                     buildAddress(instanceDesc.ip),
                     instanceDesc
                 )

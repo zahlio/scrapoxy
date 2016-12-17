@@ -2,13 +2,31 @@
 Changelog
 =========
 
+
+X.X.X
+=====
+
+Features
+--------
+
+- **digitalocean**: update Digital Ocean documentation
+- **digitalocean**: view only instances from selected region
+
+
+Bug fixes
+---------
+
+- **digitalocean**: limit the number of created instances at each API request
+- **digitalocean**: don't remove locked instances
+
+
 2.3.8
 =====
 
 Features
 --------
 
-- **docker**: Create the Docker image fabienvauchelles/scrapoxy
+- **docker**: create the Docker image fabienvauchelles/scrapoxy
 
 
 Bug fixes
@@ -23,7 +41,7 @@ Bug fixes
 Features
 --------
 
-- **connect**: Scrapoxy accepts now full HTTPS CONNECT method. It is useful for browser like PhantomJS_. Thanks to Anis Gandoura!!!
+- **connect**: scrapoxy accepts now full HTTPS CONNECT method. It is useful for browser like PhantomJS_. Thanks to Anis Gandoura!!!
 
 
 2.3.6

@@ -125,6 +125,7 @@ module.exports = class ProviderAWSEC2 {
                 instanceDesc.id,
                 self.name,
                 convertStatus(instanceDesc.status),
+                false,
                 buildAddress(instanceDesc.ip),
                 instanceDesc
             ));

@@ -13,7 +13,7 @@ Step 2: Generate a new token
 ============================
 
 1. Click on *API*
-2. Click on *Generate new token*
+2. Click on *Generate New Token*
 
 .. image:: step_1.jpg
 

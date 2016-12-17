@@ -49,24 +49,34 @@ module.exports = class ProviderDigitalOcean {
         return self._api.getAllDroplets()
             .then(summarizeInfo)
             .then(excludeArchive)
+            .then(excludeRegion)
             .then(excludeOutscope)
             .then(convertToModel);
 
 
         ////////////
 
-
         function summarizeInfo(droplets) {
             return _.map(droplets, (droplet) => ({
                 id: droplet.id.toString(),
                 status: droplet.status,
-                ip: droplet.networks.v4[0].ip_address,
+                locked: droplet.locked,
+                ip: _.get(droplet, 'networks.v4[0].ip_address'),
                 name: droplet.name,
+                region: droplet.region.slug,
             }));
         }
 
         function excludeArchive(droplets) {
-            return _.filter(droplets, (droplet) => droplet.status !== ProviderDigitalOcean.ST_ARCHIVE);
+            return _.filter(droplets,
+                (droplet) => droplet.status !== ProviderDigitalOcean.ST_ARCHIVE
+            );
+        }
+
+        function excludeRegion(droplets) {
+            return _.filter(droplets,
+                (droplet) => droplet.region === self._config.region
+            );
         }
 
         function excludeOutscope(droplets) {
@@ -80,6 +90,7 @@ module.exports = class ProviderDigitalOcean {
                 droplet.id,
                 self.name,
                 convertStatus(droplet.status),
+                droplet.locked,
                 buildAddress(droplet.ip),
                 droplet
             ));
@@ -128,6 +139,15 @@ module.exports = class ProviderDigitalOcean {
 
         winston.debug('[ProviderDigitalOcean] createInstances: count=%d', count);
 
+        let countLimited;
+        if (count > 10) {
+            countLimited = 10;
+            winston.warn('[ProviderDigitalOcean] createInstances: limit instances creation count to 10 (%d asked)', count);
+        }
+        else {
+            countLimited = count;
+        }
+
         return this._api.getAllDroplets()
             .then((droplets) => {
                 const actualCount = _(droplets)
@@ -136,16 +156,16 @@ module.exports = class ProviderDigitalOcean {
 
                 winston.debug('[ProviderDigitalOcean] createInstances: actualCount=%d', actualCount);
 
-                if (this._config.maxRunningInstances && actualCount + count > this._config.maxRunningInstances) {
-                    throw new ScalingError(count, true);
+                if (this._config.maxRunningInstances && actualCount + countLimited > this._config.maxRunningInstances) {
+                    throw new ScalingError(countLimited, true);
                 }
 
                 return init()
-                    .spread((image, sshKey) => createInstances(count, image.id, sshKey.id));
+                    .spread((image, sshKey) => createInstances(countLimited, image.id, sshKey.id));
             })
             .catch((err) => {
                 if (err.id === 'forbidden' && err.message.indexOf('droplet limit') >= 0) {
-                    throw new ScalingError(count, false);
+                    throw new ScalingError(countLimited, false);
                 }
 
                 throw err;
