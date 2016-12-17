@@ -128,6 +128,15 @@ module.exports = class ProviderDigitalOcean {
 
         winston.debug('[ProviderDigitalOcean] createInstances: count=%d', count);
 
+        let countLimited;
+        if (count > 10) {
+            countLimited = 10;
+            winston.warn('[ProviderDigitalOcean] createInstances: limit instances creation count to 10 (%d asked)', count);
+        }
+        else {
+            countLimited = count;
+        }
+
         return this._api.getAllDroplets()
             .then((droplets) => {
                 const actualCount = _(droplets)
@@ -136,16 +145,16 @@ module.exports = class ProviderDigitalOcean {
 
                 winston.debug('[ProviderDigitalOcean] createInstances: actualCount=%d', actualCount);
 
-                if (this._config.maxRunningInstances && actualCount + count > this._config.maxRunningInstances) {
-                    throw new ScalingError(count, true);
+                if (this._config.maxRunningInstances && actualCount + countLimited > this._config.maxRunningInstances) {
+                    throw new ScalingError(countLimited, true);
                 }
 
                 return init()
-                    .spread((image, sshKey) => createInstances(count, image.id, sshKey.id));
+                    .spread((image, sshKey) => createInstances(countLimited, image.id, sshKey.id));
             })
             .catch((err) => {
                 if (err.id === 'forbidden' && err.message.indexOf('droplet limit') >= 0) {
-                    throw new ScalingError(count, false);
+                    throw new ScalingError(countLimited, false);
                 }
 
                 throw err;
