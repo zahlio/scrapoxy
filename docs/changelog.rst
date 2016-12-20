@@ -3,6 +3,15 @@ Changelog
 =========
 
 
+X.X.X
+=====
+
+Features
+--------
+
+- **docs**: add **ami-06220275** with type n2.nano
+
+
 2.3.9
 =====
 
