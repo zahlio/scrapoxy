@@ -20,6 +20,7 @@ module.exports = class Instance extends EventEmitter {
         self._config = config;
 
         self._model = void 0;
+        self._removing = false;
         self._alive = false;
         self._aliveCount = void 0;
         self._rqCount = 0;
@@ -205,6 +206,11 @@ module.exports = class Instance extends EventEmitter {
     }
 
 
+    get removing() {
+        return this._removing;
+    }
+
+
     removedFromManager() {
         this._model.status = InstanceModel.REMOVED;
 
@@ -213,6 +219,7 @@ module.exports = class Instance extends EventEmitter {
 
 
     remove() {
+        this._removing = true;
         this._changeAlive(false);
 
         return this._provider.removeInstance(this._model);
