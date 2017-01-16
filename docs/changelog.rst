@@ -3,13 +3,19 @@ Changelog
 =========
 
 
-X.X.X
-=====
+2.3.10
+======
 
 Features
 --------
 
 - **docs**: add **ami-06220275** with type n2.nano
+
+
+Bug fixes
+---------
+
+- **instance**: remove listeners on instance alive status on instance removal. Thanks to Étienne Corbillé
 
 
 2.3.9

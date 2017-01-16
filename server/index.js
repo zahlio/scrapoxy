@@ -27,7 +27,7 @@ winston.add(winston.transports.Console, {timestamp: true});
 
 
 program
-    .version('2.3.9')
+    .version('2.3.10')
     .option('-d, --debug', 'Debug mode (increase verbosity)', debugMode)
     .parse(process.argv);
 
