@@ -128,11 +128,13 @@ module.exports = class Manager extends EventEmitter {
 
                 instance.on('alive:updated', (alive) => {
                     const name = instance.name;
-                    if (alive) {
+                    if (alive && !instance.removing) {
                         self._aliveInstances.push(instance);
                         self._aliveInstancesMap.set(name, instance);
                     }
                     else {
+                        // If instance is not alive OR instance is alived but is asked to be removed
+                        // we remove the instance from the alive pool
                         const idx = self._aliveInstances.indexOf(instance);
                         if (idx >= 0) {
                             self._aliveInstances.splice(idx, 1);
