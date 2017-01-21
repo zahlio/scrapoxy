@@ -9,6 +9,7 @@ Bug fixes
 ---------
 
 - **proxy**: use a valid startup script for init.d Thanks to Hotrush
+- **useragent**: change useragents with a fresh list for 2017
 
 
 2.3.10
