@@ -2,6 +2,14 @@
 Changelog
 =========
 
+X.X.X
+======
+
+Bug fixes
+---------
+
+- **proxy**: use a valid startup script for init.d Thanks to Hotrush
+
 
 2.3.10
 ======
