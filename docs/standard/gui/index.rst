@@ -70,7 +70,7 @@ This panel contains many information:
 - Instance status on the provider;
 - Instance status in Scrapoxy.
 
-Scrapoxy relays requests to instances which are **started** and **alived** 
+Scrapoxy relays requests to instances which are **started** and **alived**
 (|started| + |alive|).
 
 
@@ -84,6 +84,8 @@ Type of provider
 +----------------+--------------+
 | |digitalocean| | DigitalOcean |
 +----------------+--------------+
+| |vscale|       | VScale       |
++----------------+--------------+
 
 .. |awsec2| image:: gui_instance_awsec2.png
    :width: 25px
@@ -92,6 +94,9 @@ Type of provider
    :width: 25px
 
 .. |ovhcloud| image:: gui_instance_ovhcloud.png
+   :width: 25px
+
+.. |vscale| image:: gui_instance_vscale.png
    :width: 25px
 
 

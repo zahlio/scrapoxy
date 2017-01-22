@@ -23,7 +23,7 @@ Step 2: Connect to your region
 
 Step 3: Create a security group
 -------------------------------
- 
+
 See :doc:`Create a security group <create_security_group/index>`.
 
 

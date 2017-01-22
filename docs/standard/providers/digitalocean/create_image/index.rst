@@ -89,7 +89,7 @@ The green icon disappears when the droplet is off:
 .. image:: step_5.jpg
 
 
-Step 7: Create a backup
+Step 8: Create a backup
 =======================
 
 1. Click on *Images*
