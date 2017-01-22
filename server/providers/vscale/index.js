@@ -107,6 +107,10 @@ module.exports = class ProviderVscale {
 
             function convertStatus(status) {
                 switch (status) {
+                    case ProviderVscale.ST_DEFINED:
+                    {
+                        return InstanceModel.STARTING;
+                    }
                     case ProviderVscale.ST_STARTED:
                     {
                         return InstanceModel.STARTED;
@@ -115,17 +119,15 @@ module.exports = class ProviderVscale {
                     {
                         return InstanceModel.STOPPED;
                     }
-                    case ProviderVscale.ST_BILLING:
-                    {
-                        return InstanceModel.STOPPED;
-                    }
                     case ProviderVscale.ST_CREATED:
                     {
-                        return InstanceModel.STOPPED;
-                    }
-                    case ProviderVscale.ST_DEFINED:
-                    {
                         return InstanceModel.STARTING;
+                    }
+                    case ProviderVscale.ST_BILLING:
+                    {
+                        winston.error('[ProviderVscale] Error: Unsufficients funds');
+
+                        return InstanceModel.ERROR;
                     }
                     default:
                     {
@@ -222,7 +224,12 @@ module.exports = class ProviderVscale {
                 do_start: true,
             };
 
-            return Promise.map(names, (name) => self._api.createServer(createOptions));
+            const promises = [];
+            for (let i = 0; i < countOfScalets; ++i) {
+                promises.push(self._api.createScalet(createOptions));
+            }
+
+            return Promise.all(promises);
         }
     }
 
