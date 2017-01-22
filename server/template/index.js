@@ -61,7 +61,6 @@ const template = {
         vscale: {
             token: 'YOUR PERSONAL TOKEN',
             region: 'YOUR REGION (could be: msk0, spb0)',
-            name: 'YOUR SERVER NAME',
             imageName: 'YOUR SNAPSHOT NAME (could be: forward-proxy)',
             sshKeyName: 'YOUR SSH KEY (could be: mykey)',
             plan: 'YOUR PLAN (could be: small)',
