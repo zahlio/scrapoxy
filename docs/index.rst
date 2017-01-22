@@ -33,7 +33,7 @@ What Scrapoxy does ?
 --------------------
 
 - Create your own proxies
-- Use multiple cloud providers (AWS, DigitalOcean, OVH)
+- Use multiple cloud providers (AWS_, DigitalOcean_, OVH_, Vscale_)
 - Rotate IP addresses
 - Impersonate known browsers
 - Exclude blacklisted instances
@@ -96,6 +96,7 @@ And complete with :ref:`tutorials-docs`.
    standard/providers/awsec2/index
    standard/providers/digitalocean/index
    standard/providers/ovhcloud/index
+   standard/providers/vscale/index
    standard/gui/index
 
 
@@ -143,8 +144,12 @@ See the :doc:`License <license>`.
 
 
 .. _AngularJS: https://angularjs.org/
+.. _AWS: https://aws.amazon.com
+.. _DigitalOcean: https://www.digitalocean.com
 .. _`open an issue`: https://github.com/fabienvauchelles/scrapoxy/issues
+.. _OVH: https://www.ovh.com
 .. _`Node.js`: https://nodejs.org
 .. _Python: https://www.python.org
 .. _`ScrapingHub`: https://scrapinghub.com/
 .. _`Scrapy framework`: http://scrapy.org
+.. _Vscale: https://vscale.io

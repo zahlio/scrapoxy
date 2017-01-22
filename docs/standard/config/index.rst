@@ -18,7 +18,7 @@ Options: commander
 Option   Default value Description
 ======== ============= ===================================
 port     8889          TCP port of the REST API
-password none          Password to access to the commander 
+password none          Password to access to the commander
 ======== ============= ===================================
 
 
@@ -87,10 +87,11 @@ Options: providers
 ============ ============= ==========================================================================================================
 Option       Default value Description
 ============ ============= ==========================================================================================================
-type         8888          Name of the used provider (awsec2, digitalocean or ovhcloud)
+type         8888          Name of the used provider (awsec2, digitalocean, ovhcloud or vscale)
 awsec2       none          see `AWS EC2 - Configuration <../providers/awsec2/index.html#configure-scrapoxy-awsec2>`_
 ovhcloud     none          see `OVH Cloud - Configuration <../providers/ovhcloud/index.html#configure-scrapoxy-ovhcloud>`_
 digitalocean none          see `DigitalOcean - Configuration <../providers/digitalocean/index.html#configure-scrapoxy-digitalocean>`_
+vscale       none          see `Vscale - Configuration <../providers/vscale/index.html#configure-scrapoxy-vscale>`_
 ============ ============= ==========================================================================================================
 
 

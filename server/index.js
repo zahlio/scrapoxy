@@ -7,6 +7,7 @@ const _ = require('lodash'),
     ProviderAWSEC2 = require('./providers/awsec2'),
     ProviderDigitalOcean = require('./providers/digitalocean'),
     ProviderOVHCloud = require('./providers/ovhcloud'),
+    ProviderVscale = require('./providers/vscale'),
     fs = require('fs'),
     moment = require('moment'),
     ovh = require('ovh'),
@@ -27,7 +28,7 @@ winston.add(winston.transports.Console, {timestamp: true});
 
 
 program
-    .version('2.3.10')
+    .version('2.4.0')
     .option('-d, --debug', 'Debug mode (increase verbosity)', debugMode)
     .parse(process.argv);
 
@@ -145,6 +146,11 @@ function startProxy(configFilename) {
             case 'ovhcloud':
             {
                 return new ProviderOVHCloud(cfg.providers.ovhcloud, cfg.instance.port);
+            }
+
+            case 'vscale':
+            {
+                return new ProviderVscale(cfg.providers.vscale, cfg.instance.port);
             }
 
             default:

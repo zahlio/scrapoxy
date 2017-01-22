@@ -42,6 +42,11 @@ module.exports = {
             name: 'Proxy',
             maxRunningInstances: 10,
         },
+
+        vscale: {
+            name: 'Proxy',
+            maxRunningInstances: 10,
+        },
     },
 
     stats: {
