@@ -2,13 +2,19 @@
 Changelog
 =========
 
-X.X.X
-======
+2.4.0
+=====
+
+Features
+--------
+
+- **provider**: add `VScale.io`_ provider. Thanks to Hotrush!!!
+
 
 Bug fixes
 ---------
 
-- **proxy**: use a valid startup script for init.d Thanks to Hotrush
+- **proxy**: use a valid startup script for init.d. Thanks to Hotrush!!!
 - **useragent**: change useragents with a fresh list for 2017
 
 
@@ -24,7 +30,7 @@ Features
 Bug fixes
 ---------
 
-- **instance**: remove listeners on instance alive status on instance removal. Thanks to Étienne Corbillé
+- **instance**: remove listeners on instance alive status on instance removal. Thanks to Étienne Corbillé!!!
 
 
 2.3.9
@@ -335,3 +341,4 @@ Features
 .. _Scrapy: http://scrapy.org
 .. _`Node.js`: https://nodejs.org
 .. _PhantomJS: http://phantomjs.org
+.. _`VScale.io`: https://vscale.io
