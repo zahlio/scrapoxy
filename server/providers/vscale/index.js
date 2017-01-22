@@ -21,7 +21,7 @@ module.exports = class ProviderVscale {
 
         this._imagePromise = void 0;
         this._sshKeyPromise = void 0;
-        
+
         this._api = new API(this._config.token);
     }
 
@@ -50,7 +50,7 @@ module.exports = class ProviderVscale {
     get models() {
         const self = this;
 
-        return self._api.getAllServers()
+        return self._api.getAllScalets()
             .then(summarizeInfo)
             .then(excludeRegion)
             .then(excludeOutscope)
@@ -58,37 +58,37 @@ module.exports = class ProviderVscale {
 
         ////////////
 
-        function summarizeInfo(servers) {
-            return _.map(servers, (server) => ({
-                id: server.ctid.toString(),
-                status: server.status,
-                locked: server.locked,
-                ip: _.get(server, 'public_address.address'),
-                name: server.name,
-                region: server.location,
+        function summarizeInfo(scalets) {
+            return _.map(scalets, (scalet) => ({
+                id: scalet.ctid.toString(),
+                status: scalet.status,
+                locked: scalet.locked,
+                ip: _.get(scalet, 'public_address.address'),
+                name: scalet.name,
+                region: scalet.location,
             }));
         }
 
-        function excludeRegion(servers) {
-            return _.filter(servers,
-                (server) => server.region === self._config.region
+        function excludeRegion(scalets) {
+            return _.filter(scalets,
+                (scalets) => scalets.region === self._config.region
             );
         }
 
-        function excludeOutscope(servers) {
-            return _.filter(servers,
-                (server) => server.name && server.name.indexOf(self._config.name) === 0
+        function excludeOutscope(scalets) {
+            return _.filter(scalets,
+                (scalet) => scalet.name && scalet.name.indexOf(self._config.name) === 0
             );
         }
 
-        function convertToModel(servers) {
-            return _.map(servers, (server) => new InstanceModel(
-                server.id,
+        function convertToModel(scalets) {
+            return _.map(scalets, (scalet) => new InstanceModel(
+                scalet.id,
                 self.name,
-                convertStatus(server.status),
-                server.locked,
-                buildAddress(server.ip),
-                server
+                convertStatus(scalet.status),
+                scalet.locked,
+                buildAddress(scalet.ip),
+                scalet
             ));
 
 
@@ -145,9 +145,9 @@ module.exports = class ProviderVscale {
 
         winston.debug('[ProviderVscale] createInstances: count=%d', count);
 
-        return this._api.getAllServers()
-            .then((servers) => {
-                const actualCount = _(servers)
+        return this._api.getAllScalets()
+            .then((scalets) => {
+                const actualCount = _(scalets)
                     .size();
 
                 winston.debug('[ProviderVscale] createInstances: actualCount=%d', actualCount);
@@ -211,10 +211,7 @@ module.exports = class ProviderVscale {
 
         }
 
-        function createInstances(countOfServers, imageId, sshKeyId) {
-            const names = Array(countOfServers);
-            _.fill(names, self._config.name);
-
+        function createInstances(countOfScalets, imageId, sshKeyId) {
             const createOptions = {
                 name: self._config.name,
                 location: self._config.region,
@@ -237,14 +234,14 @@ module.exports = class ProviderVscale {
     startInstance(model) {
         winston.debug('[ProviderVscale] startInstance: model=', model.toString());
 
-        return this._api.enableServer(model.providerOpts.id);
+        return this._api.startScalet(model.providerOpts.id);
     }
 
 
     removeInstance(model) {
         winston.debug('[ProviderVscale] removeInstance: model=', model.toString());
 
-        return this._api.removeServer(model.providerOpts.id);
+        return this._api.removeScalet(model.providerOpts.id);
     }
 
     removeInstances(models) {
@@ -256,6 +253,6 @@ module.exports = class ProviderVscale {
             return;
         }
 
-        return Promise.map(models, (model) => this._api.removeServer(model.providerOpts.id));
+        return Promise.map(models, (model) => this._api.removeScalet(model.providerOpts.id));
     }
 };

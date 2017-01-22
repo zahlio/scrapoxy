@@ -11,7 +11,9 @@ module.exports = class VscaleAPI {
         this._token = token;
     }
 
-    getAllServers() {
+
+    // SCALETS
+    getAllScalets() {
         const options = {
             method: 'GET',
             path: '/scalets',
@@ -20,7 +22,7 @@ module.exports = class VscaleAPI {
         return this._makeRequest(options);
     }
 
-    createServer(params) {
+    createScalet(params) {
         const options = {
             method: 'POST',
             path: '/scalets',
@@ -29,7 +31,18 @@ module.exports = class VscaleAPI {
         return this._makeRequest(options, params);
     }
 
-    removeServer(id) {
+
+    startScalet(id) {
+        const options = {
+            method: 'PATCH',
+            path: `/scalets/${id}/start`,
+        };
+
+        return this._makeRequest(options);
+    }
+
+
+    removeScalet(id) {
         const options = {
             method: 'DELETE',
             path: `/scalets/${id}`,
@@ -44,15 +57,6 @@ module.exports = class VscaleAPI {
                     throw err;
                 }
             });
-    }
-
-    enableServer(id) {
-        const options = {
-            method: 'PATCH',
-            path: `/scalets/${id}/start`,
-        };
-
-        return this._makeRequest(options);
     }
 
 
@@ -77,6 +81,7 @@ module.exports = class VscaleAPI {
         return this._makeRequest(options);
     }
 
+
     _makeRequest(options, body) {
         const path = url.format({
             pathname: `/v1${options.path}`,
@@ -89,7 +94,7 @@ module.exports = class VscaleAPI {
             method: options.method,
             path,
             headers: {
-                'X-Token': `${this._token}`,
+                'X-Token': this._token,
             },
         };
 
@@ -139,5 +144,4 @@ module.exports = class VscaleAPI {
             req.end();
         });
     }
-
 };
