@@ -2,6 +2,16 @@
 Changelog
 =========
 
+
+2.4.1
+=====
+
+Bug fixes
+---------
+
+- **instance**: correctly remove instance when instance is removed. Thanks to Étienne Corbillé!!!
+
+
 2.4.0
 =====
 
