@@ -315,19 +315,6 @@ module.exports = class ProviderOVHCloud {
     }
 
 
-    removeInstances(models) {
-        winston.debug('[ProviderOVHCloud] removeInstances: models=',
-            _.map(models, (model) => model.toString())
-        );
-
-        if (models.length <= 0) {
-            return;
-        }
-
-        return Promise.map(models, (model) => this._removeInstance(model.providerOpts.id));
-    }
-
-
     _describeInstances() {
         return new Promise((resolve, reject) => {
             const options = {

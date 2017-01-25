@@ -278,28 +278,4 @@ module.exports = class ProviderAWSEC2 {
             });
         });
     }
-
-    removeInstances(models) {
-        winston.debug('[ProviderAWSEC2] removeInstances: models=',
-            _.map(models, (model) => model.toString())
-        );
-
-        if (models.length <= 0) {
-            return;
-        }
-
-        return new Promise((resolve, reject) => {
-            const params = {
-                'InstanceIds': _.map(models, (model) => model.providerOpts.id),
-            };
-
-            this._ec2.terminateInstances(params, (err) => {
-                if (err) {
-                    return reject(err);
-                }
-
-                resolve();
-            });
-        });
-    }
 };

@@ -248,16 +248,4 @@ module.exports = class ProviderDigitalOcean {
 
         return this._api.removeDroplet(model.providerOpts.id);
     }
-
-    removeInstances(models) {
-        winston.debug('[ProviderDigitalOcean] removeInstances: models=',
-            _.map(models, (model) => model.toString())
-        );
-
-        if (models.length <= 0) {
-            return;
-        }
-
-        return Promise.map(models, (model) => this._api.removeDroplet(model.providerOpts.id));
-    }
 };

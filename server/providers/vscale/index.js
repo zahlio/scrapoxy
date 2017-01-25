@@ -243,16 +243,4 @@ module.exports = class ProviderVscale {
 
         return this._api.removeScalet(model.providerOpts.id);
     }
-
-    removeInstances(models) {
-        winston.debug('[ProviderVscale] removeInstances: models=',
-            _.map(models, (model) => model.toString())
-        );
-
-        if (models.length <= 0) {
-            return;
-        }
-
-        return Promise.map(models, (model) => this._api.removeScalet(model.providerOpts.id));
-    }
 };

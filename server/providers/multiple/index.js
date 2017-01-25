@@ -75,30 +75,5 @@ module.exports = class ProviderMultiple {
 
         return provider.removeInstance(model);
     }
-
-
-    removeInstances(models) {
-        winston.debug('[ProviderMultiple] removeInstances: models=',
-            _.map(models, (model) => model.toString())
-        );
-
-        if (models.length <= 0) {
-            return;
-        }
-
-        const byProvider = _.groupBy(models, '_type');
-
-        const promises = [];
-        this._providers.forEach((provider) => {
-            const modelsGrp = byProvider[provider.name];
-            if (modelsGrp && modelsGrp.length > 0) {
-                promises.push(provider.removeInstances(modelsGrp));
-            }
-        });
-
-        return Promise
-            .all(promises)
-            .then((results) => _.flatten(results));
-    }
 };
 
