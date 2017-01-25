@@ -187,8 +187,7 @@ module.exports = class Manager extends EventEmitter {
         winston.debug('[Manager] crashRandomInstance: name=%s', randomName);
 
         const instance = this._managedInstances.get(randomName);
-
-        return this._provider.removeInstances([instance.model]);
+        return instance.remove();
     }
 
 
