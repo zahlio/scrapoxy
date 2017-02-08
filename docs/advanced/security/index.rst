@@ -76,8 +76,8 @@ Step 2: Allow Scrapoxy
 
 ::
 
-   sudo ufw allow tcp/8888
-   sudo ufw allow tcp/8889
+   sudo ufw allow 8888/tcp
+   sudo ufw allow 8889/tcp
 
 
 Step 3: Enable UFW
