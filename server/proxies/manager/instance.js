@@ -24,6 +24,7 @@ module.exports = class Instance extends EventEmitter {
         self._alive = false;
         self._aliveCount = void 0;
         self._rqCount = 0;
+        self._useragent = useragent.generateBrowser();
 
 
         // Check is alive
@@ -66,20 +67,6 @@ module.exports = class Instance extends EventEmitter {
             else if (self._checkRestartTimeout) {
                 clearTimeout(self._checkRestartTimeout);
                 self._checkRestartTimeout = void 0;
-            }
-        });
-
-        // Change user agent
-        self.on('status:updated', (newstatus) => {
-            // Alive
-            if (newstatus === InstanceModel.STARTED) {
-                // Set useragent
-                self._useragent = useragent.generateBrowser();
-                //self._useragent = useragent.generateBot();
-            }
-            else {
-                // Unset useragent
-                self._useragent = void 0;
             }
         });
 
