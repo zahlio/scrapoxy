@@ -3,6 +3,16 @@ Changelog
 =========
 
 
+2.4.2
+=====
+
+Bug fixes
+---------
+
+- **useragent**: set useragent at instance creation, not at startup
+- **instance**: force crashed instance to be removed
+
+
 2.4.1
 =====
 
