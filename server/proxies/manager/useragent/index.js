@@ -2,7 +2,6 @@
 
 module.exports = {
     generateBrowser,
-    generateBot,
 };
 
 
@@ -40,16 +39,3 @@ const browsersUA = [
 function generateBrowser() {
     return browsersUA[Math.floor(Math.random() * browsersUA.length)];
 }
-
-
-const botsUA = [
-    'Googlebot/2.1 (+http://www.googlebot.com/bot.html)',
-    //'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)',
-    //'Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)',
-    //'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)'
-];
-
-function generateBot() {
-    return botsUA[Math.floor(Math.random() * botsUA.length)];
-}
-
