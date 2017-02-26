@@ -115,12 +115,10 @@ module.exports = class Instance extends EventEmitter {
                 self._checkStopIfCrashedTimeout = setTimeout(() => {
                     winston.debug('[Instance/%s] stopIfCrashed', self._model.name);
 
-                    if (self._model.status === InstanceModel.STARTED) {
-                        self.remove()
-                            .catch((err) => {
-                                winston.error('[Instance/%s] Error: Cannot remove running crashed instance:', self._model.name, err);
-                            });
-                    }
+                    self.remove()
+                        .catch((err) => {
+                            winston.error('[Instance/%s] Error: Cannot remove running crashed instance:', self._model.name, err);
+                        });
                 }, self._config.stopIfCrashedDelay);
             }
         });
