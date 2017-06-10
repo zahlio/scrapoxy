@@ -1,23 +1,24 @@
 'use strict';
 
-const Router = require('koa-router');
+const express = require('express');
 
 
 module.exports = (stats) => {
-    const router = new Router();
+    const router = express.Router();
 
     router.get('/', getStats);
 
-    return router.routes();
+    return router;
 
 
     ////////////
 
-    function *getStats() {
-        const retention = parseRetention(this.request.query);
+    function getStats(req, res) {
+        const retention = parseRetention(req.query);
 
-        this.status = 200;
-        this.body = stats.getHistory(retention);
+        return res.send(
+            stats.getHistory(retention)
+        );
 
 
         ////////////

@@ -1,28 +1,29 @@
 'use strict';
 
 const _ = require('lodash'),
-    Router = require('koa-router'),
+    express = require('express'),
     tools = require('../tools');
 
 
 module.exports = (config, manager) => {
-    const router = new Router();
+    const router = express.Router();
 
     router.get('/', getConfig);
     router.patch('/', updateConfig);
 
-    return router.routes();
+    return router;
 
 
     ////////////
 
-    function *getConfig() {
-        this.status = 200;
-        this.body = tools.omitDeep(config, ['password', 'test']);
+    function getConfig(req, res) {
+        return res.send(
+            tools.omitDeep(config, ['password', 'test'])
+        );
     }
 
-    function *updateConfig() {
-        const payload = tools.omitDeep(this.request.body, ['password', 'test']);
+    function updateConfig(req, res) {
+        const payload = tools.omitDeep(req.body, ['password', 'test']);
 
         if (payload.instance && payload.instance.scaling) {
             tools.checkScalingIntegrity(payload.instance.scaling);
@@ -33,13 +34,14 @@ module.exports = (config, manager) => {
         _.merge(config, payload);
 
         if (_.isEqual(config, oldConfig)) {
-            this.status = 204;
+            return res.sendStatus(204);
         }
         else {
             manager.emit('config:updated', config);
 
-            this.status = 200;
-            this.body = tools.omitDeep(config, ['password', 'test']);
+            return res.send(
+                tools.omitDeep(config, ['password', 'test'])
+            );
         }
     }
 };

@@ -221,7 +221,7 @@ module.exports = class ProviderOVHCloud {
                             return reject(`${err}: ${results}`);
                         }
 
-                        const result = _.findWhere(results, {name});
+                        const result = _.find(results, {name});
                         if (!result) {
                             return reject(new Error(`Cannot find flavor by name '${name}'`));
                         }
@@ -243,7 +243,7 @@ module.exports = class ProviderOVHCloud {
                             return reject(`${err}: ${results}`);
                         }
 
-                        const result = _.findWhere(results, {name});
+                        const result = _.find(results, {name});
                         if (!result) {
                             return reject(new Error(`Cannot find snapshot by name '${name}'`));
                         }
@@ -265,7 +265,7 @@ module.exports = class ProviderOVHCloud {
                             return reject(`${err}: ${results}`);
                         }
 
-                        const result = _.findWhere(results, {name});
+                        const result = _.find(results, {name});
                         if (!result) {
                             return reject(new Error(`Cannot find sshKey by name '${name}'`));
                         }

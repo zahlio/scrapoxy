@@ -6,21 +6,17 @@ module.exports = class Auth {
     }
 
 
-    *koa(ctx, next) {
-        const token = ctx.request.header['authorization'];
+    express(req, res, next) {
+        const token = req.headers['authorization'];
         if (!token || token.length <= 0) {
-            ctx.status = 403;
-            ctx.body = 'no authorization token found';
-            return;
+            return res.status(403).send('no authorization token found');
         }
 
         if (token !== this._hash) {
-            ctx.status = 403;
-            ctx.body = 'wrong token';
-            return;
+            return res.status(403).send('wrong token');
         }
 
-        yield next;
+        next();
     }
 
 

@@ -2,16 +2,13 @@
 
 const Promise = require('bluebird'),
     Auth = require('./auth'),
-    bodyParser = require('koa-bodyparser'),
-    compress = require('koa-compress'),
-    cors = require('kcors'),
-    errorHandler = require('koa-error'),
+    bodyParser = require('body-parser'),
+    compression = require('compression'),
+    cors = require('cors'),
+    express = require('express'),
+    morgan = require('morgan'),
     http = require('http'),
-    Koa = require('koa'),
-    logger = require('koa-logger'),
     path = require('path'),
-    Router = require('koa-router'),
-    serve = require('koa-static'),
     socketIO = require('socket.io'),
     winston = require('winston');
 
@@ -20,41 +17,34 @@ module.exports = class Commander {
     constructor(config, manager, stats) {
         this._config = config;
 
+        // Configure Express framework
+        const app = express();
 
-        // Configure KOA framework
-        const app = new Koa();
-        app.name = 'Scrapoxy';
-
-        if (winston.level === 'debug') {
-            app.use(logger());
-        }
-
-        app.use(errorHandler());
+        app.use(morgan('combined'));
         app.use(cors());
-        app.use(compress());
-        app.use(bodyParser());
+        app.use(compression());
+        app.use(bodyParser.json());
 
         // Serve frontend
-        app.use(serve(path.join(__dirname, 'public')));
-
-        // Auth
-        const auth = new Auth(this._config.commander.password);
-
-        function *koaAuth(next) {
-            yield auth.koa(this, next);
-        }
+        app.use(express.static(path.join(__dirname, 'public')));
 
         // Define routes
-        const router = new Router();
-        router.use('/api/config', koaAuth, require('./api/config')(this._config, manager));
-        router.use('/api/instances', koaAuth, require('./api/instances')(manager));
-        router.use('/api/scaling', koaAuth, require('./api/scaling')(this._config, manager));
-        router.use('/api/stats', koaAuth, require('./api/stats')(stats));
-        app.use(router.routes());
+        const router = express.Router();
+        router.use('/config', require('./api/config')(this._config, manager));
+        router.use('/instances', require('./api/instances')(manager));
+        router.use('/scaling', require('./api/scaling')(this._config, manager));
+        router.use('/stats', require('./api/stats')(stats));
 
+        // Use auth
+        const auth = new Auth(this._config.commander.password);
+        app.use(
+            '/api',
+            (req, res, next) => auth.express(req, res, next),
+            router
+        );
 
         // Socket I.O
-        this._httpServer = http.Server(app.callback());
+        this._httpServer = http.createServer(app);
         const io = socketIO(this._httpServer);
         io.use((socket, next) => auth.socketio(socket, next));
 

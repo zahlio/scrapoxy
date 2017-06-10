@@ -1,28 +1,27 @@
 'use strict';
 
 const _ = require('lodash'),
-    Router = require('koa-router'),
+    express = require('express'),
     tools = require('../tools');
 
 
 module.exports = (config, manager) => {
-    const router = new Router();
+    const router = express.Router();
 
     router.get('/', getScaling);
     router.patch('/', updateScaling);
 
-    return router.routes();
+    return router;
 
 
     ////////////
 
-    function *getScaling() {
-        this.status = 200;
-        this.body = config.instance.scaling;
+    function getScaling(req, res) {
+        return res.send(config.instance.scaling);
     }
 
-    function *updateScaling() {
-        const payload = this.request.body;
+    function updateScaling(req, res) {
+        const payload = req.body;
 
         tools.checkScalingIntegrity(payload);
 
@@ -32,13 +31,12 @@ module.exports = (config, manager) => {
         _.merge(scaling, payload);
 
         if (_.isEqual(scaling, oldScaling)) {
-            this.status = 204;
+            return res.sendStatus(204);
         }
         else {
             manager.emit('scaling:updated', scaling);
 
-            this.status = 200;
-            this.body = scaling;
+            return res.send(scaling);
         }
     }
 };
