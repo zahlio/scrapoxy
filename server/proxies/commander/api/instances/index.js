@@ -1,51 +1,45 @@
 'use strict';
 
-const Router = require('koa-router'),
+const express = require('express'),
     winston = require('winston');
 
 
 module.exports = (manager) => {
-    const router = new Router();
+    const router = express.Router();
 
     router.get('/', getInstances);
     router.post('/stop', removeInstance);
 
-    return router.routes();
+    return router;
 
 
     ////////////
 
-    function *getInstances() {
-        this.status = 200;
-        this.body = manager.stats;
+    function getInstances(req, res) {
+        return res.send(manager.stats);
     }
 
-    function *removeInstance() {
-        const name = this.request.body['name'];
+    function removeInstance(req, res) {
+        const name = req.body['name'];
         if (!name || name.length <= 0) {
-            throw new Error('Name not found');
+            return res.status(500).send('Name not found');
         }
 
         try {
             const promise = manager.removeInstance(name);
             if (!promise) {
-                this.status = 404;
-                this.body = `Proxy ${name} not found`;
-                return;
+                return res.status(404).send(`Proxy ${name} not found`);
             }
 
-            yield promise;
-
-            this.status = 200;
-            this.body = {
-                alive: manager.aliveInstances.length,
-            };
+            promise
+                .then(() => res.send({
+                    alive: manager.aliveInstances.length,
+                }));
         }
         catch (err) {
             winston.error('[Commander] Error: Cannot remove instance %s:', name, err);
 
-            this.status = 500;
-            this.body = `Error: Cannot remove instance ${name}: ${err.toString()}`;
+            return res.status(500).send(`Error: Cannot remove instance ${name}: ${err.toString()}`);
         }
     }
 };
