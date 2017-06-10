@@ -32,7 +32,6 @@ function sigstop(callback) {
             'SIGTERM',
             'SIGUSR1',
             'SIGUSR2',
-            'SIGPROF',
             'SIGSYS',
             'SIGTRAP',
             'SIGVTALRM',

@@ -14,7 +14,7 @@ module.exports = class ProviderMultiple {
         this.name = 'multiple';
 
         this._providers = providers;
-        this._providersMap = _.indexBy(this._providers, 'name');
+        this._providersMap = _.keyBy(this._providers, 'name');
     }
 
 

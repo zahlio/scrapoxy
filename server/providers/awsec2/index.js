@@ -70,7 +70,7 @@ module.exports = class ProviderAWSEC2 {
                     }
 
                     const instances = _(data.Reservations)
-                        .pluck('Instances')
+                        .map('Instances')
                         .flatten()
                         .value();
 
@@ -183,7 +183,7 @@ module.exports = class ProviderAWSEC2 {
                 }
 
                 const actualCount = _(dataDescribe.Reservations)
-                    .pluck('Instances')
+                    .map('Instances')
                     .flatten()
                     .filter(
                     (instance) =>
@@ -216,7 +216,7 @@ module.exports = class ProviderAWSEC2 {
                         return reject(errParams);
                     }
 
-                    const ids = _.pluck(dataRun.Instances, 'InstanceId');
+                    const ids = _.map(dataRun.Instances, 'InstanceId');
 
                     // Need to add some delay because EC2 API is not so fast!
                     setTimeout(() => {

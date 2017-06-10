@@ -196,7 +196,7 @@ module.exports = class ProviderDigitalOcean {
             function getImageByName(name) {
                 return self._api.getAllImages(true)
                     .then((images) => {
-                        const image = _.findWhere(images, {name});
+                        const image = _.find(images, {name});
                         if (!image) {
                             throw new Error(`Cannot find image by name '${name}'`);
                         }
@@ -208,7 +208,7 @@ module.exports = class ProviderDigitalOcean {
             function getSSHkeyByName(name) {
                 return self._api.getAllSSHkeys()
                     .then((sshKeys) => {
-                        const sshKey = _.findWhere(sshKeys, {name});
+                        const sshKey = _.find(sshKeys, {name});
                         if (!sshKey) {
                             throw new Error(`Cannot find ssh_key by name '${name}'`);
                         }
