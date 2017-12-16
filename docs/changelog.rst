@@ -3,7 +3,7 @@ Changelog
 =========
 
 
-2.4.X
+2.4.3
 =====
 
 Bug fixes
