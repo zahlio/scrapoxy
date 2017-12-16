@@ -10,6 +10,7 @@ Bug fixes
 ---------
 
 - **node**: change minimum version of Node.js to 8
+- **dependencies**: upgrade dependencies to latest version
 
 
 2.4.2
