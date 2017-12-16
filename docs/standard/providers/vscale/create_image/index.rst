@@ -69,7 +69,7 @@ Install proxy with::
 
     sudo apt-get update
     sudo apt-get install --yes curl
-    curl --silent --location https://deb.nodesource.com/setup_6.x | sudo bash -
+    curl --silent --location https://deb.nodesource.com/setup_8.x | sudo bash -
     sudo apt-get install --yes nodejs
     curl --silent --location https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/tools/install/proxy.js | sudo tee /root/proxy.js > /dev/null
     curl --silent --location https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/tools/install/proxyup.sh | sudo tee /etc/init.d/proxyup.sh > /dev/null

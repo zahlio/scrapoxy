@@ -3,6 +3,15 @@ Changelog
 =========
 
 
+2.4.X
+=====
+
+Bug fixes
+---------
+
+- **node**: change minimum version of Node.js to 8
+
+
 2.4.2
 =====
 
