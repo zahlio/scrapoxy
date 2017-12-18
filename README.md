@@ -10,6 +10,6 @@ It starts a pool of proxies to send your requests.
 
 Now, you can crawl without thinking about blacklisting!
 
-It is written in Javascript (ES6) with `Node.js`_ & AngularJS_ and it is **open source**!
+It is written in Javascript (ES6) with [Node.js](https://nodejs.org) & [AngularJS](https://angularjs.org) and it is **open source**!
 
 Latest news are on [scrapoxy.io](http://scrapoxy.io)!
