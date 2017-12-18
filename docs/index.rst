@@ -8,7 +8,7 @@ Scrapoxy
 What is Scrapoxy ?
 ==================
 
-https://github.com/fabienvauchelles/scrapoxy
+http://scrapoxy.io
 
 Scrapoxy **hides** your scraper behind a cloud.
 
