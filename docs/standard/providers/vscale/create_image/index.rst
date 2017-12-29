@@ -42,7 +42,7 @@ Use the SSH key named *mykey*:
 
 
 Step 4: Create the scalet
-========================
+=========================
 
 Click on *CREATE SERVER*
 
