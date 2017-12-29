@@ -44,21 +44,19 @@ Step 5: Update configuration
 Open :code:`conf.json`::
 
   {
-    "providers": {
+    "providers": [
       "type": "ovhcloud",
-  
-      "ovhcloud": {
-        "endpoint": "YOUR ENDPOINT (could be: ovh-eu)",
-        "appKey": "YOUR APP KEY",
-        "appSecret": "YOUR APP SECRET",
-        "consumerKey": "YOUR CONSUMERKEY",
-        "serviceId": "YOUR SERVICEID",
-        "region": "YOUR REGION (could be: BHS1, GRA1 or SBG1)",
-        "sshKeyName": "YOUR SSH KEY (could be: mykey)",
-        "flavorName": "vps-ssd-1",
-        "snapshotName": "YOUR SNAPSHOT NAME (could be: forward-proxy)"
-      }
-    }
+
+      "endpoint": "YOUR ENDPOINT (could be: ovh-eu)",
+      "appKey": "YOUR APP KEY",
+      "appSecret": "YOUR APP SECRET",
+      "consumerKey": "YOUR CONSUMERKEY",
+      "serviceId": "YOUR SERVICEID",
+      "region": "YOUR REGION (could be: BHS1, GRA1 or SBG1)",
+      "sshKeyName": "YOUR SSH KEY (could be: mykey)",
+      "flavorName": "vps-ssd-1",
+      "snapshotName": "YOUR SNAPSHOT NAME (could be: forward-proxy)"
+    ]
   },
 
 And update config with your parameters.
@@ -75,6 +73,7 @@ Options: ovhcloud
 =================== ============= ===================================================================================================================================
 Option              Default value Description
 =================== ============= ===================================================================================================================================
+type                none          Must be **ovhcloud**
 endpoint            none          OVH subdivision (ovh-eu or ovh-ca)
 appKey              none          Credentials for OVH
 appSecret           none          Credentials for OVH
@@ -85,6 +84,7 @@ sshKeyName          none          Name of the SSH key
 flavorName          none          Type of instance
 name                Proxy         Name of the instance
 snapshotName        none          Name of the backup image (for the proxy instance)
+max                 none          Maximum number of instances for this provider. If empty, there is no maximum.
 =================== ============= ===================================================================================================================================
 
 

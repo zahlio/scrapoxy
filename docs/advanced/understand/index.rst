@@ -116,6 +116,16 @@ There is a tutorial: :doc:`../../tutorials/python-scrapy-blacklisting/index`.
 Instances management
 ====================
 
+How does multi-providers work ?
+-------------------------------
+
+In the configuration file, you can specify **multiple providers** (the ``providers`` field is an array).
+
+You can also specify the maximum number of instances by provider, with the ``max`` parameter (for example: 2 instances maximum for AWSEC2 and unlimited for DigitalOcean).
+
+When several instances are requested, the algorithm **randomly** asks the instances at the providers, within the specified capacities.
+
+
 How does the monitoring mechanism ?
 -----------------------------------
 

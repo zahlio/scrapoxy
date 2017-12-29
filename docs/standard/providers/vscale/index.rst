@@ -41,16 +41,14 @@ Step 4: Update configuration
 Open :code:`conf.json`::
 
   {
-    "providers": {
+    "providers": [
       "type": "vscale",
-      "vscale": {
-        "token": "YOUR PERSONAL TOKEN",
-        "region": "YOUR REGION (could be: msk0, spb0)",
-        "name": "YOUR SERVER NAME",
-        "sshKeyName": "YOUR SSH KEY (could be: mykey)",
-        "plan": "YOUR PLAN (could be: small)"
-      }
-    }
+      "token": "YOUR PERSONAL TOKEN",
+      "region": "YOUR REGION (could be: msk0, spb0)",
+      "name": "YOUR SERVER NAME",
+      "sshKeyName": "YOUR SSH KEY (could be: mykey)",
+      "plan": "YOUR PLAN (could be: small)"
+    ]
   },
 
 And update config with your parameters.
@@ -67,12 +65,14 @@ Options: vscale
 =================== ============= ===================================================================================================================================
 Option              Default value Description
 =================== ============= ===================================================================================================================================
+type                none          Must be **vscale**
 token               none          Credentials for Vscale
 region              none          Vscale region (example: msk0, spb0)
 sshKeyName          none          Name of the SSH key
 plan                none          Type of plan (example: small)
 name                Proxy         Name of the scalet
 imageName           none          Name of the image (for the proxy scalet)
+max                 none          Maximum number of instances for this provider. If empty, there is no maximum.
 =================== ============= ===================================================================================================================================
 
 

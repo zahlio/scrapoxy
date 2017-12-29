@@ -36,17 +36,15 @@ Step 4: Update configuration
 Open :code:`conf.json`::
 
   {
-    "providers": {
+    "providers": [
       "type": "digitalocean",
 
-      "digitalocean": {
-        "token": "YOUR PERSONAL TOKEN",
-        "region": "YOUR REGION (could be: lon1)",
-        "size": "512mb",
-        "sshKeyName": "YOUR SSH KEY (could be: mykey)",
-        "imageName": "YOUR SNAPSHOT NAME (could be: forward-proxy)"
-      }
-    }
+      "token": "YOUR PERSONAL TOKEN",
+      "region": "YOUR REGION (could be: lon1)",
+      "size": "512mb",
+      "sshKeyName": "YOUR SSH KEY (could be: mykey)",
+      "imageName": "YOUR SNAPSHOT NAME (could be: forward-proxy)"
+    ]
   },
 
 And update config with your parameters.
@@ -63,12 +61,14 @@ Options: digitalocean
 =================== ============= ===================================================================================================================================
 Option              Default value Description
 =================== ============= ===================================================================================================================================
+type                none          Must be **digitalocean**
 token               none          Credentials for DigitalOcean
 region              none          DigitalOcean region (example: lon1)
 sshKeyName          none          Name of the SSH key
 size                none          Type of droplet
 name                Proxy         Name of the droplet
 imageName           none          Name of the image (for the proxy droplet)
+max                 none          Maximum number of instances for this provider. If empty, there is no maximum.
 =================== ============= ===================================================================================================================================
 
 

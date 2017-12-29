@@ -11,6 +11,68 @@ To create a new configuration, use::
     scrapoxy init conf.json
 
 
+Multi-Providers Example configuration
+=====================================
+
+This command creates a configuration example, with 4 providers::
+
+  {
+        "commander": {
+            "password": "CHANGE_THIS_PASSWORD"
+        },
+        "instance": {
+            "port": 3128,
+            "scaling": {
+                "min": 1,
+                "max": 2
+            }
+        },
+        "providers": [
+            {
+                "type": "awsec2",
+                "accessKeyId": "YOUR ACCESS KEY ID",
+                "secretAccessKey": "YOUR SECRET ACCESS KEY",
+                "region": "YOUR REGION (could be: eu-west-1)",
+                "instance": {
+                    "InstanceType": "t1.micro",
+                    "ImageId": "ami-c74d0db4",
+                    "SecurityGroups": [
+                        "forward-proxy"
+                    ]
+                }
+            },
+            {
+                "type": "ovhcloud",
+                "endpoint": "YOUR ENDPOINT (could be: ovh-eu)",
+                "appKey": "YOUR APP KEY",
+                "appSecret": "YOUR APP SECRET",
+                "consumerKey": "YOUR CONSUMER KEY",
+                "serviceId": "YOUR SERVICE ID",
+                "region": "YOUR REGION (could be: BHS1, GRA1 or SBG1)",
+                "sshKeyName": "YOUR SSH KEY (could be: mykey)",
+                "flavorName": "vps-ssd-1",
+                "snapshotName": "YOUR SNAPSHOT NAME (could be: forward-proxy)"
+            },
+            {
+                "type": "digitalocean",
+                "token": "YOUR PERSONAL TOKEN",
+                "region": "YOUR REGION (could be: lon1)",
+                "size": "512mb",
+                "sshKeyName": "YOUR SSH KEY (could be: mykey)",
+                "imageName": "YOUR SNAPSHOT NAME (could be: forward-proxy)"
+            },
+            {
+                "type": "vscale",
+                "token": "YOUR PERSONAL TOKEN",
+                "region": "YOUR REGION (could be: msk0, spb0)",
+                "imageName": "YOUR SNAPSHOT NAME (could be: forward-proxy)",
+                "sshKeyName": "YOUR SSH KEY (could be: mykey)",
+                "plan": "YOUR PLAN (could be: small)"
+            }
+        ]
+  }
+
+
 Options: commander
 ==================
 
@@ -84,15 +146,12 @@ path   none          If specified, writes all logs in a dated file
 Options: providers
 ==================
 
-============ ============= ==========================================================================================================
-Option       Default value Description
-============ ============= ==========================================================================================================
-type         8888          Name of the used provider (awsec2, digitalocean, ovhcloud or vscale)
-awsec2       none          see `AWS EC2 - Configuration <../providers/awsec2/index.html#configure-scrapoxy-awsec2>`_
-ovhcloud     none          see `OVH Cloud - Configuration <../providers/ovhcloud/index.html#configure-scrapoxy-ovhcloud>`_
-digitalocean none          see `DigitalOcean - Configuration <../providers/digitalocean/index.html#configure-scrapoxy-digitalocean>`_
-vscale       none          see `Vscale - Configuration <../providers/vscale/index.html#configure-scrapoxy-vscale>`_
-============ ============= ==========================================================================================================
+Providers is an array of provider. It can contains multiple providers:
+
+* AWS EC2: see `AWS EC2 - Configuration <../providers/awsec2/index.html#configure-scrapoxy-awsec2>`_
+* OVH Cloud: see `OVH Cloud - Configuration <../providers/ovhcloud/index.html#configure-scrapoxy-ovhcloud>`_
+* DigitalOcean: see `DigitalOcean - Configuration <../providers/digitalocean/index.html#configure-scrapoxy-digitalocean>`_
+* Vscale: see `Vscale - Configuration <../providers/vscale/index.html#configure-scrapoxy-vscale>`_
 
 
 Options: proxy

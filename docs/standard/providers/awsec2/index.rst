@@ -44,18 +44,16 @@ Step 5: Update configuration
 Open :code:`conf.json`::
 
   {
-    "providers": {
+    "providers": [
       "type": "awsec2",
 
-      "awsec2": {
-        "region": "eu-west-1",
-        "instance": {
-          "InstanceType": "t1.micro",
-          "ImageId": "ami-c74d0db4",
-          "SecurityGroups": [ "forward-proxy" ],
-        }
+      "region": "eu-west-1",
+      "instance": {
+        "InstanceType": "t1.micro",
+        "ImageId": "ami-c74d0db4",
+        "SecurityGroups": [ "forward-proxy" ],
       }
-    }
+    ]
   }
 
 And update *region* and *ImageId* with your parameters.
@@ -77,11 +75,13 @@ For credentials, there is 2 choices:
 =================== ============= ===================================================================================================================================
 Option              Default value Description
 =================== ============= ===================================================================================================================================
+type                none          Must be **awsec2**
 accessKeyId         none          Credentials for AWS (optional)
 secretAccessKey     none          Credentials for AWS (optional)
 region              none          AWS region (example: eu-west-1)
 tag                 Proxy         Name of the AWS / EC2 instance
 instance            none          see :ref:`awsec2 / instance <awsec2-instance>`
+max                 none          Maximum number of instances for this provider. If empty, there is no maximum.
 =================== ============= ===================================================================================================================================
 
 

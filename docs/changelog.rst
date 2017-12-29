@@ -3,20 +3,24 @@ Changelog
 =========
 
 
-2.4.X
+X.X.X
 =====
+
+Features
+--------
+
+.. WARNING::
+    **BREAKING CHANGE!** The configuration of providers changes. See `documentation here <standard/config/index.html#configure-scrapoxy-vscale>`_.
+
+- **providers**: uses multiple providers at a time
+- **awsec2**: provider removes instances in batch every second (and no longer makes thousands of queries)
+- **ovhcloud**: provider creates instances in batch (new API route used)
+
 
 Bug fixes
 ---------
 
 - **maxRunningInstances**: remove blocking parameters maxRunningInstances
-
-
-Features
---------
-
-- **awsec2**: provider removes instances in batch every second (and no longer makes thousands of queries)
-- **ovhcloud**: provider creates instances in batch (new API route used)
 
 
 2.4.3
