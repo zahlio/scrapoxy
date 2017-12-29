@@ -1,7 +1,6 @@
 'use strict';
 
-const _ = require('lodash'),
-    Promise = require('bluebird'),
+const Promise = require('bluebird'),
     https = require('https'),
     url = require('url');
 

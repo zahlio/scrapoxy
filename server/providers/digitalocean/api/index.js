@@ -191,7 +191,7 @@ module.exports = class DigitalOceanAPI {
 
                         // Check coherency
                         if (joinedResults.length !== totalItems) {
-                            throw new Error(`Total results (${totalItems}) doesn\'t match to joined results (${joinedResults.length})`);
+                            throw new Error(`Total results (${totalItems}) doesn't match to joined results (${joinedResults.length})`);
                         }
 
                         return joinedResults;

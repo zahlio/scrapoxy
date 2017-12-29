@@ -61,6 +61,7 @@ module.exports = class ProviderVscale {
             .then(excludeRegion)
             .then(excludeOutscope)
             .then(convertToModel)
+        ;
 
         ////////////
 
@@ -77,7 +78,7 @@ module.exports = class ProviderVscale {
 
         function excludeRegion(scalets) {
             return _.filter(scalets,
-                (scalets) => scalets.region === self._config.region
+                (sc) => sc.region === self._config.region
             );
         }
 
