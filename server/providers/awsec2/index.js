@@ -21,6 +21,25 @@ module.exports = class ProviderAWSEC2 {
 
         const opts = _.pick(this._config, ['accessKeyId', 'secretAccessKey', 'region']);
         this._ec2 = new AWS.EC2(opts);
+
+        // Remove instances in batch every second
+        this._modelsToRemove = [];
+        setInterval(() => {
+            if (this._modelsToRemove.length <= 0) {
+                return;
+            }
+
+            const models = this._modelsToRemove;
+            this._modelsToRemove = [];
+
+            this
+                ._removeInstances(models)
+                .catch((err) => {
+                    const names = models.map((model) => model.toString()).join(',');
+                    winston.error('[ProviderAWSEC2] Error: Cannot remove instances %s:', names, err);
+                })
+            ;
+        }, 1000);
     }
 
 
@@ -258,11 +277,24 @@ module.exports = class ProviderAWSEC2 {
 
 
     removeInstance(model) {
-        winston.debug('[ProviderAWSEC2] removeInstance: model=', model.toString());
+        winston.debug('[ProviderAWSEC2] removeInstance (asked): model=', model.toString());
+
+        this._modelsToRemove.push(model);
+
+        return Promise.resolve();
+    }
+
+
+    _removeInstances(models) {
+        const
+            ids = models.map((model) => model.providerOpts.id),
+            names = models.map((model) => model.toString()).join(',');
+
+        winston.debug('[ProviderAWSEC2] removeInstances: models=', names);
 
         return new Promise((resolve, reject) => {
             const params = {
-                'InstanceIds': [model.providerOpts.id],
+                'InstanceIds': ids,
             };
 
             this._ec2.terminateInstances(params, (err) => {
@@ -270,7 +302,7 @@ module.exports = class ProviderAWSEC2 {
                     return reject(err);
                 }
 
-                resolve();
+                return resolve();
             });
         });
     }

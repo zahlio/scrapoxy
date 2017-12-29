@@ -12,6 +12,12 @@ Bug fixes
 - **maxRunningInstances**: remove blocking parameters maxRunningInstances
 
 
+Features
+--------
+
+- **awsec2**: provider removes instances in batch every second (and no longer makes thousands of queries)
+
+
 2.4.3
 =====
 
