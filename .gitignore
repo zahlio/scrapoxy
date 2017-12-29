@@ -1,5 +1,5 @@
 node_modules/
 .idea
 .DS_Store
-server/my-config.json
+server/my-config*.json
 server/conf.json
