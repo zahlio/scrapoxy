@@ -15,6 +15,8 @@ module.exports = class ProviderAWSEC2 {
         }
 
         this._config = config;
+        this._config.tag = this._config.tag || 'Proxy';
+
         this._instancePort = instancePort;
 
         this.name = 'awsec2';
@@ -65,6 +67,11 @@ module.exports = class ProviderAWSEC2 {
 
     static get ST_STOPPED() {
         return 'stopped';
+    }
+
+
+    get region() {
+        return this._config.region;
     }
 
 
@@ -146,6 +153,7 @@ module.exports = class ProviderAWSEC2 {
                 convertStatus(instanceDesc.status),
                 false,
                 buildAddress(instanceDesc.ip),
+                self.region,
                 instanceDesc
             ));
 

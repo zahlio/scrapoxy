@@ -4,7 +4,6 @@ const _ = require('lodash'),
     Promise = require('bluebird'),
     API = require('./api'),
     InstanceModel = require('../../proxies/manager/instance.model'),
-    ScalingError = require('../../common/error/scaling'),
     winston = require('winston');
 
 
@@ -15,6 +14,8 @@ module.exports = class ProviderVscale {
         }
 
         this._config = config;
+        this._config.name = this._config.name || 'Proxy';
+
         this._instancePort = instancePort;
 
         this.name = 'vscale';
@@ -44,6 +45,11 @@ module.exports = class ProviderVscale {
 
     static get ST_BILLING() {
         return 'billing';
+    }
+
+
+    get region() {
+        return this._config.region;
     }
 
 
@@ -88,6 +94,7 @@ module.exports = class ProviderVscale {
                 convertStatus(scalet.status),
                 scalet.locked,
                 buildAddress(scalet.ip),
+                self.region,
                 scalet
             ));
 

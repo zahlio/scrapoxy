@@ -110,12 +110,12 @@ function startProxy(configFilename) {
     }
 
     // Initialize
-    const provider = getProvider(config);
-    if (!provider) {
-        return winston.error('[Start] Error: Provider is not specify or supported');
+    const providers = getProviders(config);
+    if (providers.length <= 0) {
+        return winston.error('[Start] Error: Providers are not specify or supported');
     }
 
-    const main = new Proxies(config, provider);
+    const main = new Proxies(config, providers);
 
     // Register stop event
     sigstop(
@@ -131,31 +131,41 @@ function startProxy(configFilename) {
 
     ////////////
 
-    function getProvider(cfg) {
-        switch (cfg.providers.type) {
-            case 'awsec2':
-            {
-                return new ProviderAWSEC2(cfg.providers.awsec2, cfg.instance.port);
-            }
+    function getProviders(cfg) {
+        return _(cfg.providers)
+            .map(getProvider)
+            .compact()
+            .value();
 
-            case 'digitalocean':
-            {
-                return new ProviderDigitalOcean(cfg.providers.digitalocean, cfg.instance.port);
-            }
 
-            case 'ovhcloud':
-            {
-                return new ProviderOVHCloud(cfg.providers.ovhcloud, cfg.instance.port);
-            }
+        ////////////
 
-            case 'vscale':
-            {
-                return new ProviderVscale(cfg.providers.vscale, cfg.instance.port);
-            }
+        function getProvider(provider) {
+            switch (provider.type) {
+                case 'awsec2':
+                {
+                    return new ProviderAWSEC2(provider, cfg.instance.port);
+                }
 
-            default:
-            {
-                return;
+                case 'digitalocean':
+                {
+                    return new ProviderDigitalOcean(provider, cfg.instance.port);
+                }
+
+                case 'ovhcloud':
+                {
+                    return new ProviderOVHCloud(provider, cfg.instance.port);
+                }
+
+                case 'vscale':
+                {
+                    return new ProviderVscale(provider, cfg.instance.port);
+                }
+
+                default:
+                {
+                    return;
+                }
             }
         }
     }

@@ -27,23 +27,7 @@ module.exports = {
         },
     },
 
-    providers: {
-        awsec2: {
-            tag: 'Proxy',
-        },
-
-        ovhcloud: {
-            name: 'Proxy',
-        },
-
-        digitalocean: {
-            name: 'Proxy',
-        },
-
-        vscale: {
-            name: 'Proxy',
-        },
-    },
+    providers: [],
 
     stats: {
         retention: 86400000, // 24h

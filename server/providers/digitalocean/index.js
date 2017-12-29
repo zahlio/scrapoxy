@@ -15,6 +15,8 @@ module.exports = class ProviderDigitalOcean {
         }
 
         this._config = config;
+        this._config.name = this._config.name || 'Proxy';
+
         this._instancePort = instancePort;
 
         this.name = 'digitalocean';
@@ -40,6 +42,11 @@ module.exports = class ProviderDigitalOcean {
 
     static get ST_ARCHIVE() {
         return 'archive';
+    }
+
+
+    get region() {
+        return this._config.region;
     }
 
 
@@ -92,6 +99,7 @@ module.exports = class ProviderDigitalOcean {
                 convertStatus(droplet.status),
                 droplet.locked,
                 buildAddress(droplet.ip),
+                self.region,
                 droplet
             ));
 

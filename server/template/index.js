@@ -24,10 +24,9 @@ const template = {
         },
     },
 
-    providers: {
-        type: 'awsec2',
-
-        awsec2: {
+    providers: [
+        {
+            type: 'awsec2',
             accessKeyId: 'YOUR ACCESS KEY ID',
             secretAccessKey: 'YOUR SECRET ACCESS KEY',
             region: 'YOUR REGION (could be: eu-west-1)',
@@ -38,7 +37,8 @@ const template = {
             },
         },
 
-        ovhcloud: {
+        {
+            type: 'ovhcloud',
             endpoint: 'YOUR ENDPOINT (could be: ovh-eu)',
             appKey: 'YOUR APP KEY',
             appSecret: 'YOUR APP SECRET',
@@ -50,7 +50,8 @@ const template = {
             snapshotName: 'YOUR SNAPSHOT NAME (could be: forward-proxy)',
         },
 
-        digitalocean: {
+        {
+            type: 'digitalocean',
             token: 'YOUR PERSONAL TOKEN',
             region: 'YOUR REGION (could be: lon1)',
             size: '512mb',
@@ -58,14 +59,15 @@ const template = {
             imageName: 'YOUR SNAPSHOT NAME (could be: forward-proxy)',
         },
 
-        vscale: {
+        {
+            type: 'vscale',
             token: 'YOUR PERSONAL TOKEN',
             region: 'YOUR REGION (could be: msk0, spb0)',
             imageName: 'YOUR SNAPSHOT NAME (could be: forward-proxy)',
             sshKeyName: 'YOUR SSH KEY (could be: mykey)',
             plan: 'YOUR PLAN (could be: small)',
         },
-    },
+    ]
 };
 
 

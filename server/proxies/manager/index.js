@@ -9,12 +9,12 @@ const _ = require('lodash'),
 
 
 module.exports = class Manager extends EventEmitter {
-    constructor(config, stats, provider) {
+    constructor(config, stats, providers) {
         super();
 
         this._config = config;
         this._stats = stats;
-        this._provider = provider;
+        this._providers = providers;
 
         this._managedInstances = new Map();
         this._aliveInstances = [];
@@ -68,7 +68,11 @@ module.exports = class Manager extends EventEmitter {
         function checkInstances() {
             winston.debug('[Manager] checkInstances');
 
-            self._provider.models
+            Promise.map(self._providers,
+                (provider) => provider.models
+                    .then((models) => assignProviderToModels(models, provider))
+            )
+                .then((modelsByProvider) => _.flatten(modelsByProvider))
                 .then(updateInstances)
                 .then(adjustInstances)
                 .catch((err) => {
@@ -82,11 +86,25 @@ module.exports = class Manager extends EventEmitter {
 
             ////////////
 
+            function assignProviderToModels(models, provider) {
+                models.forEach((model) => {
+                    model.provider = provider;
+                });
+
+                provider.instancesCount = models.length;
+
+                return models;
+            }
+
             function updateInstances(models) {
                 const existingNames = Array.from(self._managedInstances.keys());
 
                 models.forEach((model) => {
                     const name = model.name;
+
+                    // Get provider
+                    const provider = model.provider;
+                    delete model.provider;
 
                     let instance = self._managedInstances.get(name);
                     if (instance) {
@@ -102,7 +120,7 @@ module.exports = class Manager extends EventEmitter {
                         // Add
                         winston.debug('[Manager] checkInstances: add:', model.toString());
 
-                        instance = new Instance(self, self._stats, self._provider, self._config);
+                        instance = new Instance(self, self._stats, provider, self._config);
                         self._managedInstances.set(name, instance);
 
                         registerEvents(instance);
@@ -121,31 +139,35 @@ module.exports = class Manager extends EventEmitter {
 
                     instance.removedFromManager();
                 });
-            }
 
-            function registerEvents(instance) {
-                instance.on('status:updated', () => self.emit('status:updated', instance.stats));
 
-                instance.on('alive:updated', (alive) => {
-                    const name = instance.name;
-                    if (alive && !instance.removing) {
-                        self._aliveInstances.push(instance);
-                        self._aliveInstancesMap.set(name, instance);
-                    }
-                    else {
-                        // If instance is not alive OR instance is alived but is asked to be removed
-                        // we remove the instance from the alive pool
-                        const idx = self._aliveInstances.indexOf(instance);
-                        if (idx >= 0) {
-                            self._aliveInstances.splice(idx, 1);
+                ////////////
+
+                function registerEvents(inst) {
+                    inst.on('status:updated', () => self.emit('status:updated', inst.stats));
+
+                    inst.on('alive:updated', (alive) => {
+                        const name = inst.name;
+                        if (alive && !inst.removing) {
+                            self._aliveInstances.push(inst);
+                            self._aliveInstancesMap.set(name, inst);
+                        }
+                        else {
+                            // If instance is not alive OR instance is alived but is asked to be removed
+                            // we remove the instance from the alive pool
+                            const idx = self._aliveInstances.indexOf(inst);
+                            if (idx >= 0) {
+                                self._aliveInstances.splice(idx, 1);
+                            }
+
+                            self._aliveInstancesMap.delete(name);
                         }
 
-                        self._aliveInstancesMap.delete(name);
-                    }
-
-                    self.emit('alive:updated', instance.stats);
-                });
+                        self.emit('alive:updated', inst.stats);
+                    });
+                }
             }
+
 
             function adjustInstances() {
                 const managedCount = self._managedInstances.size;
@@ -169,7 +191,58 @@ module.exports = class Manager extends EventEmitter {
 
                     winston.debug('[Manager] adjustInstances: add %d instances', count);
 
-                    return self._provider.createInstances(count);
+                    return createInstances(count);
+                }
+
+
+                ////////////
+
+                function createInstances(cnt) {
+                    const counters = buildCounters();
+
+                    // Split the count
+                    const countersAvailable = counters.slice(0);
+                    let i = 0;
+                    while (i < cnt && countersAvailable.length > 0) {
+                        const
+                            counterIdx = Math.floor(Math.random() * countersAvailable.length),
+                            counter = countersAvailable[counterIdx];
+
+                        if (counter.max >= 0 && counter.count >= counter.max) {
+                            countersAvailable.splice(counterIdx, 1);
+                        }
+                        else {
+                            counter.count++;
+                            i++;
+                        }
+                    }
+
+                    const countersFilled = counters.filter((counter) => counter.count > 0);
+                    if (countersFilled.length <= 0) {
+                        throw new ScalingError(cnt, false);
+                    }
+
+                    return Promise.map(countersFilled,
+                        (counter) => counter.provider.createInstances(counter.count)
+                    );
+
+
+                    ////////////
+
+                    function buildCounters() {
+                        return self._providers.map((provider) => {
+                            const counter = {
+                                count: 0,
+                                provider,
+                            };
+
+                            if (provider._config.max) {
+                                counter.max = Math.max(0, provider._config.max - provider.instancesCount);
+                            }
+
+                            return counter;
+                        });
+                    }
                 }
             }
         }

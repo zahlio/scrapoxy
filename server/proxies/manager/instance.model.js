@@ -1,12 +1,13 @@
 'use strict';
 
 module.exports = class InstanceModel {
-    constructor(name, type, status, locked, address, providerOpts) {
+    constructor(name, type, status, locked, address, region, providerOpts) {
         this.name = name;
         this.type = type;
         this.status = status;
         this.locked = locked;
         this.address = address;
+        this.region = region;
 
         this.providerOpts = providerOpts;
     }
@@ -43,6 +44,7 @@ module.exports = class InstanceModel {
             type: this.type,
             status: this.status,
             address: this.address,
+            region: this.region,
         };
     }
 

@@ -8,12 +8,13 @@ const Commander = require('./commander'),
 
 
 module.exports = class Proxies {
-    constructor(config, provider) {
+    constructor(config, providers) {
         this._config = config;
-        this._provider = provider;
+        this._providers = providers;
 
         // Show provider name
-        winston.info('[Main] The selected provider is', this._provider.name);
+        const providersName = this._providers.map((provider) => `${provider.name}/${provider.region}`);
+        winston.info('[Main] The selected providers are', providersName.join(', '));
 
         // Stats
         this._stats = new Stats(this._config.stats);
@@ -22,7 +23,7 @@ module.exports = class Proxies {
         this._manager = new Manager(
             this._config.instance,
             this._stats,
-            this._provider
+            this._providers
         );
 
         // Init Master

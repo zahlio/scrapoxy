@@ -15,6 +15,8 @@ module.exports = class ProviderOVHCloud {
         }
 
         this._config = config;
+        this._config.name = this._config.name || 'Proxy';
+
         this._instancePort = instancePort;
 
         this.name = 'ovhcloud';
@@ -46,6 +48,11 @@ module.exports = class ProviderOVHCloud {
 
     static get ST_ERROR() {
         return 'ERROR';
+    }
+
+
+    get region() {
+        return this._config.region;
     }
 
 
@@ -122,6 +129,7 @@ module.exports = class ProviderOVHCloud {
                     convertStatus(instanceDesc.status),
                     false,
                     buildAddress(instanceDesc.ip),
+                    self.region,
                     instanceDesc
                 )
             );
