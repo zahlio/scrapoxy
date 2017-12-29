@@ -16,6 +16,7 @@ Features
 --------
 
 - **awsec2**: provider removes instances in batch every second (and no longer makes thousands of queries)
+- **ovhcloud**: provider creates instances in batch (new API route used)
 
 
 2.4.3

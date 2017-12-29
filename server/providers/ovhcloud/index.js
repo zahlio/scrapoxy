@@ -173,14 +173,14 @@ module.exports = class ProviderOVHCloud {
 
         return init()
             .spread((flavor, snapshot, sshKey) => {
-                const promises = [];
-
-                for (let i = 0; i < count; ++i) {
-                    promises.push(createInstance(flavor.id, snapshot.id, sshKey.id));
+                if (count > 1) {
+                    return createInstances(flavor.id, snapshot.id, sshKey.id, count);
                 }
-
-                return Promise.all(promises);
-            });
+                else {
+                    return createInstance(flavor.id, snapshot.id, sshKey.id);
+                }
+            })
+        ;
 
 
         ////////////
@@ -289,6 +289,30 @@ module.exports = class ProviderOVHCloud {
                 };
 
                 self._client.request('POST', '/cloud/project/{serviceName}/instance', options, (err, results) => {
+                    if (err) {
+
+
+                        return reject(`${err}: ${results}`);
+                    }
+
+                    resolve();
+                });
+            });
+        }
+
+        function createInstances(flavorId, snapshotId, sshKeyId, cnt) {
+            return new Promise((resolve, reject) => {
+                const options = {
+                    serviceName: self._config.serviceId,
+                    region: self._config.region,
+                    flavorId,
+                    imageId: snapshotId,
+                    name: self._config.name,
+                    sshKeyId,
+                    number: cnt,
+                };
+
+                self._client.request('POST', '/cloud/project/{serviceName}/instance/bulk', options, (err, results) => {
                     if (err) {
                         if (err === 409 && results.indexOf('more instances' >= 0)) {
                             return reject(new ScalingError(count, false));
