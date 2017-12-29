@@ -28,7 +28,7 @@ winston.add(winston.transports.Console, {timestamp: true});
 
 
 program
-    .version('2.4.3')
+    .version('3.0.0')
     .option('-d, --debug', 'Debug mode (increase verbosity)', debugMode)
     .parse(process.argv);
 
@@ -112,7 +112,7 @@ function startProxy(configFilename) {
     // Initialize
     const providers = getProviders(config);
     if (providers.length <= 0) {
-        return winston.error('[Start] Error: Providers are not specify or supported');
+        return winston.error('[Start] Error: Providers are not specified or supported');
     }
 
     const main = new Proxies(config, providers);

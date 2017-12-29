@@ -3,7 +3,7 @@ Changelog
 =========
 
 
-X.X.X
+3.0.0
 =====
 
 Features
