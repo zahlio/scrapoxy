@@ -85,7 +85,6 @@ sshKeyName          none          Name of the SSH key
 flavorName          none          Type of instance
 name                Proxy         Name of the instance
 snapshotName        none          Name of the backup image (for the proxy instance)
-maxRunningInstances 10            It is a security limit. Scrapoxy cannot create new instances if the current count and the count of new instances exceeds this limit
 =================== ============= ===================================================================================================================================
 
 

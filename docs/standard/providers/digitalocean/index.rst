@@ -69,7 +69,6 @@ sshKeyName          none          Name of the SSH key
 size                none          Type of droplet
 name                Proxy         Name of the droplet
 imageName           none          Name of the image (for the proxy droplet)
-maxRunningInstances 10            It is a security limit. Scrapoxy cannot create new instances if the current count and the count of new instances exceeds this limit
 =================== ============= ===================================================================================================================================
 
 

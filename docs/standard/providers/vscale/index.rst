@@ -73,7 +73,6 @@ sshKeyName          none          Name of the SSH key
 plan                none          Type of plan (example: small)
 name                Proxy         Name of the scalet
 imageName           none          Name of the image (for the proxy scalet)
-maxRunningInstances 10            It is a security limit. Scrapoxy cannot create new instances if the current count and the count of new instances exceeds this limit
 =================== ============= ===================================================================================================================================
 
 

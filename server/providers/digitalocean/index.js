@@ -148,28 +148,16 @@ module.exports = class ProviderDigitalOcean {
             countLimited = count;
         }
 
-        return this._api.getAllDroplets()
-            .then((droplets) => {
-                const actualCount = _(droplets)
-                    .filter((droplet) => droplet.status !== ProviderDigitalOcean.ST_ARCHIVE)
-                    .size();
-
-                winston.debug('[ProviderDigitalOcean] createInstances: actualCount=%d', actualCount);
-
-                if (this._config.maxRunningInstances && actualCount + countLimited > this._config.maxRunningInstances) {
-                    throw new ScalingError(countLimited, true);
-                }
-
-                return init()
-                    .spread((image, sshKey) => createInstances(countLimited, image.id, sshKey.id));
-            })
+        return init()
+            .spread((image, sshKey) => createInstances(countLimited, image.id, sshKey.id))
             .catch((err) => {
                 if (err.id === 'forbidden' && err.message.indexOf('droplet limit') >= 0) {
                     throw new ScalingError(countLimited, false);
                 }
 
                 throw err;
-            });
+            })
+        ;
 
 
         ////////////

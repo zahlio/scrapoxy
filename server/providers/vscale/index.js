@@ -145,23 +145,9 @@ module.exports = class ProviderVscale {
 
         winston.debug('[ProviderVscale] createInstances: count=%d', count);
 
-        return this._api.getAllScalets()
-            .then((scalets) => {
-                const actualCount = _(scalets)
-                    .size();
-
-                winston.debug('[ProviderVscale] createInstances: actualCount=%d', actualCount);
-
-                if (this._config.maxRunningInstances && actualCount + count > this._config.maxRunningInstances) {
-                    throw new ScalingError(count, true);
-                }
-
-                return init()
-                    .spread((image, sshKey) => createInstances(count, image.id, sshKey.id));
-            })
-            .catch((err) => {
-                throw err;
-            });
+        return init()
+            .spread((image, sshKey) => createInstances(count, image.id, sshKey.id))
+        ;
 
 
         ////////////

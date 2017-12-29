@@ -55,7 +55,6 @@ module.exports = {
                 ],
             },
             tag: process.env.PROVIDERS_AWSEC2_TAG || 'Proxy',
-            maxRunningInstances: parseInt(process.env.PROVIDERS_AWSEC2_MAXRUNNINGINSTANCES || '10'),
         },
 
         ovhcloud: {
@@ -69,7 +68,6 @@ module.exports = {
             flavorName: process.env.PROVIDERS_OVHCLOUD_FLAVORNAME,
             snapshotName: process.env.PROVIDERS_OVHCLOUD_SNAPSHOTNAME,
             name: process.env.PROVIDERS_OVHCLOUD_NAME || 'Proxy',
-            maxRunningInstances: parseInt(process.env.PROVIDERS_OVHCLOUD_MAXRUNNINGINSTANCES || '10'),
         },
 
         digitalocean: {
@@ -79,7 +77,6 @@ module.exports = {
             sshKeyName: process.env.PROVIDERS_DIGITALOCEAN_SSHKEYNAME,
             imageName: process.env.PROVIDERS_DIGITALOCEAN_IMAGENAME,
             name: process.env.PROVIDERS_DIGITALOCEAN_NAME || 'Proxy',
-            maxRunningInstances: parseInt(process.env.PROVIDERS_DIGITALOCEAN_MAXRUNNINGINSTANCES || '10'),
         },
     },
 

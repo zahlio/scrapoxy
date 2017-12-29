@@ -47,7 +47,6 @@ module.exports = _.merge({}, configDefaults, {
                 ],
                 KeyName: 'proxy',
             },
-            maxRunningInstances: 20,
         },
     },
 

@@ -52,13 +52,31 @@ module.exports = class ProviderOVHCloud {
     get models() {
         const self = this;
 
-        return self._describeInstances()
+        return describeInstances()
             .then(summarizeInfo)
             .then(excludeTerminated)
             .then(excludeOutscope)
             .then(convertToModel);
 
+
         ////////////
+
+        function describeInstances() {
+            return new Promise((resolve, reject) => {
+                const options = {
+                    serviceName: self._config.serviceId,
+                    region: self._config.region,
+                };
+
+                self._client.request('GET', '/cloud/project/{serviceName}/instance', options, (err, instances) => {
+                    if (err) {
+                        return reject(err);
+                    }
+
+                    return resolve(instances);
+                });
+            });
+        }
 
         function summarizeInfo(instancesDesc) {
             return _.map(instancesDesc,
@@ -153,32 +171,15 @@ module.exports = class ProviderOVHCloud {
 
         winston.debug('[ProviderOVHCloud] createInstances: count=%d', count);
 
-        return self._describeInstances()
-            .then((instances) => {
-                const actualCount = _(instances)
-                    .filter(
-                        (instance) =>
-                        instance.status !== ProviderOVHCloud.ST_DELETING &&
-                        instance.status !== ProviderOVHCloud.ST_DELETED
-                    )
-                    .size();
+        return init()
+            .spread((flavor, snapshot, sshKey) => {
+                const promises = [];
 
-                winston.debug('[ProviderOVHCloud] createInstances: actualCount=%d', actualCount);
-
-                if (self._config.maxRunningInstances && actualCount + count > self._config.maxRunningInstances) {
-                    throw new ScalingError(count, true);
+                for (let i = 0; i < count; ++i) {
+                    promises.push(createInstance(flavor.id, snapshot.id, sshKey.id));
                 }
 
-                return init()
-                    .spread((flavor, snapshot, sshKey) => {
-                        const promises = [];
-
-                        for (let i = 0; i < count; ++i) {
-                            promises.push(createInstance(flavor.id, snapshot.id, sshKey.id));
-                        }
-
-                        return Promise.all(promises);
-                    });
+                return Promise.all(promises);
             });
 
 
@@ -311,33 +312,10 @@ module.exports = class ProviderOVHCloud {
     removeInstance(model) {
         winston.debug('[ProviderOVHCloud] removeInstance: model=', model.toString());
 
-        return this._removeInstance(model.providerOpts.id);
-    }
-
-
-    _describeInstances() {
         return new Promise((resolve, reject) => {
             const options = {
                 serviceName: this._config.serviceId,
-                region: this._config.region,
-            };
-
-            this._client.request('GET', '/cloud/project/{serviceName}/instance', options, (err, instances) => {
-                if (err) {
-                    return reject(err);
-                }
-
-                resolve(instances);
-            });
-        });
-    }
-
-
-    _removeInstance(instanceId) {
-        return new Promise((resolve, reject) => {
-            const options = {
-                serviceName: this._config.serviceId,
-                instanceId,
+                instanceId: model.providerOpts.id,
             };
 
             this._client.request('DELETE', '/cloud/project/{serviceName}/instance/{instanceId}', options, (err, results) => {
@@ -345,7 +323,7 @@ module.exports = class ProviderOVHCloud {
                     return reject(`${err}: ${results}`);
                 }
 
-                resolve(results);
+                return resolve(results);
             });
         });
     }

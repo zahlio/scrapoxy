@@ -82,7 +82,6 @@ secretAccessKey     none          Credentials for AWS (optional)
 region              none          AWS region (example: eu-west-1)
 tag                 Proxy         Name of the AWS / EC2 instance
 instance            none          see :ref:`awsec2 / instance <awsec2-instance>`
-maxRunningInstances 10            It is a security limit. Scrapoxy cannot create new instances if the current count and the count of new instances exceeds this limit
 =================== ============= ===================================================================================================================================
 
 

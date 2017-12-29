@@ -3,6 +3,15 @@ Changelog
 =========
 
 
+2.4.X
+=====
+
+Bug fixes
+---------
+
+- **maxRunningInstances**: remove blocking parameters maxRunningInstances
+
+
 2.4.3
 =====
 

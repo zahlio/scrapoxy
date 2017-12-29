@@ -173,72 +173,68 @@ module.exports = class ProviderAWSEC2 {
         }
     }
 
+
     createInstances(count) {
+        const self = this;
+
         winston.debug('[ProviderAWSEC2] createInstances: count=%d', count);
 
-        return new Promise((resolve, reject) => {
-            this._ec2.describeInstances({}, (errDescribe, dataDescribe) => {
-                if (errDescribe) {
-                    return reject(errDescribe);
+        return createInstances(self._config.instance, count)
+            .then((ids) => Promise.delay(500, ids))
+            .then((ids) => tagInstances(ids, self._config.tag))
+            .catch((err) => {
+                if (err.code === 'InstanceLimitExceeded') {
+                    throw new ScalingError(count, false);
                 }
 
-                const actualCount = _(dataDescribe.Reservations)
-                    .map('Instances')
-                    .flatten()
-                    .filter(
-                    (instance) =>
-                    instance.State.Name !== ProviderAWSEC2.ST_SHUTTING_DOWN &&
-                    instance.State.Name !== ProviderAWSEC2.ST_TERMINATED
-                )
-                    .size();
+                throw err;
+            })
+        ;
 
-                winston.debug('[ProviderAWSEC2] createInstances: actualCount=%d', actualCount);
 
-                if (this._config.maxRunningInstances && actualCount + count > this._config.maxRunningInstances) {
-                    return reject(new ScalingError(count, true));
-                }
+        ////////////
 
-                const runParams = _.merge({}, this._config.instance, {
-                    MinCount: count,
-                    MaxCount: count,
+        function createInstances(instanceConfig, cnt) {
+            return new Promise((resolve, reject) => {
+                const runParams = _.merge({}, instanceConfig, {
+                    MinCount: cnt,
+                    MaxCount: cnt,
                     InstanceInitiatedShutdownBehavior: 'terminate',
                     Monitoring: {
                         Enabled: false,
                     },
                 });
 
-                this._ec2.runInstances(runParams, (errParams, dataRun) => {
+                self._ec2.runInstances(runParams, (errParams, dataRun) => {
                     if (errParams) {
-                        if (errParams.code === 'InstanceLimitExceeded') {
-                            return reject(new ScalingError(count, false));
-                        }
-
                         return reject(errParams);
                     }
 
                     const ids = _.map(dataRun.Instances, 'InstanceId');
-
-                    // Need to add some delay because EC2 API is not so fast!
-                    setTimeout(() => {
-                        const tagsParams = {
-                            Resources: ids,
-                            Tags: [{
-                                'Key': 'Name',
-                                'Value': this._config.tag,
-                            }],
-                        };
-
-                        this._ec2.createTags(tagsParams, (errTags) => {
-                            if (errTags) {
-                                return reject(errTags);
-                            }
-
-                            resolve();
-                        });
-                    }, 500);
+                    return resolve(ids);
                 });
             });
-        });
+        }
+
+        function tagInstances(ids, tag) {
+            return new Promise((resolve, reject) => {
+                const tagsParams = {
+                    Resources: ids,
+                    Tags: [{
+                        'Key': 'Name',
+                        'Value': tag,
+                    }],
+                };
+
+                self._ec2.createTags(tagsParams, (errTags) => {
+                    if (errTags) {
+                        return reject(errTags);
+                    }
+
+                    return resolve();
+                });
+            });
+        }
     }
 
 
