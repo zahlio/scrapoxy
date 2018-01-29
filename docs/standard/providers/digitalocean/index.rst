@@ -41,7 +41,7 @@ Open :code:`conf.json`::
 
       "token": "YOUR PERSONAL TOKEN",
       "region": "YOUR REGION (could be: lon1)",
-      "size": "512mb",
+      "size": "s-1vcpu-1gb (previous: 512mb)",
       "sshKeyName": "YOUR SSH KEY (could be: mykey)",
       "imageName": "YOUR SNAPSHOT NAME (could be: forward-proxy)"
     ]

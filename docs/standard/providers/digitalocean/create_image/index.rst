@@ -12,7 +12,7 @@ Go to `DigitalOcean console`_.
 Step 2: Create a new droplet
 ============================
 
-Click on *Create Droplet*
+Click on *Create* and *Droplets*
 
 .. image:: step_1.jpg
 
@@ -20,12 +20,12 @@ Click on *Create Droplet*
 Step 3: Change the configuration of droplet
 ===========================================
 
-Choose an image *Ubuntu 16.04.1 x64*:
+Choose an image *Ubuntu 16.04.3 x64*:
 
 .. image:: step_2a.jpg
 
 
-Choose the smallest size:
+Choose the smallest size on *Standard Droplets*:
 
 .. image:: step_2b.jpg
 

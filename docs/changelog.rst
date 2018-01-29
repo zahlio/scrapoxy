@@ -3,6 +3,15 @@ Changelog
 =========
 
 
+X.X.X
+=====
+
+Bug fixes
+---------
+
+- **digitalocean**: use new image size type
+
+
 3.0.0
 =====
 
