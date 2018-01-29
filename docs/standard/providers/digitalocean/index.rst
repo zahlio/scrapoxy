@@ -43,7 +43,8 @@ Open :code:`conf.json`::
       "region": "YOUR REGION (could be: lon1)",
       "size": "s-1vcpu-1gb (previous: 512mb)",
       "sshKeyName": "YOUR SSH KEY (could be: mykey)",
-      "imageName": "YOUR SNAPSHOT NAME (could be: forward-proxy)"
+      "imageName": "YOUR SNAPSHOT NAME (could be: forward-proxy)",
+      "tags": "YOUR TAGS SEPARATED BY A COMMA (could be: proxy,instance)"
     ]
   },
 
@@ -68,6 +69,7 @@ sshKeyName          none          Name of the SSH key
 size                none          Type of droplet
 name                Proxy         Name of the droplet
 imageName           none          Name of the image (for the proxy droplet)
+tags                none          Tags separated by a comma (example: proxy,instance)
 max                 none          Maximum number of instances for this provider. If empty, there is no maximum.
 =================== ============= ===================================================================================================================================
 

@@ -6,6 +6,12 @@ Changelog
 X.X.X
 =====
 
+Features
+--------
+
+- **digitalocean**: support Digital Ocean tags on Droplets. Thanks to Ben Lavalley !!!
+
+
 Bug fixes
 ---------
 

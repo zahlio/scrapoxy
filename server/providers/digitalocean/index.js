@@ -227,6 +227,13 @@ module.exports = class ProviderDigitalOcean {
                 ssh_keys: [sshKeyId],
             };
 
+            if (self._config.tags) {
+                createOptions.tags = self._config.tags.split(',');
+            }
+            else {
+                createOptions.tags = [];
+            }
+
             return self._api.createDroplet(createOptions);
         }
     }

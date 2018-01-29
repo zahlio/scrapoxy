@@ -59,7 +59,8 @@ This command creates a configuration example, with 4 providers::
                 "region": "YOUR REGION (could be: lon1)",
                 "size": "s-1vcpu-1gb (previous: 512mb)",
                 "sshKeyName": "YOUR SSH KEY (could be: mykey)",
-                "imageName": "YOUR SNAPSHOT NAME (could be: forward-proxy)"
+                "imageName": "YOUR SNAPSHOT NAME (could be: forward-proxy)",
+                "tags": "YOUR TAGS SEPARATED BY A COMMA (could be: proxy,instance)"
             },
             {
                 "type": "vscale",

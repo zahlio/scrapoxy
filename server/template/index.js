@@ -57,6 +57,7 @@ const template = {
             size: 's-1vcpu-1gb',
             sshKeyName: 'YOUR SSH KEY (could be: mykey)',
             imageName: 'YOUR SNAPSHOT NAME (could be: forward-proxy)',
+            tags: 'YOUR TAGS SEPARATED BY A COMMA (could be: proxy,instance)',
         },
 
         {
