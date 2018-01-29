@@ -1,15 +1,26 @@
 'use strict';
 
+
+const
+    geoip = require('geoip-lite');
+
+
 module.exports = class InstanceModel {
     constructor(name, type, status, locked, address, region, providerOpts) {
         this.name = name;
         this.type = type;
         this.status = status;
         this.locked = locked;
-        this.address = address;
         this.region = region;
-
         this.providerOpts = providerOpts;
+
+        this.address = address;
+        if (this.address) {
+            const geo = geoip.lookup(this.address.hostname);
+            if (geo) {
+                this.latlng = geo.ll;
+            }
+        }
     }
 
 
@@ -44,6 +55,7 @@ module.exports = class InstanceModel {
             type: this.type,
             status: this.status,
             address: this.address,
+            latlng: this.latlng,
             region: this.region,
         };
     }

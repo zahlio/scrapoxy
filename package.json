@@ -41,6 +41,7 @@
         "compression": "~1.7.1",
         "cors": "~2.8.4",
         "express": "~4.16.2",
+        "geoip-lite": "fabienvauchelles/node-geoip",
         "lodash": "~4.17.4",
         "moment": "~2.19.4",
         "morgan": "~1.9.0",
