@@ -68,13 +68,37 @@ Step 6: Install the proxy
 Install proxy with::
 
     sudo apt-get update
+
+and::
+
     sudo apt-get install --yes curl
+
+and::
+
     curl --silent --location https://deb.nodesource.com/setup_8.x | sudo bash -
+
+and::
+
     sudo apt-get install --yes nodejs
+
+and::
+
     curl --silent --location https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/tools/install/proxy.js | sudo tee /root/proxy.js > /dev/null
+
+and::
+
     curl --silent --location https://raw.githubusercontent.com/fabienvauchelles/scrapoxy/master/tools/install/proxyup.sh | sudo tee /etc/init.d/proxyup.sh > /dev/null
+
+and::
+
     sudo chmod a+x /etc/init.d/proxyup.sh
+
+and::
+
     sudo update-rc.d proxyup.sh defaults
+
+and::
+
     sudo /etc/init.d/proxyup.sh start
 
 
