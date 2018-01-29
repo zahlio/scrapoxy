@@ -9,7 +9,7 @@ X.X.X
 Bug fixes
 ---------
 
-- **digitalocean**: use new image size type
+- **digitalocean**: use new image size (s-1vcpu-1gb instead of 512mb)
 
 
 3.0.0
