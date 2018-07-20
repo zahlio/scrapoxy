@@ -3,3 +3,5 @@ node_modules/
 .DS_Store
 server/my-config*.json
 server/conf.json
+
+package-lock\.json
