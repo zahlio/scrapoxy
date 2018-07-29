@@ -19,6 +19,7 @@ Bug fixes
 - **logs**: correct export path of logs
 - **docs**: correct documentation
 - **ssl**: add servername in the TLS connect (bug with HELLO)
+- **pinger**: use reject instead of throw error (crash program). Thanks to Anis Gandoura !!!
 
 
 3.0.1
