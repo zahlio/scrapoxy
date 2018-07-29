@@ -10,6 +10,7 @@ Features
 --------
 
 - **domains**: manage whitelist or blacklist for urls (idea from Jonathan Wiklund)
+- **docs**: add **ami-485fbba5** with type t2.micro
 
 
 Bug fixes
@@ -106,7 +107,7 @@ Bug fixes
 Features
 --------
 
-- **docs**: add **ami-06220275** with type n2.nano
+- **docs**: add **ami-06220275** with type t2.nano
 
 
 Bug fixes
