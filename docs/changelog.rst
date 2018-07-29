@@ -17,6 +17,7 @@ Bug fixes
 
 - **logs**: correct export path of logs
 - **docs**: correct documentation
+- **ssl**: add servername in the TLS connect (bug with HELLO)
 
 
 3.0.1
