@@ -34,6 +34,10 @@ module.exports = class Master {
             agent: self._agent,
         });
 
+        // Domains
+        self._domainsAllowed = (self._config.domains_allowed || []).map(d => d.toLowerCase());
+        self._domainsForbidden = (self._config.domains_forbidden || []).map(d => d.toLowerCase());
+
         // Config server
         self._server = http.createServer();
 
@@ -55,11 +59,9 @@ module.exports = class Master {
                 }
             }
 
-            // Check requested url against blocklist items
-            for (var blockrule of self._config.blocklist) {
-                if (req.url.indexOf(blockrule) !== -1) {
-                    return writeEnd(res, 403, '[Master] Error: Requested URL matches blocklist rule');
-                }
+            // Check requested url against rules
+            if (isUrlForbidden(req.url)) {
+                return writeEnd(res, 407, '[Master] Error: request is forbidden by url rule');
             }
 
             // Trigger scaling if necessary
@@ -189,11 +191,9 @@ module.exports = class Master {
                 }
             }
 
-            // Check requested url against blocklist items
-            for (var blockrule of self._config.blocklist) {
-                if (req.url.indexOf(blockrule) !== -1) {
-                    return writeEnd(socket, 403, '[Master] Error: Requested URL matches blocklist rule');
-                }
+            // Check requested url against rules
+            if (isUrlForbidden(req.url)) {
+                return writeEnd(socket, 407, '[Master] Error: request is forbidden by url rule');
             }
 
             // Trigger scaling if necessary
@@ -327,6 +327,43 @@ module.exports = class Master {
 
                 s.write(text);
                 return s.end();
+            }
+        }
+
+        function isUrlForbidden(url) {
+            let rUrl;
+            if (!url) {
+                rUrl = '';
+            }
+            else {
+                rUrl = url.toLowerCase();
+            }
+
+            if (self._domainsForbidden.length > 0) {
+                if (found(rUrl, self._domainsForbidden)) {
+                    return true;
+                }
+            }
+
+            if (self._domainsAllowed.length > 0) {
+                if (!found(rUrl, self._domainsAllowed)) {
+                    return true;
+                }
+            }
+
+            return false;
+
+
+            ////////////
+
+            function found(u, domains) {
+                for (const domain of domains) {
+                    if (u.indexOf(domain) >= 0) {
+                        return true;
+                    }
+                }
+
+                return false;
             }
         }
     }

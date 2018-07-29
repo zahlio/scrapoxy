@@ -3,6 +3,22 @@ Changelog
 =========
 
 
+3.0.2
+=====
+
+Features
+--------
+
+- **domains**: manage whitelist or blacklist for urls (idea from Jonathan Wiklund)
+
+
+Bug fixes
+---------
+
+- **logs**: correct export path of logs
+- **docs**: correct documentation
+
+
 3.0.1
 =====
 

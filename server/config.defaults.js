@@ -5,7 +5,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // Allow wrong certificates
 module.exports = {
     proxy: {
         port: 8888,
-        blocklist: [], // if anything defined in blocklist is found in requested URL, Master will reject.
+        domains_allowed: [],
+        domains_forbidden: [],
     },
 
     commander: {
