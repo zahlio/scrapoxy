@@ -158,12 +158,14 @@ Providers is an array of provider. It can contains multiple providers:
 Options: proxy
 ==============
 
-====== ============= ===================================================
-Option Default value Description
-====== ============= ===================================================
-port   8888          TCP port of Scrapoxy
-auth   none          see :ref:`proxy / auth <proxy-auth>` (optional)
-====== ============= ===================================================
+================== ============= ===============================================================================
+Option             Default value Description
+================== ============= ===============================================================================
+port               8888          TCP port of Scrapoxy
+auth               none          see :ref:`proxy / auth <proxy-auth>` (optional)
+domains_allowed    []            Whitelisted domains: only URLs with this domains are allowed (ignored if empty)
+domains_forbidden  []            Blacklisted domains: URLs with this domains are rejected (ignored if empty)
+================== ============= ===============================================================================
 
 
 .. _proxy-auth:
