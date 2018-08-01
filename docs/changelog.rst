@@ -3,6 +3,25 @@ Changelog
 =========
 
 
+3.0.2
+=====
+
+Features
+--------
+
+- **domains**: manage whitelist or blacklist for urls (idea from Jonathan Wiklund)
+- **docs**: add **ami-485fbba5** with type t2.micro
+
+
+Bug fixes
+---------
+
+- **logs**: correct export path of logs
+- **docs**: correct documentation
+- **ssl**: add servername in the TLS connect (bug with HELLO)
+- **pinger**: use reject instead of throw error (crash program). Thanks to Anis Gandoura !!!
+
+
 3.0.1
 =====
 
@@ -89,7 +108,7 @@ Bug fixes
 Features
 --------
 
-- **docs**: add **ami-06220275** with type n2.nano
+- **docs**: add **ami-06220275** with type t2.nano
 
 
 Bug fixes

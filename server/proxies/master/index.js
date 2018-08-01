@@ -34,11 +34,15 @@ module.exports = class Master {
             agent: self._agent,
         });
 
+        // Domains
+        self._domainsAllowed = (self._config.domains_allowed || []).map(d => d.toLowerCase());
+        self._domainsForbidden = (self._config.domains_forbidden || []).map(d => d.toLowerCase());
+
         // Config server
         self._server = http.createServer();
 
         self._server.on('request', request);
-		self._server.on('connect', connect);
+        self._server.on('connect', connect);
 
 
         ////////////
@@ -53,6 +57,11 @@ module.exports = class Master {
                         'Content-Type': 'text/plain',
                     });
                 }
+            }
+
+            // Check requested url against rules
+            if (isUrlForbidden(req.url)) {
+                return writeEnd(res, 407, '[Master] Error: request is forbidden by url rule');
             }
 
             // Trigger scaling if necessary
@@ -180,6 +189,11 @@ module.exports = class Master {
                         'Connection': 'close',
                     });
                 }
+            }
+
+            // Check requested url against rules
+            if (isUrlForbidden(req.url)) {
+                return writeEnd(socket, 407, '[Master] Error: request is forbidden by url rule');
             }
 
             // Trigger scaling if necessary
@@ -313,6 +327,43 @@ module.exports = class Master {
 
                 s.write(text);
                 return s.end();
+            }
+        }
+
+        function isUrlForbidden(url) {
+            let rUrl;
+            if (!url) {
+                rUrl = '';
+            }
+            else {
+                rUrl = url.toLowerCase();
+            }
+
+            if (self._domainsForbidden.length > 0) {
+                if (found(rUrl, self._domainsForbidden)) {
+                    return true;
+                }
+            }
+
+            if (self._domainsAllowed.length > 0) {
+                if (!found(rUrl, self._domainsAllowed)) {
+                    return true;
+                }
+            }
+
+            return false;
+
+
+            ////////////
+
+            function found(u, domains) {
+                for (const domain of domains) {
+                    if (u.indexOf(domain) >= 0) {
+                        return true;
+                    }
+                }
+
+                return false;
             }
         }
     }
