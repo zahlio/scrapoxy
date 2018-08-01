@@ -203,26 +203,35 @@ module.exports = class ProviderAWSEC2 {
 
     createInstances(count) {
         const self = this;
+        const shouldSplit = true;
 
         winston.debug('[ProviderAWSEC2] createInstances: count=%d', count);
+        const promiseArr = [...Array(count).keys()].map(() => createInstances(self._config.instance, shouldSplit ? 1 : count));
 
-        return createInstances(self._config.instance, count)
+        return Promise.all(promiseArr)
+            .then((arr) => arr.reduce((ids, _ids) => ids.concat(_ids), []))
             .then((ids) => Promise.delay(500, ids))
-            .then((ids) => tagInstances(ids, self._config.tag))
+            .then((ids) => {
+                if (ids.length) {
+                    return tagInstances(ids, self._config.tag);
+                }
+                else {
+                    // no instances was started
+                    throw new ScalingError(count, false);
+                }
+            })
             .catch((err) => {
                 if (err.code === 'InstanceLimitExceeded') {
                     throw new ScalingError(count, false);
                 }
 
                 throw err;
-            })
-        ;
-
+            });
 
         ////////////
 
         function createInstances(instanceConfig, cnt) {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 const runParams = _.merge({}, instanceConfig, {
                     MinCount: cnt,
                     MaxCount: cnt,
@@ -234,7 +243,7 @@ module.exports = class ProviderAWSEC2 {
 
                 self._ec2.runInstances(runParams, (errParams, dataRun) => {
                     if (errParams) {
-                        return reject(errParams);
+                        return resolve([]);
                     }
 
                     const ids = _.map(dataRun.Instances, 'InstanceId');
