@@ -18,6 +18,8 @@ module.exports = class Instance extends EventEmitter {
         self._stats = stats;
         self._provider = provider;
         self._config = config;
+        self._createdAt = +new Date();
+        self._aliveAt = null;
 
         self._model = void 0;
         self._removing = false;
@@ -187,6 +189,8 @@ module.exports = class Instance extends EventEmitter {
         return _.merge({}, this._model.stats, {
             alive: this._alive,
             useragent: this._useragent,
+            createdAt: this._createdAt,
+            aliveAt: this._aliveAt,
         });
     }
 
@@ -243,6 +247,12 @@ module.exports = class Instance extends EventEmitter {
 
         if (this._alive !== alive) {
             this._alive = alive;
+            if (alive) {
+                this._aliveAt = +new Date();
+            }
+            else {
+                this._aliveAt = null;
+            }
 
             this.emit('alive:updated', alive);
         }
