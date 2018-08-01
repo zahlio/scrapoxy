@@ -72,17 +72,18 @@ For credentials, there is 2 choices:
 1. Add credentials in the configuration file;
 2. Or Use your own credentials (from profile, see the `AWS documentation`_).
 
-=================== ============= ===================================================================================================================================
-Option              Default value Description
-=================== ============= ===================================================================================================================================
-type                none          Must be **awsec2**
-accessKeyId         none          Credentials for AWS (optional)
-secretAccessKey     none          Credentials for AWS (optional)
-region              none          AWS region (example: eu-west-1)
-tag                 Proxy         Name of the AWS / EC2 instance
-instance            none          see :ref:`awsec2 / instance <awsec2-instance>`
-max                 none          Maximum number of instances for this provider. If empty, there is no maximum.
-=================== ============= ===================================================================================================================================
+========================= ============= ===================================================================================================================================
+Option                    Default value Description
+========================= ============= ===================================================================================================================================
+type                      none          Must be **awsec2**
+accessKeyId               none          Credentials for AWS (optional)
+secretAccessKey           none          Credentials for AWS (optional)
+region                    none          AWS region (example: eu-west-1)
+tag                       Proxy         Name of the AWS / EC2 instance
+instance                  none          see :ref:`awsec2 / instance <awsec2-instance>`
+max                       none          Maximum number of instances for this provider. If empty, there is no maximum.
+batchCreateInstances      false         Will create 1 instance at a time. Settings this to true can improve the startup time of your instances (when you have a low limit)
+========================= ============= ===================================================================================================================================
 
 
 .. _awsec2-instance:
