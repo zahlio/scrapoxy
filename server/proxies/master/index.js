@@ -3,7 +3,10 @@
 const _ = require('lodash'),
     Promise = require('bluebird'),
     domain = require('./domain'),
+    fs = require('fs'),
     http = require('http'),
+    Mitm = require('./mitm'),
+    path = require('path'),
     ProxyAgent = require('./proxy-agent'),
     sanitize = require('./sanitize'),
     url = require('url'),
@@ -38,6 +41,27 @@ module.exports = class Master {
         self._domainsAllowed = (self._config.domains_allowed || []).map(d => d.toLowerCase());
         self._domainsForbidden = (self._config.domains_forbidden || []).map(d => d.toLowerCase());
 
+        // Mitm
+        if (self._config.mitm) {
+            let cert;
+            if (self._config.mitm.cert_filename) {
+                cert = fs.readFileSync(self._config.mitm.cert_filename);
+            }
+            else {
+                cert = fs.readFileSync(path.join(__dirname, 'mitm/cert.pem'));
+            }
+
+            let key;
+            if (self._config.mitm.key_filename) {
+                key = fs.readFileSync(self._config.mitm.key_filename);
+            }
+            else {
+                key = fs.readFileSync(path.join(__dirname, 'mitm/key.pem'));
+            }
+
+            self._mitm = new Mitm({cert, key});
+        }
+
         // Config server
         self._server = http.createServer();
 
@@ -48,7 +72,6 @@ module.exports = class Master {
         ////////////
 
         function request(req, res) {
-
             // Check auth
             if (self._token) {
                 if (!req.headers['proxy-authorization'] || req.headers['proxy-authorization'] !== self._token) {
@@ -58,6 +81,23 @@ module.exports = class Master {
                     });
                 }
             }
+
+            return requestImpl(req, res);
+        }
+
+        function requestImpl(req, res) {
+            // Log errors
+            req.on('error',
+                (err) => {
+                    winston.error('[Master] Error: request error from client (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
+                }
+            );
+
+            res.on('error',
+                (err) => {
+                    winston.error('[Master] Error: response error from client (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
+                }
+            );
 
             // Check requested url against rules
             if (isUrlForbidden(req.url)) {
@@ -78,19 +118,6 @@ module.exports = class Master {
             if (!instance) {
                 return writeEnd(res, 407, '[Master] Error: No running instance found');
             }
-
-            // Log errors
-            req.on('error',
-                (err) => {
-                    winston.error('[Master] Error: request error from client (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
-                }
-            );
-
-            res.on('error',
-                (err) => {
-                    winston.error('[Master] Error: response error from client (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
-                }
-            );
 
             // Update headers
             instance.updateRequestHeaders(req.headers);
@@ -180,7 +207,6 @@ module.exports = class Master {
         }
 
         function connect(req, socket) {
-
             // Check auth
             if (self._token) {
                 if (!req.headers['proxy-authorization'] || req.headers['proxy-authorization'] !== self._token) {
@@ -189,6 +215,23 @@ module.exports = class Master {
                         'Connection': 'close',
                     });
                 }
+            }
+
+            // Log errors
+            req.on('error',
+                (err) => {
+                    winston.error('[Master] Error: request error from client (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
+                }
+            );
+
+            socket.on('error',
+                (err) => {
+                    winston.error('[Master] Error: socket error from client (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
+                }
+            );
+
+            if (self._mitm) {
+                return self._mitm.connect(socket, (rq, rs) => requestImpl(rq, rs));
             }
 
             // Check requested url against rules
@@ -211,19 +254,6 @@ module.exports = class Master {
             if (!instance) {
                 return writeEnd(socket, 407, '[Master] Error: No running instance found');
             }
-
-            // Log errors
-            req.on('error',
-                (err) => {
-                    winston.error('[Master] Error: request error from client (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
-                }
-            );
-
-            socket.on('error',
-                (err) => {
-                    winston.error('[Master] Error: socket error from client (%s %s on instance %s):', req.method, req.url, instance.toString(), err);
-                }
-            );
 
             // Cannot update headers because SSL is encrypted
 
