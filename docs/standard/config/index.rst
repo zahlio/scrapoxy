@@ -165,6 +165,7 @@ port               8888          TCP port of Scrapoxy
 auth               none          see :ref:`proxy / auth <proxy-auth>` (optional)
 domains_allowed    []            Whitelisted domains: only URLs with this domains are allowed (ignored if empty)
 domains_forbidden  []            Blacklisted domains: URLs with this domains are rejected (ignored if empty)
+mitm               False         see :ref:`man in the middle <mitm>` (optional)
 ================== ============= ===============================================================================
 
 
@@ -179,6 +180,19 @@ Option   Default value Description
 username none          Credentials if your Scrapoxy needs them
 password none          Credentials if your Scrapoxy needs them
 ======== ============= =======================================
+
+
+.. _mitm:
+
+Options: proxy / mitm
+=====================
+
+============= ============= ======================================================================
+Option        Default value Description
+============= ============= ======================================================================
+cert_filename none          Public key filename for MITM certificate (scrapoxy has a default one)
+key_filename  none          Private key filename for MITM certificate (scrapoxy has a default one)
+============= ============= ======================================================================
 
 
 Options: stats
