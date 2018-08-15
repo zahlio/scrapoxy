@@ -206,8 +206,8 @@ module.exports = class ProviderAWSEC2 {
         const self = this;
         const {batchCreateInstances} = self._config;
 
-        winston.debug('[ProviderAWSEC2] createInstances: count=%d', count);
-        const promiseArr = [...Array(count).keys()].map(() => createInstances(self._config.instance, batchCreateInstances ? 1 : count));
+        winston.debug('[ProviderAWSEC2] createInstances: count=%d, batchCreateInstances=%d', count, batchCreateInstances ? count : 1);
+        const promiseArr = [...Array(batchCreateInstances ? 1 : count).keys()].map(() => createInstances(self._config.instance, batchCreateInstances ? count : 1));
 
         return Promise.all(promiseArr)
             .then((arr) => arr.reduce((ids, _ids) => ids.concat(_ids), []))
@@ -240,6 +240,7 @@ module.exports = class ProviderAWSEC2 {
 
                 self._ec2.runInstances(runParams, (errParams, dataRun) => {
                     if (errParams) {
+                        winston.error('[ProviderAWSEC2] runInstances', errParams);
                         return errParams.code === 'InstanceLimitExceeded' ? resolve([]) : reject(errParams);
                     }
 
