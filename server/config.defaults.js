@@ -7,6 +7,8 @@ module.exports = {
         port: 8888,
         domains_allowed: [],
         domains_forbidden: [],
+
+        mitm: false,
     },
 
     commander: {
