@@ -216,7 +216,7 @@ module.exports = class Instance extends EventEmitter {
 
 
     updateRequestHeaders(headers) {
-        headers['user-agent'] = this._useragent;
+        // headers['user-agent'] = this._useragent;
 
         if (this._config.addProxyNameInRequest) {
             headers['x-cache-proxyname'] = this.name;
