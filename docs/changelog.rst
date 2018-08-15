@@ -3,12 +3,13 @@ Changelog
 =========
 
 
-3.0.2
+3.1.0
 =====
 
 Features
 --------
 
+- **mitm**: decrypt & encrypt SSL requests to add headers (like **x-cache-proxyname**). Compatible with HTTPS requests in PhantomJS_.
 - **domains**: manage whitelist or blacklist for urls (idea from Jonathan Wiklund)
 - **docs**: add **ami-485fbba5** with type t2.micro
 
