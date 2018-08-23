@@ -207,7 +207,19 @@ module.exports = class ProviderAWSEC2 {
         const {batchCreateInstances} = self._config;
 
         winston.debug('[ProviderAWSEC2] createInstances: count=%d, batchCreateInstances=%d', count, batchCreateInstances ? count : 1);
-        const promiseArr = [...Array(batchCreateInstances ? 1 : count).keys()].map(() => createInstances(self._config.instance, batchCreateInstances ? count : 1));
+        // if count is larger then 100 split it up
+        const countMax = 100;
+        let promiseArr = [];
+        if (count > countMax && !batchCreateInstances) {
+            const split = count / countMax;
+            promiseArr = [
+                ...Array(Math.floor(split)).keys().map(() => createInstances(self._config.instance, countMax)),
+                createInstances(self._config.instance, count % countMax),
+            ];
+        }
+        else {
+            promiseArr = [...Array(batchCreateInstances ? 1 : count).keys()].map(() => createInstances(self._config.instance, batchCreateInstances ? count : 1));
+        }
 
         return Promise.all(promiseArr)
             .then((arr) => arr.reduce((ids, _ids) => ids.concat(_ids), []))
