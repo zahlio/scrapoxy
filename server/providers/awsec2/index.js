@@ -212,10 +212,11 @@ module.exports = class ProviderAWSEC2 {
         let promiseArr = [];
         if (count >= countMax) {
             const split = count / countMax;
-            promiseArr = [
-                ...[...Array(Math.floor(split)).keys()].map(() => createInstances(self._config.instance, countMax)),
-                createInstances(self._config.instance, count % countMax),
-            ];
+            promiseArr = [...Array(Math.floor(split)).keys()].map(() => createInstances(self._config.instance, countMax));
+
+            if (count % countMax > 0) {
+                promiseArr.push(createInstances(self._config.instance, count % countMax)
+            }
         }
         else {
             promiseArr = [...Array(batchCreateInstances ? 1 : count).keys()].map(() => createInstances(self._config.instance, batchCreateInstances ? count : 1));
